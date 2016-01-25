@@ -1,15 +1,11 @@
-using System.Collections.Generic;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
-using Microsoft.CodeAnalysis.Text;
+
 
 namespace MixinRefactoring
 {
@@ -49,16 +45,19 @@ namespace MixinRefactoring
 
             var classDeclarationNode = fieldDeclarationNode.Parent as ClassDeclarationSyntax;
 
-            var mixin = new MixinFactory(model).FromFieldDeclaration(fieldDeclarationNode);
+            var mixin = new MixinReferenceFactory(model).Create(fieldDeclarationNode);
             if (mixin == null)
                 return null;
 
-            var mixinChild = new MixinChild(classDeclarationNode, model);
+            var mixinChild = new ClassFactory(model).Create(classDeclarationNode);
             if (mixinChild == null)
                 return null;
 
             // do the refactoring
-            var newClassDeclaration = mixinChild.Include(mixin);
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, mixinChild);
+            var syntaxWriter = new IncludeMixinSyntaxWriter(mixer.MembersToImplement, mixin.Name);
+            var newClassDeclaration = syntaxWriter.Visit(mixinChild.SourceCode);
 
             var root = await model.SyntaxTree.GetRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(classDeclarationNode, newClassDeclaration);

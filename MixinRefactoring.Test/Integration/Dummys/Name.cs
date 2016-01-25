@@ -40,4 +40,23 @@ namespace MixinRefactoring.Test
     {
         string Name { get; }
     }
+
+    /// <summary>
+    /// This is a mixin with a static property,
+    /// the property should not be included
+    /// into the child
+    /// </summary>
+    public class StaticName
+    {
+        public static string Name { get; set; }
+    }
+
+    /// <summary>
+    /// an interface that has a property with
+    /// a generic type parameter
+    /// </summary>
+    public interface INameWithGenericParameter
+    {
+        IEnumerable<string> Names { get; set; }
+    }   
 }

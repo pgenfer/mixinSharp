@@ -1,4 +1,6 @@
-﻿namespace MixinRefactoring.Test
+﻿using System.Collections.Generic;
+
+namespace MixinRefactoring.Test
 {
     /// <summary>
     /// class that contains some mixins
@@ -95,5 +97,53 @@
     public class ThirdPersonClass : SecondPersonBaseClass
     {
         private OnlyGetterName _name;
+    }
+
+    /// <summary>
+    /// class with a mixin with a static property.
+    /// The property should not be added to the child.
+    /// </summary>
+    public class PersonWithStaticMixin
+    {
+        private StaticName _name;
+    }
+
+    /// <summary>
+    /// this class has a mixin which has a
+    /// property with a generic parameter.
+    /// </summary>
+    public class PersonWithGenericMixin
+    {
+        private INameWithGenericParameter _name;
+    }
+
+    /// <summary>
+    /// a class that combines a property and a method
+    /// </summary>
+    public class WorkingPerson
+    {
+        public string Name { get; set; }
+        public void Work(int toolNumber) { }
+    }
+
+    /// <summary>
+    /// this class has a mixin but implements already 
+    /// one property of the mixin, so only
+    /// two other properties will be delegated
+    /// </summary>
+    public class PersonWithFullName
+    {
+        private Name _name;
+        public string FullName => "Already has a fullname property";
+    }
+
+    /// <summary>
+    /// this class should also implement
+    /// the ToString method from the mixin although
+    /// it is already defined in the object base class
+    /// </summary>
+    public class PersonWithToString
+    {
+        private MixinWithToString _toString;
     }
 }

@@ -30,7 +30,7 @@ namespace MixinRefactoring.Test
                 "temp", 
                 syntaxTrees: new[] { _syntaxTree },
                 // add reference to system assembly (for standard data types)
-                references: new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) });
+                references: MetaDataReferenceResolver.ResolveSystemAssemblies());
             _semanticModel  = compilation.GetSemanticModel(_syntaxTree);
         }
 

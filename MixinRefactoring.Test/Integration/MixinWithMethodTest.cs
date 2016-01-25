@@ -18,14 +18,37 @@ namespace MixinRefactoring.Test
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
-            var mixin = new MixinFactory(semanticModel).FromFieldDeclaration(mixinReference);
-            var child = new MixinChild(personClass, semanticModel);
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
 
-            child.Include(mixin);
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
 
-            Assert.AreEqual(child.Members.Count(), mixin.Services.Count());
-            foreach (var service in mixin.Services)
-                Assert.AreEqual(1, child.Members.Count(x => x.Name == service.Name));
+            Assert.AreEqual(mixer.MethodsToImplement.Count(), mixin.Class.Methods.Count());
+            foreach (var service in mixin.Class.Methods)
+                Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == service.Name));
+        }
+
+        [Test]
+        public void MixinWithToString_Include_ToStringShouldBeImplemented()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithToString");
+            var mixinReference = personClass.FindMixinReference("_toString");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // ToString should be in list of methods to override
+            Assert.IsTrue(mixer.MethodsToImplement.Any(x => x.Name == "ToString"));
+            // ToString in mixin must have override keyword
+            Assert.IsTrue(mixer.MethodsToImplement.Single(x => x.Name == "ToString").IsOverrideFromObject);
+
+
         }
 
         // TODO: Ensure that method parameters are also included

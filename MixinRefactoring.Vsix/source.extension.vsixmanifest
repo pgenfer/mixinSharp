@@ -1,9 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="MixinRefactoring..6af25ee5-c001-4b3b-85f4-e7785ff466f0" Version="1.0" Language="en-US" Publisher="Patric"/>
-    <DisplayName>MixinRefactoring</DisplayName>
-    <Description xml:space="preserve">This is a sample code refactoring extension for the .NET Compiler Platform ("Roslyn").</Description>
+    <Identity Id="mixinSharp..6af25ee5-c001-4b3b-85f4-e7785ff466f0" Version="0.8.0" Language="en-US" Publisher="Patric Genfer"/>
+    <DisplayName>mixin# (mixinSharp)</DisplayName>
+    <Description xml:space="preserve">A code refactoring extension that adds mixins to C#.
+
+Mixins are classes with commonly used functionality that can be added to other classes, but instead of providing the functionality via inheritance, composition is used. 
+The mixin is "included" into the child class and all relevant calls will be delegated to the mixin.</Description>
+    <License>license.txt</License>
+    <Icon>mixin_logo.png</Icon>
+    <PreviewImage>mixin_logo.png</PreviewImage>
+    <Tags>C#, Mixin, Composition</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[14.0,]" Id="Microsoft.VisualStudio.Pro" />
