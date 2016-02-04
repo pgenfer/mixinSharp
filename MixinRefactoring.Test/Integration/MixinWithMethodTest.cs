@@ -30,6 +30,60 @@ namespace MixinRefactoring.Test
         }
 
         [Test]
+        public void MethodAlreadyImplemented_Include_MethodNotIncluded()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithWorkMethod");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // no method to implement
+            Assert.IsEmpty(mixer.MethodsToImplement);
+        }
+
+        [Test]
+        public void MethodImplementedWithOtherParameter_Include_MethodIncluded()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithOtherWorkMethod");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // no method to implement
+            Assert.AreEqual(1,mixer.MethodsToImplement.Count(x => x.Name == "Work"));
+        }
+
+        [Test]
+        public void MixinWithStaticMethod_Include_MethodNotIncluded()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithStaticMixin");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // no method to implement
+            Assert.IsEmpty(mixer.MethodsToImplement);
+        }
+
+        [Test]
         public void MixinWithToString_Include_ToStringShouldBeImplemented()
         {
             var sourceCode = new SourceCode("Person.cs", "Worker.cs");
@@ -47,13 +101,8 @@ namespace MixinRefactoring.Test
             Assert.IsTrue(mixer.MethodsToImplement.Any(x => x.Name == "ToString"));
             // ToString in mixin must have override keyword
             Assert.IsTrue(mixer.MethodsToImplement.Single(x => x.Name == "ToString").IsOverrideFromObject);
-
-
         }
 
-        // TODO: Ensure that method parameters are also included
-        // TODO: Ensure that a method is not generated when the same method is already in the child
-        // TODO: Ensure that a method is generated when the same method with a different signature is in the child
         // TODO: Check base class handling: What happens if a method is already in the base class of the child / mixin?
         // TODO: ignore static methods
     }

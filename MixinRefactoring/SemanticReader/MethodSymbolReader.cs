@@ -18,6 +18,11 @@ namespace MixinRefactoring
 
         protected override void ReadSymbol(IMethodSymbol methodSymbol)
         {
+            // we don't need to know about static members
+            // because they won't be delegated from child to mixin
+            if (methodSymbol.IsStatic)
+                return;
+
             // skip all property accessors and ctors
             if (methodSymbol.MethodKind == MethodKind.Ordinary)
             {
@@ -25,7 +30,10 @@ namespace MixinRefactoring
                     methodSymbol.IsOverride &&
                     methodSymbol.OverriddenMethod
                     ?.ContainingType.SpecialType == SpecialType.System_Object;
-                var method = new Method(methodSymbol.Name, methodSymbol.ReturnType, isOverrideFromObject);
+                var method = new Method(
+                    methodSymbol.Name, 
+                    methodSymbol.ReturnType, 
+                    isOverrideFromObject);
                 var parameterReader = new ParameterSymbolReader(method);
                 parameterReader.VisitSymbol(methodSymbol);
                 _methods.AddMethod(method);

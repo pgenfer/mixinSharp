@@ -5,7 +5,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 namespace MixinRefactoring
 {
@@ -61,6 +62,7 @@ namespace MixinRefactoring
 
             var root = await model.SyntaxTree.GetRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(classDeclarationNode, newClassDeclaration);
+
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument.Project.Solution;
         }

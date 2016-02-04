@@ -44,11 +44,14 @@
                 if (first.ParameterCount == second.ParameterCount)
                 {
                     for (var i = 0; i < first.ParameterCount; i++)
+                    {
                         if (!first.GetParameter(i).IsEqual(second.GetParameter(i)))
                             return false;
+                    }
+                    return true; // all parameters are same => methods are equal
                 }
 
-                return true;
+                return false;
             }
 
             return false;

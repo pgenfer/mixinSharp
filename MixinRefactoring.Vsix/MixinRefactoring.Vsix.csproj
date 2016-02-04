@@ -59,6 +59,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icon_large.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

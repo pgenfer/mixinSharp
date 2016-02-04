@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+
+// TODO: add using SyntaxFactory here
 
 namespace MixinRefactoring
 {
@@ -62,7 +65,7 @@ namespace MixinRefactoring
             // store statements in accessorlist 
             if (getStatement != null)
                 accessorList = accessorList.Add(getStatement);
-            if (setStatement != null)
+             if (setStatement != null)
                 accessorList = accessorList.Add(setStatement);
             var propertyDeclaration = SyntaxFactory.PropertyDeclaration(
                 SyntaxFactory.ParseTypeName(property.Type.ToString()), property.Name)

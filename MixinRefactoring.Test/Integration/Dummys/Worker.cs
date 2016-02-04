@@ -30,4 +30,12 @@ namespace MixinRefactoring.Test
     {
         public override string ToString() => "This is a ToString method";
     }
+
+    public class MixinWithStaticMethod
+    {
+        /// <summary>
+        /// a static method that should not be included
+        /// </summary>
+        public static void Work() { };
+    }
 }

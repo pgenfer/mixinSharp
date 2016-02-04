@@ -146,4 +146,27 @@ namespace MixinRefactoring.Test
     {
         private MixinWithToString _toString;
     }
+
+    /// <summary>
+    /// class that already has a method that should not be implemented
+    /// </summary>
+    public class PersonWithWorkMethod
+    {
+        private Worker _worker;
+        public void Work() { }
+    }
+
+    /// <summary>
+    /// class that already has a method that should not be implemented
+    /// </summary>
+    public class PersonWithOtherWorkMethod
+    {
+        private Worker _worker;
+        public void Work(string nameOfWork) { }
+    }
+
+    public class PersonWithStaticMixin
+    {
+        private MixinWithStaticMethod _worker;
+    }
 }
