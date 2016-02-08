@@ -57,7 +57,7 @@ namespace MixinRefactoring
             // do the refactoring
             var mixer = new Mixer();
             mixer.IncludeMixinInChild(mixin, mixinChild);
-            var syntaxWriter = new IncludeMixinSyntaxWriter(mixer.MembersToImplement, mixin.Name);
+            var syntaxWriter = new IncludeMixinSyntaxWriter(mixer.MembersToImplement, mixin.Name, model);
             var newClassDeclaration = syntaxWriter.Visit(mixinChild.SourceCode);
 
             var root = await model.SyntaxTree.GetRootAsync(cancellationToken);

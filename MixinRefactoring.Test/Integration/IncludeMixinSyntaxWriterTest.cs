@@ -16,7 +16,7 @@ namespace MixinRefactoring.Test
         {
             public bool ImplementPropertyCalled { get; set; }
 
-            public IncludeSyntaxWriterTestDummy(IEnumerable<Member> members,string name):base(members, name)
+            public IncludeSyntaxWriterTestDummy(IEnumerable<Member> members,string name):base(members, name,null)
             { }
 
             protected override MemberDeclarationSyntax ImplementDelegation(Property property)
@@ -48,7 +48,7 @@ namespace MixinRefactoring.Test
             var personClassSource = sourceCode.Class("PersonWithToString");
             var worker = new MixinReferenceFactory(sourceCode.Semantic).Create(personClassSource.FindMixinReference("_toString"));
             
-            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, "_toString");
+            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, "_toString",sourceCode.Semantic);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
             // check that new person class has a method that is overriden
             var methodDeclaration = newPersonClassSource.DescendantNodes()

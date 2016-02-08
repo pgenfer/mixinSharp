@@ -13,14 +13,22 @@ namespace MixinRefactoring
     {
         private readonly IEnumerable<Member> _members;
         private readonly string _name;
-        public IncludeMixinSyntaxWriter(IEnumerable<Member> membersToImplement, string mixinReferenceName)
+        private readonly SemanticModel _semantic;
+        private int _classDeclarationPosition; // we need the position of the class in source file to reduce qualified names
+
+
+        public IncludeMixinSyntaxWriter(
+            IEnumerable<Member> membersToImplement, string mixinReferenceName,SemanticModel semanticModel)
         {
             _members = membersToImplement;
             _name = mixinReferenceName;
+            _semantic = semanticModel;
         }
 
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
         {
+            _classDeclarationPosition = classDeclaration.GetLocation().SourceSpan.Start;
+
             var membersToAdd = _members
                 .Select(x => ImplementDelegation((dynamic)x))
                 .Where(x => x != null).OfType<MemberDeclarationSyntax>()
@@ -68,10 +76,24 @@ namespace MixinRefactoring
              if (setStatement != null)
                 accessorList = accessorList.Add(setStatement);
             var propertyDeclaration = SyntaxFactory.PropertyDeclaration(
-                SyntaxFactory.ParseTypeName(property.Type.ToString()), property.Name)
+                SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(property.Type)),
+                property.Name)
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
                 .WithAccessorList(SyntaxFactory.AccessorList(accessorList));
             return propertyDeclaration;
+        }
+
+        /// <summary>
+        /// reduces the qualification of a type name if possible.
+        /// Depends on the position of the mixin class within the source code
+        /// because it has to be checked whether the types namespace
+        /// is already included by a using statement.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private string ReduceQualifiedTypeName(ITypeSymbol type)
+        {
+            return type.ToMinimalDisplayString(_semantic, _classDeclarationPosition);
         }
 
         protected virtual MemberDeclarationSyntax ImplementDelegation(Method method)
@@ -84,7 +106,7 @@ namespace MixinRefactoring
             var parameters = method.Parameters.Select(x => SyntaxFactory.Parameter(
                  new SyntaxList<AttributeListSyntax>(),
                  SyntaxFactory.TokenList(),
-                 SyntaxFactory.ParseTypeName(x.Type.ToString()),
+                 SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(x.Type)),
                  SyntaxFactory.Identifier(x.Name),
                  null));
 
@@ -100,7 +122,7 @@ namespace MixinRefactoring
                     .ToArray());
             // will be: void method(int parameter) => _mixin.method(parameter);
             var methodDeclaration =
-                SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName(method.ReturnType.ToString()), method.Name)
+                SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(method.ReturnType)), method.Name)
                 .AddParameterListParameters(parameters.ToArray())
                 .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(mixinServiceInvocation))
                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))

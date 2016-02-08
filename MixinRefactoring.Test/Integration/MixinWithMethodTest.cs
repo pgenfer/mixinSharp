@@ -69,7 +69,7 @@ namespace MixinRefactoring.Test
         public void MixinWithStaticMethod_Include_MethodNotIncluded()
         {
             var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithStaticMixin");
+            var personClass = sourceCode.Class("PersonWithStaticMethodMixin");
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -104,6 +104,5 @@ namespace MixinRefactoring.Test
         }
 
         // TODO: Check base class handling: What happens if a method is already in the base class of the child / mixin?
-        // TODO: ignore static methods
     }
 }

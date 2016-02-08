@@ -36,6 +36,6 @@ namespace MixinRefactoring.Test
         /// <summary>
         /// a static method that should not be included
         /// </summary>
-        public static void Work() { };
+        public static void Work() { }
     }
 }

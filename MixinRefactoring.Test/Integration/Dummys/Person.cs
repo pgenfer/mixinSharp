@@ -165,7 +165,7 @@ namespace MixinRefactoring.Test
         public void Work(string nameOfWork) { }
     }
 
-    public class PersonWithStaticMixin
+    public class PersonWithStaticMethodMixin
     {
         private MixinWithStaticMethod _worker;
     }
