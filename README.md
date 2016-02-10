@@ -7,13 +7,7 @@ MixinSharp (or shorter: mixin#) is a code refactoring extension for Visual Studi
 Mixins are a software concept that provides code reuse by *composition* instead of *inheritance*.  
 The code that should be reused is placed in a separate class (the *mixin*) and any other class (in this context also called the *child* class) that wants to use this code simply holds a reference to the mixin and delegates method calls to the mixin.  
 For the ouside standing caller it looks like that the child instance is handling the request directly.  
-  
-  
-  
-![Uml diagram of mixin/child composition](https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_uml.png)  
-(a child class including a mixin)
-
-
+ 
 ## why are they useful?
 
 The code reuse concept of mixins has some advantages compared to classical inheritance. Please check the wiki for a more detailed comparison of both approaches.  
@@ -50,5 +44,11 @@ public class Person
   public override string ToString() => _name.ToString();
 }
 ```
+
+## Installation Instruction
+mixinSharp is a Visual Studio 2015 Extension (VSIX), as such it can be downloaded from the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/b35e41d9-3520-4e40-84b0-fcf907ef1199).  
+After downloading the VSIX file, doubleclicking the file will start the installation process.    
+
+To recompile and use the extension from source, it might be necessary that you install the [.NET Compiler Platform SDK](https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89) first.
 
 
