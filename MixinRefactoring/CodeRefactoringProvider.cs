@@ -26,8 +26,13 @@ namespace MixinRefactoring
             if (fieldDeclarationNode == null)
                 return;
 
-            // For any type declaration node, create a code action to reverse the identifier text.
-            var action = CodeAction.Create("Create mixin", c => CreateMixin(context.Document, fieldDeclarationNode, c));
+            // try to extract mixin information from the field declaration
+            var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+            var mixin = new MixinReferenceFactory(model).Create(fieldDeclarationNode);
+            if (mixin == null)
+                return;
+
+            var action = CodeAction.Create($"Include mixin: '{mixin.Name}'", c => CreateMixin(context.Document, fieldDeclarationNode, c));
 
             // Register this code action.
             context.RegisterRefactoring(action);

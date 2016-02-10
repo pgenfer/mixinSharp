@@ -221,5 +221,7 @@ namespace MixinRefactoring.Test
         }
 
         // TODO: check what to do with abstract properties
+        // TODO: indexers are not supported yet
+        // TODO: skip basic data types (like string, int etc...)
     }
 }
