@@ -6,13 +6,13 @@ The VSIX binary installation file can be found in the [Visual Studio Gallery](ht
 ## what are mixins?
 
 Mixins are a software concept that provides code reuse by *composition* instead of *inheritance*.  
-The code that should be reused is placed in a separate class (the *mixin*) and any other class (in this context also called the *child* class) that wants to use this code simply holds a reference to the mixin and delegates method calls to the mixin.  
+The code that should be reused is placed in a separate class (the *mixin*) and any other class (in this context also called a *child* class) that wants to use this code simply holds a reference to the mixin and delegates method calls to it.  
 For the ouside standing caller it looks like that the child instance is handling the request directly.  
  
 ## why are they useful?
 
-The code reuse concept of mixins has some advantages compared to classical inheritance. Please check the wiki for a more detailed comparison of both approaches.  
-Unfortunately, C# does not support mixins directly on a language level, that's where mixinSharp comes into play by offering a refactoring step that can create the required mixin code automatically.
+Compared to classical inheritance, mixins have some advantages. Please check the wiki for a more detailed comparison between the both approaches.  
+Unfortunately, C# does not support mixins directly on a language level, that's where mixinSharp comes into play by offering a refactoring step that automatically creates the required mixin code.
 
 ## a simple example
 
@@ -56,8 +56,8 @@ public class Person
 
 ## Installation Instruction
 mixinSharp is a Visual Studio 2015 Extension (VSIX), as such it can be downloaded from the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/b35e41d9-3520-4e40-84b0-fcf907ef1199).  
-After downloading the VSIX file, doubleclicking the file will start the installation process.    
+After downloading the VSIX file, doubleclicking it will start the installation process.    
 
-To recompile and use the extension from source, it might be necessary that you install the [.NET Compiler Platform SDK](https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89) first.
+To compile the extension from source, you will have to install the [.NET Compiler Platform SDK](https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89) first (but Visual Studio will automatically ask you to do so during the build).
 
 
