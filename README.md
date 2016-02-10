@@ -30,7 +30,15 @@ public class Person
   private NameMixin _name = new NameMixin();
 }
 ```
-after applying the mixin refactoring on the ``` _name``` field, your mixin class is included in your child
+Open the *Quick Action" context menu while your cursor is on your ``` _name``` field declaration:    
+
+![Quick action](https://github.com/pgenfer/mixinSharp/blob/master/images/quick_action.png)    
+
+From the context menu that popped up, choose the entry *Include mixin: 'name'*    
+
+![Include mixin](https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_preview.png)  
+
+After applying the mixin refactoring, your mixin class is included in your child:
 ```csharp
 public class Person
 {
