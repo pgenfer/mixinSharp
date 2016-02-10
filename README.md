@@ -6,9 +6,14 @@ MixinSharp (or shorter: mixin#) is a code refactoring extension for Visual Studi
 
 Mixins are a software concept that provides code reuse by *composition* instead of *inheritance*.  
 The code that should be reused is placed in a separate class (the *mixin*) and any other class (in this context also called the *child* class) that wants to use this code simply holds a reference to the mixin and delegates method calls to the mixin.  
-For the ouside standing caller it looks like that the child instance is handling the request directly.
+For the ouside standing caller it looks like that the child instance is handling the request directly.  
+<figure>
+    <img src="https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_uml.png" alt="Mixin/Child composition">
+<figcaption>
+    a child class includes a mixin
+</figcaption>
 ![Uml diagram of mixin/child composition](https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_uml.png)
-[[https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_uml.png]]
+
 
 ## why are they useful?
 
