@@ -42,6 +42,63 @@ namespace MixinRefactoring
             return null;
         }
 
+        private IEnumerable<ParameterSyntax> ImplementParameters(IEnumerable<Parameter> parameterList)
+        {
+            var parameters = parameterList.Select(x => SyntaxFactory.Parameter(
+                new SyntaxList<AttributeListSyntax>(),
+                SyntaxFactory.TokenList(),
+                SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(x.Type)),
+                SyntaxFactory.Identifier(x.Name),
+                null));
+            return parameters;
+        }
+
+        protected virtual MemberDeclarationSyntax ImplementDelegation(IndexerProperty property)
+        {
+            var parameters = ImplementParameters(property.Parameters);
+
+            // indexer access to member, like "_collection[index]
+            var memberAccess = SyntaxFactory.ElementAccessExpression(
+                SyntaxFactory.IdentifierName(_name))
+                .AddArgumentListArguments(
+                    property.Parameters
+                    .Select(x => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(x.Name)))
+                    .ToArray());
+            // in case only getter => use expression body
+            if (property.IsReadOnly)
+            {
+                return SyntaxFactory.IndexerDeclaration(SyntaxFactory.ParseTypeName(property.Type.ToString()))
+                    .WithParameterList(SyntaxFactory.BracketedParameterList(SyntaxFactory.SeparatedList(parameters)))
+                    .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(memberAccess))
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
+            }
+
+            // otherwise create getter and/or setter bodies
+            var getStatement = property.HasGetter ?
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                .AddBodyStatements(SyntaxFactory.ReturnStatement(memberAccess)) :
+                null;
+            var setStatement = property.HasSetter ?
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                .AddBodyStatements(SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression, memberAccess, SyntaxFactory.IdentifierName("value")))) :
+                null;
+            var accessorList = new SyntaxList<AccessorDeclarationSyntax>();
+            // store statements in accessorlist 
+            if (getStatement != null)
+                accessorList = accessorList.Add(getStatement);
+            if (setStatement != null)
+                accessorList = accessorList.Add(setStatement);
+            var propertyDeclaration = SyntaxFactory.IndexerDeclaration(
+                SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(property.Type)))
+                .WithParameterList(SyntaxFactory.BracketedParameterList(SyntaxFactory.SeparatedList(parameters)))
+                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                .WithAccessorList(SyntaxFactory.AccessorList(accessorList));
+            return propertyDeclaration;
+        }
+
         protected virtual MemberDeclarationSyntax ImplementDelegation(Property property)
         {
             // access to member (like: "_mixin.Property")
@@ -103,12 +160,7 @@ namespace MixinRefactoring
                 modifiers.Add(SyntaxFactory.Token(SyntaxKind.OverrideKeyword)) : 
                 modifiers;
 
-            var parameters = method.Parameters.Select(x => SyntaxFactory.Parameter(
-                 new SyntaxList<AttributeListSyntax>(),
-                 SyntaxFactory.TokenList(),
-                 SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(x.Type)),
-                 SyntaxFactory.Identifier(x.Name),
-                 null));
+            var parameters = ImplementParameters(method.Parameters);
 
             // method body should delegate call to mixin directly
             var mixinServiceInvocation =
@@ -126,8 +178,7 @@ namespace MixinRefactoring
                 .AddParameterListParameters(parameters.ToArray())
                 .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(mixinServiceInvocation))
                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                .WithModifiers(modifiers);
-                
+                .WithModifiers(modifiers);                
 
             return methodDeclaration;
         }

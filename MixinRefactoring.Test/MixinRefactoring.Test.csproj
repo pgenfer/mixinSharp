@@ -108,6 +108,7 @@
     <EmbeddedResource Include="Integration\Dummys\Name.cs" />
     <EmbeddedResource Include="Integration\Dummys\Worker.cs" />
     <Compile Include="Integration\ClassFactoryTest.cs" />
+    <EmbeddedResource Include="Integration\Dummys\Collection.cs" />
     <Compile Include="Integration\Helpers\SourceCode.cs" />
     <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />

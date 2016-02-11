@@ -59,5 +59,21 @@ namespace MixinRefactoring.Test
                 .ToString();
             Assert.IsTrue(methodDeclaration.Contains("override"));
         }
+
+        [Test]
+        public void MixinWithIndexer_WriteSyntax_IndexerImplementedInChild()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Collection.cs");
+            var personClassSource = sourceCode.Class("PersonWithIndexer");
+            var collection = new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(personClassSource.FindMixinReference("_collection"));
+
+            var includeWriter = new IncludeMixinSyntaxWriter(collection.Class.Properties, "_collection", sourceCode.Semantic);
+            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            // check that generated class code has exactly one indexer declaration
+            var indexerDeclaration = newPersonClassSource.DescendantNodes()
+                .OfType<IndexerDeclarationSyntax>().SingleOrDefault();
+            Assert.IsNotNull(indexerDeclaration);
+        }
     }
 }

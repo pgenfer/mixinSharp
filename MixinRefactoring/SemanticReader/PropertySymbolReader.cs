@@ -22,11 +22,27 @@ namespace MixinRefactoring
             if (propertySymbol.IsStatic)
                 return;
 
-            var property = new Property(
-                propertySymbol.Name,
-                propertySymbol.Type,
-                propertySymbol.GetMethod != null,
-                propertySymbol.SetMethod != null);
+            Property property = null;
+
+            if (propertySymbol.IsIndexer) // symbol is an indexer property
+            {
+                var indexerProperty = new IndexerProperty(
+                    propertySymbol.Type,
+                    propertySymbol.GetMethod != null,
+                    propertySymbol.SetMethod != null);
+                var parameterReader = new ParameterSymbolReader(indexerProperty);
+                parameterReader.VisitSymbol(propertySymbol);
+                property = indexerProperty;                    
+            }
+            else // symbol is a normal property
+            {
+                property = new Property(
+                    propertySymbol.Name,
+                    propertySymbol.Type,
+                    propertySymbol.GetMethod != null,
+                    propertySymbol.SetMethod != null);
+            }
+                        
             _properties.AddProperty(property);
         }
     }

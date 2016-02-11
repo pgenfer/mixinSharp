@@ -41,6 +41,7 @@
     <Compile Include="Extensions\SyntaxNodeExtension.cs" />
     <Compile Include="MetaData\ClassWithSourceCode.cs" />
     <Compile Include="MetaData\IMethodList.cs" />
+    <Compile Include="MetaData\IndexerProperty.cs" />
     <Compile Include="MetaData\IParameterList.cs" />
     <Compile Include="MetaData\IPropertyList.cs" />
     <Compile Include="MetaData\Member.cs" />

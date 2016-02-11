@@ -20,5 +20,21 @@ namespace MixinRefactoring
         {
             _parameters.Add(new Parameter(parameter.Name, parameter.Type));
         }
+
+
+        protected override void ReadSymbol(IPropertySymbol propertySymbol)
+        {
+            foreach (var parameter in propertySymbol.Parameters)
+                ReadSymbol(parameter);
+        }
+        /// <summary>
+        /// when overridden, don't forget to call base method to read parameters
+        /// </summary>
+        /// <param name="methodSymbol"></param>
+        protected override void ReadSymbol(IMethodSymbol methodSymbol)
+        {
+            foreach (var parameter in methodSymbol.Parameters)
+                ReadSymbol(parameter);
+        }
     }
 }

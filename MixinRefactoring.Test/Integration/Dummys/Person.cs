@@ -169,4 +169,12 @@ namespace MixinRefactoring.Test
     {
         private MixinWithStaticMethod _worker;
     }
+
+    /// <summary>
+    /// a child class that should include a mixin with an indexer
+    /// </summary>
+    public class PersonWithIndexer
+    {
+        private CollectionWithIndexer _collection;
+    }
 }

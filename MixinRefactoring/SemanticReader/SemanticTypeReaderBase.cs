@@ -26,11 +26,7 @@ namespace MixinRefactoring
         /// when overridden, don't forget to call base method to read parameters
         /// </summary>
         /// <param name="methodSymbol"></param>
-        protected virtual void ReadSymbol(IMethodSymbol methodSymbol)
-        {
-            foreach (var parameter in methodSymbol.Parameters)
-                ReadSymbol(parameter);
-        }
+        protected virtual void ReadSymbol(IMethodSymbol methodSymbol) { }
         protected virtual void ReadSymbol(IParameterSymbol parameter) { }
 
         public void VisitSymbol(ISymbol symbol)

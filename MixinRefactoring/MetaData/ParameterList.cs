@@ -13,5 +13,6 @@ namespace MixinRefactoring
         public int ParameterCount => _parameters.Count;
         public Parameter GetParameter(int index) => _parameters[index];
         public override string ToString() => string.Join(",", _parameters.Select(x => $"{x.Type.ToString()} {x.Name}"));
+        public IEnumerable<Parameter> Parameters => this;
     }
 }

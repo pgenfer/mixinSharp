@@ -1,4 +1,6 @@
-﻿namespace MixinRefactoring
+﻿using System.Collections.Generic;
+
+namespace MixinRefactoring
 {
     public interface IParameterList
     {
@@ -7,6 +9,8 @@
         {
             get;
         }
+
+        IEnumerable<Parameter> Parameters { get; }
 
         Parameter GetParameter(int index);
     }

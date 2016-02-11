@@ -217,11 +217,29 @@ namespace MixinRefactoring.Test
             // name property should be of type "IEnumerable<string>"
             var typeName = mixer.PropertiesToImplement.Single().Type.ToString();
             Assert.AreEqual("System.Collections.Generic.IEnumerable<string>", typeName);
+        }
 
+        [Test]
+        public void MixinWithIndexer_Include_IndexerImplemented()
+        {
+            // arrange
+            var sourceCode = new SourceCode("Person.cs", "Collection.cs");
+            var personClass = sourceCode.Class("PersonWithIndexer");
+            var mixinReference = personClass.FindMixinReference("_collection");
+            var semanticModel = sourceCode.Semantic;
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            // act 
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // child should also have an indexer property now
+            Assert.AreEqual(1, mixer.PropertiesToImplement.Count());
+            Assert.AreEqual("string this[int index]", mixer.PropertiesToImplement.Single().ToString());            
         }
 
         // TODO: check what to do with abstract properties
-        // TODO: indexers are not supported yet
         // TODO: skip basic data types (like string, int etc...)
     }
 }
