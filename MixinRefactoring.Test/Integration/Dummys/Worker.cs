@@ -38,4 +38,33 @@ namespace MixinRefactoring.Test
         /// </summary>
         public static void Work() { }
     }
+
+    /// <summary>
+    /// a class with a generic type
+    /// parameter. When including
+    /// this mixin, the parameter T should
+    /// be specified
+    /// </summary>
+    /// <typeparam name="T">generic parameter of mixin</typeparam>
+    public class GenericWorker<T>
+    {
+        public T Work(T tool) { return default(T); }
+    }
+
+    /// <summary>
+    /// base class that already provides a method
+    /// </summary>
+    public class WorkerBase
+    {
+        public void Work() { }
+    }
+
+    /// <summary>
+    /// derived worker, when including the mixin,
+    /// the base class method should also be added
+    /// </summary>
+    public class DerivedWorker : WorkerBase
+    {
+        public void AdditionalWork() { }
+    }
 }

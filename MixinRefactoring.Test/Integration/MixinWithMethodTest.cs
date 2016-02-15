@@ -103,6 +103,69 @@ namespace MixinRefactoring.Test
             Assert.IsTrue(mixer.MethodsToImplement.Single(x => x.Name == "ToString").IsOverrideFromObject);
         }
 
-        // TODO: Check base class handling: What happens if a method is already in the base class of the child / mixin?
+        [Test]
+        public void MixinWithGenericParameter_Include_MixinImplemented()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithGenericClassMixin");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should be one method to implement
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count());
+            // parameter and return type of the method should be int
+            Assert.AreEqual("int", mixer.MethodsToImplement.Single().ReturnType.ToString());
+            Assert.AreEqual("int", mixer.MethodsToImplement.Single().GetParameter(0).Type.ToString());
+        }
+
+        [Test]
+        public void MixinWithBaseClass_Include_BothMethodsImplemented()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithDerivedWorker");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should be two methods, from base mixin and derived mixin
+            Assert.AreEqual(2, mixer.MethodsToImplement.Count());
+            // method from base should be in the implementation list
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "Work"));
+            // method from derived should be in the implementation list
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "AdditionalWork"));            
+        }
+
+
+        [Test]
+        public void ChildWithBaseMethod_Include_BaseMethodNotImplemented()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("DerivedPerson");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should be two methods, from base mixin and derived mixin
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count());
+            // only one method from the mixin should be implemented, the other one
+            // is alredy implemented by childs base
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "Work"));
+        }
     }
 }

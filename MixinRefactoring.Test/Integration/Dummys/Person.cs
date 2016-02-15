@@ -177,4 +177,44 @@ namespace MixinRefactoring.Test
     {
         private CollectionWithIndexer _collection;
     }
+
+    /// <summary>
+    /// this class uses a mixin with a generic type parameter.
+    /// All methods of the mixin should replace the
+    /// generic parameter with the real one.
+    /// </summary>
+    public class PersonWithGenericClassMixin
+    {
+        private GenericWorker<int> _worker = new GenericWorker<int>();
+    }
+
+    /// <summary>
+    /// the mixin of this class has a base,
+    /// so both methods from base and derived
+    /// should be added to the child class
+    /// </summary>
+    public class PersonWithDerivedWorker
+    {
+        private DerivedWorker _worker;
+    }
+
+    /// <summary>
+    /// base class of a person that already implements
+    /// a method
+    /// </summary>
+    public class PersonBase
+    {
+        // additional work is already impelmented
+        // so it should not be taken from the mixin anymore
+        public void AdditionalWork() { }
+    }
+
+    /// <summary>
+    /// derived class that has a base class which already
+    /// implements a method from the mixin
+    /// </summary>
+    public class DerivedPerson : PersonBase
+    {
+        private DerivedWorker _worker;
+    }
 }
