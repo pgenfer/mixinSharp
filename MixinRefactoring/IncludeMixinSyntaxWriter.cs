@@ -109,7 +109,7 @@ namespace MixinRefactoring
             // in case only getter => use expression body
             if (property.IsReadOnly)
             {
-                return SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(property.Type.ToString()), property.Name)
+                return SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(ReduceQualifiedTypeName(property.Type)), property.Name)
                     .WithExpressionBody(SyntaxFactory.ArrowExpressionClause(memberAccess))
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                     .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)));
