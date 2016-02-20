@@ -1,7 +1,7 @@
 # mixinSharp
 
 MixinSharp (or shorter: mixin#) is a code refactoring extension for Visual Studio 2015 that adds mixin support to C# by auto generating the required code.  
-The VSIX binary installation file can be found in the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/b35e41d9-3520-4e40-84b0-fcf907ef1199), the full source code is available here. 
+The VSIX binary installation file can be found in the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/05c8154b-eb71-45f1-986e-923acca556f1), the full source code is available here. 
 
 ## what are mixins?
 
@@ -55,7 +55,7 @@ public class Person
 ```
 
 ## Installation Instruction
-mixinSharp is a Visual Studio 2015 Extension (VSIX), as such it can be downloaded from the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/b35e41d9-3520-4e40-84b0-fcf907ef1199).  
+mixinSharp is a Visual Studio 2015 Extension (VSIX), as such it can be downloaded from the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/05c8154b-eb71-45f1-986e-923acca556f1).  
 After downloading the VSIX file, doubleclicking it will start the installation process.    
 
 To compile the extension from source, you will have to install the [.NET Compiler Platform SDK](https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89) first (but Visual Studio will automatically ask you to do so during the build).
