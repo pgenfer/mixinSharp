@@ -217,4 +217,24 @@ namespace MixinRefactoring.Test
     {
         private DerivedWorker _worker;
     }
+
+    /// <summary>
+    /// this class has a lambda method.
+    /// When the classes source code is parsed
+    /// the "x" parameter in the lambda should
+    /// not be handled as method parameter
+    /// </summary>
+    public class PersonWithLambdaMethod
+    {
+        private Worker _worker;
+
+        public void MethodWithoutLambda(int methodParameter)
+        {
+        }
+
+        public void LambdaMethod()
+        {
+            Action<int> action = x => System.Console.WriteLine(x);
+        }
+    }
 }

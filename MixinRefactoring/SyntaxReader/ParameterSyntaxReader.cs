@@ -14,6 +14,9 @@ namespace MixinRefactoring
 
         public override void VisitParameter(ParameterSyntax node)
         {
+            // ignore parameters in lambdaexpressions
+            if (node.Parent is SimpleLambdaExpressionSyntax)
+                return;
             var parameter = new Parameter(
                 node.Identifier.ToString(),
                 (ITypeSymbol)_semantic.GetSymbolInfo(node.Type).Symbol);

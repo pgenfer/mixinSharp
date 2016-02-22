@@ -117,6 +117,7 @@
     <Compile Include="Integration\MixinWithMethodTest.cs" />
     <Compile Include="Integration\MixinWithPropertyTest.cs" />
     <Compile Include="Integration\MethodSyntaxReaderTest.cs" />
+    <Compile Include="Integration\ParameterSyntaxReaderTest.cs" />
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />
