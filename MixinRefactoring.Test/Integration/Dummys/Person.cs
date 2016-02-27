@@ -237,4 +237,50 @@ namespace MixinRefactoring.Test
             Action<int> action = x => System.Console.WriteLine(x);
         }
     }
+
+    /// <summary>
+    /// base class with an abstract method
+    /// </summary>
+    public abstract class PersonWithAbstractWork
+    {
+        public abstract void Work();
+    }
+
+    /// <summary>
+    /// derived class with a mixin,
+    /// the method of the mixin should override the abstract method
+    /// </summary>
+    public class PersonFromAbstractWork : PersonWithAbstractWork
+    {
+        private Worker _worker;
+    }
+
+    /// <summary>
+    /// a class with an abstract method that has the same signature
+    /// as the mixin method.
+    /// But the method of the mixin should not be implemented,
+    /// because only methods from base should be checked.
+    /// </summary>
+    public abstract class PersonWithAbstractMethod
+    {
+        private Worker _worker;
+        public abstract void Work();
+    }
+
+    /// <summary>
+    /// class with an abstract property
+    /// </summary>
+    public abstract class PersonWithAbstractName
+    {
+        public abstract string Name { get; set; }
+    }
+
+    /// <summary>
+    /// class where an abstract property must be overridden during code 
+    /// generation
+    /// </summary>
+    public class PersonFromAbstractName : PersonWithAbstractName
+    {
+        private SimpleName _name;
+    }
 }

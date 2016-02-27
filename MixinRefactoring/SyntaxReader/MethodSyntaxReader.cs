@@ -26,6 +26,9 @@ namespace MixinRefactoring
             var parameterSyntaxReader = new ParameterSyntaxReader(method, _semantic);
             parameterSyntaxReader.Visit(node);
             _methods.AddMethod(method);
+            // we don't care if the method here is abstract or not
+            // since methods that are defined directly in the child
+            // will never be overridden by mixin methods
         }
     }   
 }

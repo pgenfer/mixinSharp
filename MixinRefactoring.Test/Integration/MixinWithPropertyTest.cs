@@ -239,7 +239,29 @@ namespace MixinRefactoring.Test
             Assert.AreEqual("string this[int index]", mixer.PropertiesToImplement.Single().ToString());            
         }
 
-        // TODO: check what to do with abstract properties
+        [Test]
+        public void ChildWithAbstractProperty_Include_AbstractPropertyOverridden()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            var personClass = sourceCode.Class("PersonFromAbstractName");
+            var mixinReference = personClass.FindMixinReference("_name");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should be two methods, from base mixin and derived mixin
+            Assert.AreEqual(1, mixer.PropertiesToImplement.Count());
+            // only one method from the mixin should be implemented, the other one
+            // is alredy implemented by childs base
+            Assert.AreEqual(1, mixer.PropertiesToImplement.Count(x => x.Name == "Name"));
+            Assert.IsTrue(mixer.PropertiesToImplement.Single().NeedsOverrideKeyword);
+        }
+
+
         // TODO: skip basic data types (like string, int etc...)
     }
 }

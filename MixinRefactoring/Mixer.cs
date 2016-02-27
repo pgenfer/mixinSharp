@@ -11,8 +11,8 @@ namespace MixinRefactoring
     /// </summary>
     public class Mixer
     {
-        private MemberComparer _memberCompare = new MemberComparer();
-        private List<Member> _membersToImplement = new List<Member>();
+        private readonly MemberComparer _memberCompare = new MemberComparer();
+        private readonly List<Member> _membersToImplement = new List<Member>();
         public Mixer()
         {
         }
@@ -21,7 +21,18 @@ namespace MixinRefactoring
         {
             var childMembers = child.MembersFromThisAndBase;
             var mixinMembers = mixin.Class.MembersFromThisAndBase;
-            _membersToImplement.AddRange(mixinMembers.Where(x => !childMembers.Any(y => _memberCompare.IsImplementationOf(x, y))));
+            // find all members that are in the mixin and must be implemented in the child
+            _membersToImplement.AddRange(
+                mixinMembers
+                .Where(x => !childMembers.Any(y => _memberCompare.IsImplementationOf(x, y)))
+                .Select(x => x.Clone()));
+            // now find all members that are abstract in the child and are available in the mixin
+            // they need an override keyword
+            _membersToImplement.AddRange(
+                mixinMembers
+                .Where(x => childMembers.Any(y => y.IsAbstract && _memberCompare.IsImplementationOf(x, y)))
+                .Select(x => x.Clone(true)));
+            
         }
 
         public IEnumerable<Member> MembersToImplement => _membersToImplement;

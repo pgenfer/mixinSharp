@@ -17,6 +17,14 @@ namespace MixinRefactoring.Test
     }
 
     /// <summary>
+    /// A class with a single property
+    /// </summary>
+    public class SimpleName
+    {
+        public string Name { get; set; }
+    }
+
+    /// <summary>
     /// Mixin that has only a readonly property
     /// </summary>
     public class OnlyGetterName

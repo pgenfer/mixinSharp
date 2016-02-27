@@ -167,5 +167,50 @@ namespace MixinRefactoring.Test
             // is alredy implemented by childs base
             Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "Work"));
         }
+
+        [Test(
+         Description = "If the abstract method is in the base class, override it when including the mixin")]
+        public void ChildWithAbstractMethodFromBase_Include_AbstractMethodOverridden()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonFromAbstractWork");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should be one method that overrides the abstract method
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count());
+            // only one method from the mixin should be implemented, the other one
+            // is alredy implemented by childs base
+            Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "Work"));
+            Assert.IsTrue(mixer.MethodsToImplement.Single().NeedsOverrideKeyword);
+        }
+
+        [Test(
+         Description = "Dont create an override method if the abstract method is declared in the child itself")]
+        public void ChildWithAbstractMethod_Include_MethodOverrideNotCreated()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClass = sourceCode.Class("PersonWithAbstractMethod");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should not be any method to override,
+            // because when reading method declarations from the child's sourcecode,
+            // we don't care if the method is abstract or not (since an abstract method
+            // will never be overridden in the same class declaration)
+            Assert.AreEqual(0, mixer.MethodsToImplement.Count());
+        }
     }
 }

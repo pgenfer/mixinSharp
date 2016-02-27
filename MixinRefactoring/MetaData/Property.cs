@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 
 namespace MixinRefactoring
 {
@@ -28,5 +29,11 @@ namespace MixinRefactoring
         }
 
         public bool IsReadOnly => HasGetter && !HasSetter;
+
+        protected override Member CreateCopy()
+        {
+            var copy = new Property(Name, Type, HasGetter, HasSetter);
+            return copy;
+        }
     }
 }

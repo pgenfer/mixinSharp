@@ -34,6 +34,7 @@ namespace MixinRefactoring
                     methodSymbol.Name, 
                     methodSymbol.ReturnType, 
                     isOverrideFromObject);
+                method.IsAbstract = methodSymbol.IsAbstract;
                 var parameterReader = new ParameterSymbolReader(method);
                 parameterReader.VisitSymbol(methodSymbol);
                 _methods.AddMethod(method);

@@ -1,11 +1,10 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace MixinRefactoring.Test
 {
@@ -74,6 +73,50 @@ namespace MixinRefactoring.Test
             var indexerDeclaration = newPersonClassSource.DescendantNodes()
                 .OfType<IndexerDeclarationSyntax>().SingleOrDefault();
             Assert.IsNotNull(indexerDeclaration);
+        }
+
+        [Test]
+        public void MethodWithOverride_WriteSyntax_OverrideImplementedInChild()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var personClassSource = sourceCode.Class("PersonFromAbstractWork");
+            var worker = new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(personClassSource.FindMixinReference("_worker"));
+            // create a worker method with an override keyword
+            var methods = worker.Class.Methods.Select(x => x.Clone(true));
+
+            var includeWriter = new IncludeMixinSyntaxWriter(methods, "_worker", sourceCode.Semantic);
+            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            // check that generated class code has exactly one indexer declaration
+            var methodDeclaration = newPersonClassSource.DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .Single()
+                .NormalizeWhitespace()
+                .GetText()
+                .ToString();
+            Assert.IsTrue(methodDeclaration.Contains("override"));
+        }
+
+        [Test]
+        public void PropertyWithOverride_WriteSyntax_OverrideImplementedInChild()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            var personClassSource = sourceCode.Class("PersonFromAbstractName");
+            var name = new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(personClassSource.FindMixinReference("_name"));
+            // create a worker method with an override keyword
+            var properties = name.Class.Properties.Select(x => x.Clone(true));
+
+            var includeWriter = new IncludeMixinSyntaxWriter(properties, "_name", sourceCode.Semantic);
+            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            // check that generated class code has exactly one indexer declaration
+            var propertyDeclaration = newPersonClassSource.DescendantNodes()
+                .OfType<PropertyDeclarationSyntax>()
+                .Single()
+                .NormalizeWhitespace()
+                .GetText()
+                .ToString();
+            Assert.IsTrue(propertyDeclaration.Contains("override"));
         }
     }
 }

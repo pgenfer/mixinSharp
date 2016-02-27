@@ -30,5 +30,13 @@ namespace MixinRefactoring
         public IEnumerator<Parameter> GetEnumerator() => _parameters.GetEnumerator();
         public Parameter GetParameter(int index) => _parameters.GetParameter(index);
         public override string ToString() => $"{Type.ToString()} this[{_parameters.ToString()}]";
+
+        protected override Member CreateCopy()
+        {
+            var copy = new IndexerProperty(Type, HasGetter, HasSetter);
+            foreach (var parameter in Parameters)
+                copy.Add(new Parameter(parameter.Name, parameter.Type));
+            return copy;                
+        }
     }
 }

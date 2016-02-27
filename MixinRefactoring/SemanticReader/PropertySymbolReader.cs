@@ -42,7 +42,7 @@ namespace MixinRefactoring
                     propertySymbol.GetMethod != null,
                     propertySymbol.SetMethod != null);
             }
-                        
+            property.IsAbstract = propertySymbol.IsAbstract;             
             _properties.AddProperty(property);
         }
     }
