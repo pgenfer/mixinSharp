@@ -283,4 +283,18 @@ namespace MixinRefactoring.Test
     {
         private SimpleName _name;
     }
+
+    /// <summary>
+    /// this class has only native data types
+    /// and therefore no mixins should be implemented
+    /// </summary>
+    public class PersonWithNativeTypes
+    {
+        private int _int;
+        private string _string;
+        private byte _byte;
+        private double _double;
+        private decimal _decimal;
+        private IEnumerable<int> _enumerable;
+    }
 }
