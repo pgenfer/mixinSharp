@@ -188,7 +188,7 @@ namespace MixinRefactoring.Test
             // only one method from the mixin should be implemented, the other one
             // is alredy implemented by childs base
             Assert.AreEqual(1, mixer.MethodsToImplement.Count(x => x.Name == "Work"));
-            Assert.IsTrue(mixer.MethodsToImplement.Single().NeedsOverrideKeyword);
+            Assert.IsTrue(mixer.MethodsToImplement.Single().IsOverride);
         }
 
         [Test(
@@ -207,9 +207,32 @@ namespace MixinRefactoring.Test
             mixer.IncludeMixinInChild(mixin, child);
 
             // there should not be any method to override,
-            // because when reading method declarations from the child's sourcecode,
-            // we don't care if the method is abstract or not (since an abstract method
-            // will never be overridden in the same class declaration)
+            // because the abstract method is in the child class itself
+            Assert.AreEqual(0, mixer.MethodsToImplement.Count());
+        }
+
+        /// <summary>
+        /// check for issue
+        /// https://github.com/pgenfer/mixinSharp/issues/6
+        /// A method override should not be added if an override with the
+        /// same signature exists already in the child class
+        /// </summary>
+        [Test]
+        public void ChildWithOverrideMethod_Include_MethodOverrideNotCreated()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Worker.cs"); 
+            var personClass = sourceCode.Class("PersonWithOverriddenMethod");
+            var mixinReference = personClass.FindMixinReference("_worker");
+            var semanticModel = sourceCode.Semantic;
+
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // there should not be any method to override,
+            // because the child itself already overrides the method
             Assert.AreEqual(0, mixer.MethodsToImplement.Count());
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MixinRefactoring.Test
 {
@@ -268,11 +269,31 @@ namespace MixinRefactoring.Test
     }
 
     /// <summary>
+    /// class that already overrides a method from base.
+    /// The mixins method with the same signature should not be implemented again
+    /// </summary>
+    public class PersonWithOverriddenMethod : PersonWithAbstractWork
+    {
+        private Worker _worker;
+        public override void Work() { }
+    }
+
+    /// <summary>
     /// class with an abstract property
     /// </summary>
     public abstract class PersonWithAbstractName
     {
         public abstract string Name { get; set; }
+    }
+
+    /// <summary>
+    /// class that overrides a property from base with same
+    /// signature as mixin property
+    /// </summary>
+    public class PersonWithOverriddenProperty : PersonWithAbstractName
+    {
+        private SimpleName _name;
+        public override string Name { get; set; }
     }
 
     /// <summary>

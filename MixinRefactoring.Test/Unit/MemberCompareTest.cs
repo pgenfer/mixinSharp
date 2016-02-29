@@ -21,7 +21,7 @@ namespace MixinRefactoring.Test
             var otherProperty = new Property("p2", type, true, true);
             var comparer = new MemberComparer();
             // Act
-            var equal = comparer.IsImplementationOf(property, otherProperty);
+            var equal = comparer.IsSameAs(property, otherProperty);
             // Assert
             Assert.IsFalse(equal);
         }
@@ -39,7 +39,7 @@ namespace MixinRefactoring.Test
             var comparer = new MemberComparer();
 
             // Act
-            var equal = comparer.IsImplementationOf(property, otherProperty);
+            var equal = comparer.IsSameAs(property, otherProperty);
 
             // First ensure that both types are different
             Assert.AreNotEqual(typeOfProperty, typeOfOtherProperty);
@@ -58,7 +58,7 @@ namespace MixinRefactoring.Test
             var otherProperty = new Property("p1", type, true, false);
             var comparer = new MemberComparer();
             // Act
-            var equal = comparer.IsImplementationOf(property, otherProperty);
+            var equal = comparer.IsSameAs(property, otherProperty);
             // Assert
             Assert.IsTrue(equal);
         }

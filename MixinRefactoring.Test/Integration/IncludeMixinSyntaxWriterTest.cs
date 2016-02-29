@@ -117,5 +117,7 @@ namespace MixinRefactoring.Test
                 .ToString();
             Assert.IsTrue(propertyDeclaration.Contains("override"));
         }
+
+        
     }
 }

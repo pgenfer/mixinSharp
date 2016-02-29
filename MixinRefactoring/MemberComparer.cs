@@ -2,7 +2,7 @@
 {
     public class MemberComparer
     {
-        public virtual bool IsImplementationOf(Member first, Member second)
+        public virtual bool IsSameAs(Member first, Member second)
         {
             return IsEqual((dynamic)first, (dynamic)second);
         }

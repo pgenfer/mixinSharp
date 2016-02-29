@@ -42,7 +42,8 @@ namespace MixinRefactoring
                     propertySymbol.GetMethod != null,
                     propertySymbol.SetMethod != null);
             }
-            property.IsAbstract = propertySymbol.IsAbstract;             
+            property.IsAbstract = propertySymbol.IsAbstract;
+            property.IsOverride = propertySymbol.IsOverride;          
             _properties.AddProperty(property);
         }
     }

@@ -144,7 +144,7 @@ namespace MixinRefactoring
         protected SyntaxTokenList CreateModifiers(Method method)
         {
             var modifiers = TokenList(Token(SyntaxKind.PublicKeyword));
-            modifiers = method.IsOverrideFromObject || method.NeedsOverrideKeyword ?
+            modifiers = method.IsOverrideFromObject || method.IsOverride ?
                 modifiers.Add(Token(SyntaxKind.OverrideKeyword)) :
                 modifiers;
             return modifiers;
@@ -153,7 +153,7 @@ namespace MixinRefactoring
         protected SyntaxTokenList CreateModifiers(Member member)
         {
             var modifiers = TokenList(Token(SyntaxKind.PublicKeyword));
-            modifiers = member.NeedsOverrideKeyword ?
+            modifiers = member.IsOverride ?
                 modifiers.Add(Token(SyntaxKind.OverrideKeyword)) :
                 modifiers;
             return modifiers;

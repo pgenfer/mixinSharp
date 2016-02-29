@@ -32,7 +32,7 @@ namespace MixinRefactoring
         public void Add(Parameter parameter) => _parameters.Add(parameter);
       
         public int ParameterCount => _parameters.ParameterCount;
-        public override string ToString() => $"{ReturnType.ToString()} {Name.ToString()}({_parameters.ToString()})";
+        public override string ToString() => $"{Modifiers} {ReturnType.ToString()} {Name.ToString()}({_parameters.ToString()})".Trim(); // remove leading spaces when no modifiers
         public Parameter GetParameter(int index) => _parameters.GetParameter(index);
 
         protected override Member CreateCopy()
