@@ -258,10 +258,30 @@ namespace MixinRefactoring.Test
             // only one method from the mixin should be implemented, the other one
             // is alredy implemented by childs base
             Assert.AreEqual(1, mixer.PropertiesToImplement.Count(x => x.Name == "Name"));
-            Assert.IsTrue(mixer.PropertiesToImplement.Single().NeedsOverrideKeyword);
+            Assert.IsTrue(mixer.PropertiesToImplement.Single().IsOverride);
         }
 
+        /// <summary>
+        /// check that issue
+        /// https://github.com/pgenfer/mixinSharp/issues/6
+        /// is also fixed for properties
+        /// </summary>
+        [Test]
+        public void ChildWithOverrideProperty_Include_PropertyOverrideNotCreated()
+        {
+            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            var personClass = sourceCode.Class("PersonWithOverriddenProperty");
+            var mixinReference = personClass.FindMixinReference("_name");
+            var semanticModel = sourceCode.Semantic;
 
-        // TODO: skip basic data types (like string, int etc...)
+            var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
+            var child = new ClassFactory(semanticModel).Create(personClass);
+
+            var mixer = new Mixer();
+            mixer.IncludeMixinInChild(mixin, child);
+
+            // no property to override because child overrides it already
+            Assert.AreEqual(0, mixer.PropertiesToImplement.Count());
+        }
     }
 }

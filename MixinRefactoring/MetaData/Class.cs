@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MixinRefactoring
 {
@@ -12,8 +13,16 @@ namespace MixinRefactoring
         private PropertyList _properties = new PropertyList();
         private MethodList _methods = new MethodList();
         private readonly NameMixin _name = new NameMixin();
-        public void AddProperty(Property newProperty) => _properties.AddProperty(newProperty);
-        public void AddMethod(Method newMethod) => _methods.AddMethod(newMethod);
+        public void AddProperty(Property newProperty)
+        {
+            _properties.AddProperty(newProperty);
+            newProperty.Class = this;
+        }
+        public void AddMethod(Method newMethod)
+        {
+            _methods.AddMethod(newMethod);
+            newMethod.Class = this;
+        }
         public IEnumerable<Property> Properties => _properties;
         public IEnumerable<Method> Methods => _methods;
         public string Name
@@ -47,6 +56,20 @@ namespace MixinRefactoring
                     members.AddRange(BaseClass.MembersFromThisAndBase);
                 return members;
             }
+        }
+
+        public bool HasOverride(Member abstractMember)
+        {
+            if (!abstractMember.IsAbstract)
+                return false;
+            var memberComparer = new MemberComparer();
+            // check if we have a member with the same signature
+            // but with the override keyword
+            var sameMembers = MembersFromThisAndBase
+                .Where(x => x.IsOverride)
+                .Where(x => !x.IsAbstract)
+                .Where(x => memberComparer.IsSameAs(x, abstractMember));
+            return sameMembers.Any();
         }
     }
 }

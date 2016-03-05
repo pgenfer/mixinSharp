@@ -38,6 +38,11 @@ namespace MixinRefactoring
                 node.Identifier.ToString(),
                 (ITypeSymbol)_semantic.GetSymbolInfo(node.Type).Symbol,
                 hasGetter, hasSetter);
+
+            // set correct modifiers
+            property.IsOverride = node.Modifiers.Any(x => x.IsKind(SyntaxKind.OverrideKeyword));
+            property.IsAbstract = node.Modifiers.Any(x => x.IsKind(SyntaxKind.AbstractKeyword));
+
             _properties.AddProperty(property);            
         }
     }    

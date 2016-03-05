@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MixinRefactoring
 {
@@ -23,6 +24,10 @@ namespace MixinRefactoring
             var method = new Method(
                 node.Identifier.ToString(),
                 (ITypeSymbol)_semantic.GetSymbolInfo(node.ReturnType).Symbol);
+            // set correct modifiers
+            method.IsOverride = node.Modifiers.Any(x => x.IsKind(SyntaxKind.OverrideKeyword));
+            method.IsAbstract = node.Modifiers.Any(x => x.IsKind(SyntaxKind.AbstractKeyword));
+            // read parameters
             var parameterSyntaxReader = new ParameterSyntaxReader(method, _semantic);
             parameterSyntaxReader.Visit(node);
             _methods.AddMethod(method);
