@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="mixinSharp : extension for VS2015 that adds mixins to C#">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>mixinSharp</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/pgenfer/mixinSharp">View on GitHub</a>
+
+          <h1 id="project_title">mixinSharp</h1>
+          <h2 id="project_tagline">extension for VS2015 that adds mixins to C#</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/pgenfer/mixinSharp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/pgenfer/mixinSharp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="mixinsharp" class="anchor" href="#mixinsharp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>mixinSharp</h1>
+
+<p>MixinSharp (or shorter: mixin#) is a code refactoring extension for Visual Studio 2015 that adds mixin support to C# by auto generating the required code.<br>
+The VSIX binary installation file can be found in the <a href="https://visualstudiogallery.msdn.microsoft.com/05c8154b-eb71-45f1-986e-923acca556f1">Visual Studio Gallery</a>, the full source code is available here. </p>
+
+<h2>
+<a id="what-are-mixins" class="anchor" href="#what-are-mixins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>what are mixins?</h2>
+
+<p>Mixins are a software concept that provides code reuse by <em>composition</em> instead of <em>inheritance</em>.<br>
+The code that should be reused is placed in a separate class (the <em>mixin</em>) and any other class (in this context also called a <em>child</em> class) that wants to use this code simply holds a reference to the mixin and delegates method calls to it.<br>
+For the ouside standing caller it looks like that the child instance is handling the request directly.  </p>
+
+<h2>
+<a id="why-are-they-useful" class="anchor" href="#why-are-they-useful" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>why are they useful?</h2>
+
+<p>Compared to classical inheritance, mixins have some advantages. Please check the wiki for a more detailed comparison between the both approaches.<br>
+Unfortunately, C# does not support mixins directly on a language level, that's where mixinSharp comes into play by offering a refactoring step that automatically creates the required mixin code.</p>
+
+<h2>
+<a id="a-simple-example" class="anchor" href="#a-simple-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>a simple example</h2>
+
+<p>your mixin class with the code you want to reuse</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">NameMixin</span>
+{
+  <span class="pl-k">public</span> <span class="pl-k">string</span> <span class="pl-en">Name</span> { <span class="pl-k">get</span>; <span class="pl-k">set</span>; }
+  <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">string</span> <span class="pl-en">ToString</span>() =&gt; Name;
+}</pre></div>
+
+<p>the class where you want to include your mixin (your child)</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">Person</span>
+{
+  <span class="pl-k">private</span> NameMixin _name = <span class="pl-k">new</span> NameMixin();
+}</pre></div>
+
+<p>Open the *Quick Action" context menu while your cursor is on your <code>_name</code> field declaration:    </p>
+
+<p><img src="https://github.com/pgenfer/mixinSharp/blob/master/images/quick_action.png" alt="Quick action">    </p>
+
+<p>From the context menu that popped up, choose the entry <em>Include mixin: 'name'</em>    </p>
+
+<p><img src="https://github.com/pgenfer/mixinSharp/blob/master/images/mixin_preview.png" alt="Include mixin">  </p>
+
+<p>After applying the mixin refactoring, your mixin class is included in your child:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">Person</span>
+{
+  <span class="pl-k">private</span> NameMixin _name = <span class="pl-k">new</span> NameMixin();
+  <span class="pl-k">public</span> <span class="pl-k">string</span> Name
+  {
+    <span class="pl-k">get</span> { <span class="pl-k">return</span> _name.Name; }
+    <span class="pl-k">set</span> { _name.Name = <span class="pl-k">value</span>; }
+  }
+
+  <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">string</span> ToString() =&gt; _name.ToString();
+}</pre></div>
+
+<h2>
+<a id="installation-instruction" class="anchor" href="#installation-instruction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation Instruction</h2>
+
+<p>mixinSharp is a Visual Studio 2015 Extension (VSIX), as such it can be downloaded from the <a href="https://visualstudiogallery.msdn.microsoft.com/05c8154b-eb71-45f1-986e-923acca556f1">Visual Studio Gallery</a>.<br>
+After downloading the VSIX file, doubleclicking it will start the installation process.    </p>
+
+<p>To compile the extension from source, you will have to install the <a href="https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89">.NET Compiler Platform SDK</a> first (but Visual Studio will automatically ask you to do so during the build).</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">mixinSharp maintained by <a href="https://github.com/pgenfer">pgenfer</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
