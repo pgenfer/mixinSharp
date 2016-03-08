@@ -5,22 +5,8 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
-using System.ComponentModel;
-using System.Composition;
-using MixinRefactoring;
-using Microsoft.VisualStudio.Shell.Settings;
-using Microsoft.VisualStudio.Settings;
-using System.Windows;
 
 namespace MixinSharp
 {
@@ -42,83 +28,35 @@ namespace MixinSharp
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(PackageGuidString)]
-    [ProvideOptionPage(typeof(OptionPageGrid),"mixinSharp", "General", 0, 0, true)]
+    [ProvideOptionPage(typeof (OptionPageGrid), "mixinSharp", "General", 0, 0, true)]
     public sealed class MixinSharpPackage : Package
     {
         /// <summary>
         /// MixinSharpPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "1d9b1e82-4bc2-404f-955d-dba152eb31a0";
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="MixinSharpPackage"/> class.
+        /// Initializes a new instance of the <see cref = "MixinSharpPackage"/> class.
         /// </summary>
         public MixinSharpPackage()
         {
-            // Inside this method you can place any initialization code that does not require
-            // any Visual Studio service because at this point the package object is created but
-            // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
+        // Inside this method you can place any initialization code that does not require
+        // any Visual Studio service because at this point the package object is created but
+        // not sited yet inside Visual Studio environment. The place to do all the other
+        // initialization is the Initialize method.
         }
 
-        #region Package Members
-
+#region Package Members
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
+            base.Initialize();            
         }
-
-        #endregion
-    }
-
-    public class OptionPageGrid : UIElementDialogPage
-    {
-        private const string CollectionPath = "mixinSharp";
-
-        [Category("General")]
-        [DisplayName("Create region ")]
-        [Description("Create a region block around the included mixin members")]
-        public bool CreateRegions
-        {
-            get
-            {
-                var shellSettingsManager = new ShellSettingsManager(Site);
-                var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                var createRegion = store?.GetBoolean(CollectionPath, nameof(CreateRegions), false);
-                return createRegion ?? false;
-            }
-            set
-            {
-                try
-                {
-                    var shellSettingsManager = new ShellSettingsManager(Site);
-                    var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                    if (!store.CollectionExists(CollectionPath))
-                        store.CreateCollection(CollectionPath);
-                    store?.SetBoolean(CollectionPath, nameof(CreateRegions), value);
-                }
-                catch(Exception)
-                {
-                    
-                }
-                
-            }
-        }
-
-        protected override UIElement Child
-        {
-            get
-            {
-                var mixinSettingsControl = new MixinSharpSettingsControl();
-                mixinSettingsControl.DataContext = this;
-                return mixinSettingsControl;
-            }
-        }
+#endregion
     }
 }

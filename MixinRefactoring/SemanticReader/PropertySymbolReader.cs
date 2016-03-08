@@ -43,7 +43,10 @@ namespace MixinRefactoring
                     propertySymbol.SetMethod != null);
             }
             property.IsAbstract = propertySymbol.IsAbstract;
-            property.IsOverride = propertySymbol.IsOverride;          
+            property.IsOverride = propertySymbol.IsOverride;
+
+            property.Documentation = new DocumentationComment(propertySymbol.GetDocumentationCommentXml());
+
             _properties.AddProperty(property);
         }
     }

@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\NameMixin.cs" />
+    <Compile Include="Extensions\XmlSyntaxFactory.cs" />
     <Compile Include="IncludeMixinSyntaxWriter.cs" />
     <Compile Include="MemberComparer.cs" />
     <Compile Include="MetaData\Class.cs" />
@@ -41,6 +42,7 @@
     <Compile Include="Extensions\MetaDataReferenceResolver.cs" />
     <Compile Include="Extensions\SyntaxNodeExtension.cs" />
     <Compile Include="MetaData\ClassWithSourceCode.cs" />
+    <Compile Include="MetaData\DocumentationComment.cs" />
     <Compile Include="MetaData\IMethodList.cs" />
     <Compile Include="MetaData\IndexerProperty.cs" />
     <Compile Include="MetaData\IParameterList.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="SemanticReader\PropertySymbolReader.cs" />
     <Compile Include="SemanticReader\SemanticTypeReaderBase.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SettingsSerializer.cs" />
     <Compile Include="SyntaxReader\BaseClassSyntaxReader.cs" />
     <Compile Include="SyntaxReader\FieldSyntaxReader.cs" />
     <Compile Include="SyntaxReader\MethodSyntaxReader.cs" />
@@ -180,6 +183,7 @@
       <HintPath>..\packages\System.Reflection.Metadata.1.1.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />

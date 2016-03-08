@@ -214,11 +214,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MixinSharpPackage.cs" />
+    <Compile Include="MixinSharpResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MixinSharpResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="MixinSharpSettingsControl.xaml.cs">
       <DependentUpon>MixinSharpSettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OptionPageGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MixinSharpResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MixinSharpResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

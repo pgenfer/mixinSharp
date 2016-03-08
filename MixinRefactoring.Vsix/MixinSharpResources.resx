@@ -117,14 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="110" xml:space="preserve">
-    <value>MixinSharpPackage Extension</value>
+  <data name="CreateRegions" xml:space="preserve">
+    <value>Create region block</value>
   </data>
-  <data name="112" xml:space="preserve">
-    <value>MixinSharpPackage Visual Studio Extension Detailed Info</value>
+  <data name="CreateRegionsDescription" xml:space="preserve">
+    <value>When checked, the generated forwarding members will be enclosed by a region block.</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\MixinSharpPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="IncludeDocumentation" xml:space="preserve">
+    <value>Add documentation to forwarding methods</value>
+  </data>
+  <data name="IncludeDocumentationDescription" xml:space="preserve">
+    <value>If members in the mixin have a code documentation, their documentation will also be added to the generated forwarding methods if this option is selected.</value>
   </data>
 </root>

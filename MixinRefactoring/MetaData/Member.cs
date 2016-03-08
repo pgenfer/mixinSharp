@@ -62,9 +62,15 @@ namespace MixinRefactoring
             var copy = CreateCopy();
             copy.Name = Name;
             copy.IsOverride = needsOverrideKeywork;
-            // if this members will have an override keyword, it cannot be abstract
+            copy.Documentation = Documentation; // both hold the same reference, check if this might become a problem
+            // if this member will have an override keyword, it cannot be abstract
             copy.IsAbstract = needsOverrideKeywork ? false : IsAbstract;
             return copy;
-        }      
+        } 
+        
+        /// <summary>
+        /// stores the comment of this member (if any)
+        /// </summary>
+        public DocumentationComment Documentation { get; set; }     
     }
 }

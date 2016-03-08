@@ -56,11 +56,15 @@ namespace MixinRefactoring
         /// class declaration will be returned.
         /// </summary>
         /// <returns></returns>
-        public SyntaxNode Execute()
+        public SyntaxNode Execute(Settings settings = null)
         {
             if (CanExecute())
             {
-                var syntaxWriter = new IncludeMixinSyntaxWriter(_mixer.MembersToImplement, _mixin.Name, _semanticModel);
+                var syntaxWriter = new IncludeMixinSyntaxWriter(
+                    _mixer.MembersToImplement, 
+                    _mixin.Name, 
+                    _semanticModel,
+                    settings);
                 var newClassDeclaration = syntaxWriter.Visit(_mixinChild.SourceCode);
                 return newClassDeclaration;
             }

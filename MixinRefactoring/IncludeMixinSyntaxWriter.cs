@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-
-// TODO: add using SyntaxFactory here
+using static MixinSharp.XmlSyntaxFactory;
+using System;
 
 namespace MixinRefactoring
 {
@@ -16,15 +15,20 @@ namespace MixinRefactoring
         private readonly string _name;
         private readonly SemanticModel _semantic;
         private int _classDeclarationPosition; // we need the position of the class in source file to reduce qualified names
+        private readonly Settings _settings;
 
 
         public IncludeMixinSyntaxWriter(
-            IEnumerable<Member> membersToImplement, string mixinReferenceName,SemanticModel semanticModel)
+            IEnumerable<Member> membersToImplement, 
+            string mixinReferenceName, 
+            SemanticModel semanticModel,
+            Settings settings = null)
         {
             _members = membersToImplement;
             _name = mixinReferenceName;
             _semantic = semanticModel;
-        }
+            _settings = settings ?? new Settings();
+        }        
 
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
         {
@@ -159,6 +163,26 @@ namespace MixinRefactoring
             return modifiers;
         }
 
+        protected SyntaxTriviaList CreateComment(Member member)
+        {
+            if(_settings.IncludeDocumentation && member.Documentation.HasSummary)
+            {
+                var allCommentNodes = new List<XmlNodeSyntax>();
+                foreach (var node in member.Documentation.Elements)
+                {
+                    var commentNode = MultiLineElement(node.Tag, node.Content, node.Attributes);
+                    // TODO: addstarttag attributes here
+                    allCommentNodes.Add(commentNode);                    
+                }
+                var documentationNode = DocumentationComment(allCommentNodes.ToArray());
+                // add an additional new line before the comment
+                var documentation = TriviaList(EndOfLine(Environment.NewLine),Trivia(documentationNode));
+
+                return documentation;
+            }
+            return TriviaList();            
+        }
+
         /// <summary>
         /// reduces the qualification of a type name if possible.
         /// Depends on the position of the mixin class within the source code
@@ -192,7 +216,8 @@ namespace MixinRefactoring
                 .AddParameterListParameters(parameters.ToArray())
                 .WithExpressionBody(ArrowExpressionClause(mixinServiceInvocation))
                 .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                .WithModifiers(CreateModifiers(method));                
+                .WithModifiers(CreateModifiers(method))
+                .WithLeadingTrivia(CreateComment(method));        
 
             return methodDeclaration;
         }

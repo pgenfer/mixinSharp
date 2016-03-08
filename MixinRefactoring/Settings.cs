@@ -9,30 +9,36 @@ using System.Threading.Tasks;
 
 namespace MixinRefactoring
 {
+    /// <summary>
+    /// stores the settings for the code generation.
+    /// The settings can be set via an options dialog.
+    /// </summary>
     public class Settings
     {
-        private const string CollectionPath = "mixinSharp";
-
+        private SettingsSerializer _serializer = new SettingsSerializer();
+        
+        /// <summary>
+        /// creates a new settings object.
+        /// The service provider is needed to create the shell settings manager
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public Settings(IServiceProvider serviceProvider)
         {
-            ReadFromStorage(serviceProvider);
+            CreateRegions = _serializer.GetOption(nameof(CreateRegions), serviceProvider);
+            IncludeDocumentation = _serializer.GetOption(nameof(IncludeDocumentation), serviceProvider);
         }
 
-        public void ReadFromStorage(IServiceProvider serviceProvider)
+        /// <summary>
+        /// default constructor does not load settings from storage,
+        /// instead it uses default settings
+        /// </summary>
+        public Settings()
         {
-            var shellSettingsManager = new ShellSettingsManager(serviceProvider);
-            var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            var createRegion = store?.GetBoolean(CollectionPath, nameof(CreateRegions), false);
-            CreateRegions = createRegion ?? false;
+            CreateRegions = false;
+            IncludeDocumentation = false;
         }
 
-        public void WriteToStorage(IServiceProvider serviceProvider)
-        {
-            var shellSettingsManager = new ShellSettingsManager(serviceProvider);
-            var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            store?.SetBoolean(CollectionPath, nameof(CreateRegions), CreateRegions);
-        }
-
-        public bool CreateRegions { get; set; }
+        public bool CreateRegions { get; }
+        public bool IncludeDocumentation { get; }
     }
 }
