@@ -4,28 +4,42 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
+using NSubstitute;
 
 namespace MixinRefactoring.Test
 {
     [TestFixture]
     public class IncludeMixinSyntaxWriterTest
     {
+        /// <summary>
+        /// syntax writer dummy where strategies can be injected
+        /// </summary>
         public class IncludeSyntaxWriterTestDummy : IncludeMixinSyntaxWriter
         {
-            public bool ImplementPropertyCalled { get; set; }
+            /// <summary>
+            /// stores a reference to the property strategy that will be injected during test case
+            /// </summary>
+            private readonly IImplementMemberForwarding _propertyStrategy;
 
-            public IncludeSyntaxWriterTestDummy(IEnumerable<Member> members,string name):base(members, name,null)
-            { }
-
-            protected override MemberDeclarationSyntax ImplementDelegation(Property property)
+            protected override Dictionary<Type, IImplementMemberForwarding> CreateStrategies(string name, SemanticModel semantic, Settings settings)
             {
-                ImplementPropertyCalled = true;
-                return null;
+                return new Dictionary<Type, IImplementMemberForwarding>()
+                {
+                    [typeof(Property)] = _propertyStrategy
+                };
             }
+
+            public IncludeSyntaxWriterTestDummy(
+                IEnumerable<Member> members,string name,IImplementMemberForwarding propertyStrategy)
+                :base(members, name,null)
+            {
+                _propertyStrategy = propertyStrategy;
+            }            
         }
 
         [Test]
-        public void PropertiesToImplement_WriteSyntax_SyntaxWritten()
+        public void PropertiesToImplement_WriteSyntax_PropertyStrategyCalled()
         {
             var sourceCode = new SourceCode("Person.cs","Name.cs");
             var personClassSource = sourceCode.Class("Person");
@@ -33,10 +47,13 @@ namespace MixinRefactoring.Test
       
             var nameClass = new ClassFactory(sourceCode.Semantic).Create(nameClassSource);
 
-            var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties, "_name");
+            var propertyStrategy = Substitute.For<IImplementMemberForwarding>();
+            
+            var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties, "_name",propertyStrategy);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
 
-            Assert.IsTrue(includeWriter.ImplementPropertyCalled);            
+            // ensure that the implementMember of the propertyStrategy was called
+            propertyStrategy.Received().ImplementMember(Arg.Any<Member>(), Arg.Any<int>());          
         }
 
         [Test]

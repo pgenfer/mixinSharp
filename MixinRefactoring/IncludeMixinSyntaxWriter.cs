@@ -3,223 +3,63 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static MixinSharp.XmlSyntaxFactory;
 using System;
 
 namespace MixinRefactoring
 {
+    /// <summary>
+    /// class that generates the syntax nodes needed
+    /// for forwarding member calls to the mixin reference.
+    /// 
+    /// </summary>
     public class IncludeMixinSyntaxWriter : CSharpSyntaxRewriter
     {
         private readonly IEnumerable<Member> _members;
         private readonly string _name;
         private readonly SemanticModel _semantic;
-        private int _classDeclarationPosition; // we need the position of the class in source file to reduce qualified names
         private readonly Settings _settings;
-
-
-        public IncludeMixinSyntaxWriter(
-            IEnumerable<Member> membersToImplement, 
-            string mixinReferenceName, 
-            SemanticModel semanticModel,
-            Settings settings = null)
+        public IncludeMixinSyntaxWriter(IEnumerable<Member> membersToImplement, string mixinReferenceName, SemanticModel semanticModel, Settings settings = null)
         {
             _members = membersToImplement;
             _name = mixinReferenceName;
             _semantic = semanticModel;
             _settings = settings ?? new Settings();
-        }        
-
-        public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
-        {
-            _classDeclarationPosition = classDeclaration.GetLocation().SourceSpan.Start;
-
-            var membersToAdd = _members
-                .Select(x => ImplementDelegation((dynamic)x))
-                .Where(x => x != null).OfType<MemberDeclarationSyntax>()
-                .ToArray();
-            var newClassDeclaration = classDeclaration.AddMembers(membersToAdd);
-            return newClassDeclaration;
-        }
-
-        protected virtual MemberDeclarationSyntax ImplementDelegation(Member member)
-        {
-            return null;
-        }
-
-        private IEnumerable<ParameterSyntax> ImplementParameters(IEnumerable<Parameter> parameterList)
-        {
-            var parameters = parameterList.Select(x => Parameter(
-                new SyntaxList<AttributeListSyntax>(),
-                TokenList(),
-                ParseTypeName(ReduceQualifiedTypeName(x.Type)),
-                Identifier(x.Name),
-                null));
-            return parameters;
-        }
-
-        protected virtual MemberDeclarationSyntax ImplementDelegation(IndexerProperty property)
-        {
-            var parameters = ImplementParameters(property.Parameters);
-
-            // indexer access to member, like "_collection[index]
-            var memberAccess = ElementAccessExpression(
-                IdentifierName(_name))
-                .AddArgumentListArguments(
-                    property.Parameters
-                    .Select(x => Argument(IdentifierName(x.Name)))
-                    .ToArray());
-            // in case only getter => use expression body
-            if (property.IsReadOnly)
-            {
-                return IndexerDeclaration(ParseTypeName(property.Type.ToString()))
-                    .WithParameterList(BracketedParameterList(SeparatedList(parameters)))
-                    .WithExpressionBody(ArrowExpressionClause(memberAccess))
-                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                    .WithModifiers(CreateModifiers(property));
-            }
-
-            // otherwise create getter and/or setter bodies
-            var getStatement = property.HasGetter ?
-                AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                .AddBodyStatements(ReturnStatement(memberAccess)) :
-                null;
-            var setStatement = property.HasSetter ?
-                AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                .AddBodyStatements(ExpressionStatement(
-                    AssignmentExpression(
-                        SyntaxKind.SimpleAssignmentExpression, memberAccess, IdentifierName("value")))) :
-                null;
-            var accessorList = new SyntaxList<AccessorDeclarationSyntax>();
-            // store statements in accessorlist 
-            if (getStatement != null)
-                accessorList = accessorList.Add(getStatement);
-            if (setStatement != null)
-                accessorList = accessorList.Add(setStatement);
-            var propertyDeclaration = IndexerDeclaration(
-                ParseTypeName(ReduceQualifiedTypeName(property.Type)))
-                .WithParameterList(BracketedParameterList(SeparatedList(parameters)))
-                .WithModifiers(CreateModifiers(property))
-                .WithAccessorList(AccessorList(accessorList));
-            return propertyDeclaration;
-        }
-
-        protected virtual MemberDeclarationSyntax ImplementDelegation(Property property)
-        {
-            // access to member (like: "_mixin.Property")
-            var memberAccess = MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression, 
-                IdentifierName(_name), 
-                IdentifierName(property.Name));
-            // in case only getter => use expression body
-            if (property.IsReadOnly)
-            {
-                return PropertyDeclaration(ParseTypeName(ReduceQualifiedTypeName(property.Type)), property.Name)
-                    .WithExpressionBody(ArrowExpressionClause(memberAccess))
-                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
-            }
-
-            // otherwise create getter and/or setter bodies
-            var getStatement = property.HasGetter ? 
-                AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                .AddBodyStatements(ReturnStatement(memberAccess)) : 
-                null;
-            var setStatement = property.HasSetter ?
-                AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                .AddBodyStatements(ExpressionStatement(
-                    AssignmentExpression(
-                        SyntaxKind.SimpleAssignmentExpression, memberAccess, IdentifierName("value")))) : 
-                null;
-            var accessorList = new SyntaxList<AccessorDeclarationSyntax>();
-            // store statements in accessorlist 
-            if (getStatement != null)
-                accessorList = accessorList.Add(getStatement);
-             if (setStatement != null)
-                accessorList = accessorList.Add(setStatement);
-            var propertyDeclaration = PropertyDeclaration(
-                ParseTypeName(ReduceQualifiedTypeName(property.Type)),
-                property.Name)
-                .WithModifiers(CreateModifiers(property))
-                .WithAccessorList(AccessorList(accessorList));
-            return propertyDeclaration;
-        }
-
-        protected SyntaxTokenList CreateModifiers(Method method)
-        {
-            var modifiers = TokenList(Token(SyntaxKind.PublicKeyword));
-            modifiers = method.IsOverrideFromObject || method.IsOverride ?
-                modifiers.Add(Token(SyntaxKind.OverrideKeyword)) :
-                modifiers;
-            return modifiers;
-        }
-
-        protected SyntaxTokenList CreateModifiers(Member member)
-        {
-            var modifiers = TokenList(Token(SyntaxKind.PublicKeyword));
-            modifiers = member.IsOverride ?
-                modifiers.Add(Token(SyntaxKind.OverrideKeyword)) :
-                modifiers;
-            return modifiers;
-        }
-
-        protected SyntaxTriviaList CreateComment(Member member)
-        {
-            if(_settings.IncludeDocumentation && member.Documentation.HasSummary)
-            {
-                var allCommentNodes = new List<XmlNodeSyntax>();
-                foreach (var node in member.Documentation.Elements)
-                {
-                    var commentNode = MultiLineElement(node.Tag, node.Content, node.Attributes);
-                    // TODO: addstarttag attributes here
-                    allCommentNodes.Add(commentNode);                    
-                }
-                var documentationNode = DocumentationComment(allCommentNodes.ToArray());
-                // add an additional new line before the comment
-                var documentation = TriviaList(EndOfLine(Environment.NewLine),Trivia(documentationNode));
-
-                return documentation;
-            }
-            return TriviaList();            
         }
 
         /// <summary>
-        /// reduces the qualification of a type name if possible.
-        /// Depends on the position of the mixin class within the source code
-        /// because it has to be checked whether the types namespace
-        /// is already included by a using statement.
+        /// method is virtual, so derived classes can override it to create
+        /// different strategies (e.g. for testing)
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="semantic"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
-        private string ReduceQualifiedTypeName(ITypeSymbol type)
+        protected virtual Dictionary<Type, IImplementMemberForwarding> CreateStrategies(
+            string name, SemanticModel semantic, Settings settings)
         {
-            return type.ToMinimalDisplayString(_semantic, _classDeclarationPosition);
+            var implementationStrategies = new Dictionary<Type, IImplementMemberForwarding>
+            {
+                [typeof(Method)] = new ImplementMethodForwarding(_name, _semantic, _settings),
+                [typeof(IndexerProperty)] = new ImplementIndexerForwarding(_name, _semantic, _settings),
+                [typeof(Property)] = new ImplementPropertyForwarding(_name, _semantic, _settings)
+            };
+            return implementationStrategies;
         }
 
-        protected virtual MemberDeclarationSyntax ImplementDelegation(Method method)
+        public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
         {
-            var parameters = ImplementParameters(method.Parameters);
+            // currently, only three types of member forwardings are possible,
+            // there is a strategy for every forwarding implementation
+            var implementationStrategies = CreateStrategies(_name, _semantic, _settings);
 
-            // method body should delegate call to mixin directly
-            var mixinServiceInvocation =
-                InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(_name),
-                        IdentifierName(method.Name)))
-                .AddArgumentListArguments(method.Parameters
-                    .Select(x => Argument(IdentifierName(x.Name)))
-                    .ToArray());
-            // will be: void method(int parameter) => _mixin.method(parameter);
-            var methodDeclaration =
-                MethodDeclaration(ParseTypeName(ReduceQualifiedTypeName(method.ReturnType)), method.Name)
-                .AddParameterListParameters(parameters.ToArray())
-                .WithExpressionBody(ArrowExpressionClause(mixinServiceInvocation))
-                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
-                .WithModifiers(CreateModifiers(method))
-                .WithLeadingTrivia(CreateComment(method));        
-
-            return methodDeclaration;
+            // needed to evaluate whether type names can be reduced (depends on the using statements in the file)
+            var positionOfClassInSourceFile = classDeclaration.GetLocation().SourceSpan.Start;
+            // TODO: check here if a strategy is available? But can there be a member without a strategy at all?
+            var membersToAdd = _members
+                .Select(x => implementationStrategies[x.GetType()].ImplementMember(x, positionOfClassInSourceFile))
+                .Where(x => x != null).ToArray();
+            var newClassDeclaration = classDeclaration.AddMembers(membersToAdd);
+            return newClassDeclaration;
         }
     }
 }

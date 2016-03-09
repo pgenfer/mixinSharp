@@ -4,7 +4,10 @@
 /// this class is used to improve the comment generation.
 /// It seems like that this helper is not yet part of Roslyn,
 /// and is also not available through a package,
-/// so it is replicated here
+/// so it is replicated here.
+/// Methods which were not needed were removed and the
+/// MultiLineElement method was modified to support multi line
+/// document comments (with additional attributes)
 /// </summary>
 namespace MixinSharp
 {
@@ -34,12 +37,13 @@ namespace MixinSharp
             var attributeList = attributes.Select(x => TextAttribute(x.Item1, x.Item2)).OfType<XmlAttributeSyntax>();
 
             var tag = XmlName(localName);
-            var startTag = XmlElementStartTag(tag)
+            var startTag = XmlElementStartTag(tag) // begin every new start tag on a new line
                 .WithLeadingTrivia(EndOfLine(Environment.NewLine), DocumentationCommentExterior("/// "))
-                .WithAttributes(List<XmlAttributeSyntax>(attributeList));
-                
+                .WithAttributes(List<XmlAttributeSyntax>(attributeList)); // add attributes to start tag                
             var endTag = XmlElementEndTag(tag);
 
+            // this list stores the documentation content within this tag,
+            // one node element for every line
             var contentNodes = new List<XmlNodeSyntax>();
 
             // first simplify all line breaks
@@ -48,7 +52,9 @@ namespace MixinSharp
             var buffer = new StringBuilder();
             // skip spaces at the beginning of the line
             var trimAtStart = true;
-            // store the text per line 
+            // simple state machine, reads every character
+            // trims the spaces at the beginning and stores every line
+            // in a single node
             foreach (var c in content)
             {
                 switch(c)
@@ -75,82 +81,32 @@ namespace MixinSharp
             if (buffer.Length > 0)
                 contentNodes.Add(Text(buffer.ToString()));
 
-            return XmlElement(startTag, List(contentNodes.ToArray()), endTag);
-
-            // TODO:
-            // The rules:
-            // use new lines in the same way as in the content nodes,
-            // when a node starts with a new line, also add one and when it stops
-            // with a new line, also add one
-
-            // also always add a newline after an end tag (or before a start tag, let's see what works better)
-            // A good method would be:
-            // public static XmlElementSyntax MultiLineElement(XmlNameSyntax name, string content)
-            // and the string in content is used to create the syntax nodes
-            // so we have a state machine that creates nodes until it reaches a newline, then it will add the
-            // new line node and will continue with the next node
-
-
-            // add a new line after every content element
-            //var contentWithNewLine = new List<XmlNodeSyntax>();
-            //foreach (var node in content)
-            //{
-            //    contentWithNewLine.Add(NewLine());
-            //    contentWithNewLine.Add(node);
-            //}
-            //return XmlElement(
-            //    XmlElementStartTag(name),
-            //    List(contentWithNewLine.ToArray()),
-            //    //content.Insert(0, NewLine()).Add(NewLine()),
-            //    XmlElementEndTag(name));
+            return XmlElement(startTag, List(contentNodes.ToArray()), endTag);        
         }
-
-        public static XmlElementSyntax Element(string localName, SyntaxList<XmlNodeSyntax> content)
-        {
-            return Element(XmlName(localName), content);
-        }
-
-        public static XmlElementSyntax Element(XmlNameSyntax name, SyntaxList<XmlNodeSyntax> content)
-        {
-            return XmlElement(
-                XmlElementStartTag(name),
-                content,
-                XmlElementEndTag(name));
-        }
-
-        public static XmlEmptyElementSyntax EmptyElement(string localName)
-        {
-            return XmlEmptyElement(XmlName(localName));
-        }
-
+    
         public static SyntaxList<XmlNodeSyntax> List(params XmlNodeSyntax[] nodes)
         {
             return SyntaxFactory.List(nodes);
         }
 
-        public static XmlTextSyntax Text(string value)
+        private static XmlTextSyntax Text(string value)
         {
             return Text(TextLiteral(value));
         }
 
-        public static XmlTextSyntax Text(params SyntaxToken[] textTokens)
+        private static XmlTextSyntax Text(params SyntaxToken[] textTokens)
         {
             return XmlText(TokenList(textTokens));
         }
 
-        public static XmlTextAttributeSyntax TextAttribute(string name, string value)
+        private static XmlTextAttributeSyntax TextAttribute(string name, string value)
         {
             return TextAttribute(name, TextLiteral(value));
         }
 
-        public static XmlTextAttributeSyntax TextAttribute(string name, params SyntaxToken[] textTokens)
+        private static XmlTextAttributeSyntax TextAttribute(string name, params SyntaxToken[] textTokens)
         {
             return TextAttribute(XmlName(name), SyntaxKind.DoubleQuoteToken, TokenList(textTokens));
-        }
-
-        public static XmlTextAttributeSyntax TextAttribute(string name, SyntaxKind quoteKind, SyntaxTokenList textTokens)
-        {
-            return TextAttribute(XmlName(name), SyntaxKind.DoubleQuoteToken, textTokens);
         }
 
         public static XmlTextAttributeSyntax TextAttribute(XmlNameSyntax name, SyntaxKind quoteKind, SyntaxTokenList textTokens)
@@ -178,17 +134,17 @@ namespace MixinSharp
                 .WithLeadingTrivia(Whitespace(" "));
         }
 
-        public static XmlTextSyntax NewLine()
+        private static XmlTextSyntax NewLine()
         {
             return Text(TextNewLine());
         }
 
-        public static SyntaxToken TextNewLine()
+        private static SyntaxToken TextNewLine()
         {
             return TextNewLine(true);
         }
 
-        public static SyntaxToken TextNewLine(bool continueComment)
+        private static SyntaxToken TextNewLine(bool continueComment)
         {
             SyntaxToken token = XmlTextNewLine(
                 TriviaList(),
@@ -202,7 +158,7 @@ namespace MixinSharp
             return token;
         }
 
-        public static SyntaxToken TextLiteral(string value)
+        private static SyntaxToken TextLiteral(string value)
         {
             string encoded = new XText(value).ToString();
             return XmlTextLiteral(

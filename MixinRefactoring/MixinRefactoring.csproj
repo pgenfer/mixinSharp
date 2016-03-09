@@ -34,6 +34,11 @@
   <ItemGroup>
     <Compile Include="Common\NameMixin.cs" />
     <Compile Include="Extensions\XmlSyntaxFactory.cs" />
+    <Compile Include="ImplementationStrategies\IImplementMemberForwarding.cs" />
+    <Compile Include="ImplementationStrategies\ImplementIndexerForwarding.cs" />
+    <Compile Include="ImplementationStrategies\ImplementMemberForwardingBase.cs" />
+    <Compile Include="ImplementationStrategies\ImplementMethodForwarding.cs" />
+    <Compile Include="ImplementationStrategies\ImplementPropertyForwarding.cs" />
     <Compile Include="IncludeMixinSyntaxWriter.cs" />
     <Compile Include="MemberComparer.cs" />
     <Compile Include="MetaData\Class.cs" />
