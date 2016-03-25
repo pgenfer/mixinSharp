@@ -32,10 +32,12 @@ namespace MixinRefactoring
         /// default constructor does not load settings from storage,
         /// instead it uses default settings
         /// </summary>
-        public Settings()
+        public Settings(
+            bool createRegions=false,
+            bool includeDocumentation= false)
         {
-            CreateRegions = false;
-            IncludeDocumentation = false;
+            CreateRegions = createRegions;
+            IncludeDocumentation = includeDocumentation;
         }
 
         public bool CreateRegions { get; }

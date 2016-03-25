@@ -13,8 +13,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void NoPropertiesInMixin_Mix_AllPropertiesToImplement()
         {
-            var sourceCode = new SourceCode("Person.cs","Name.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person,Files.Name);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinField = personClass.FindMixinReference("_name");
 
             var child = new ClassFactory(sourceCode.Semantic).Create(personClass);
@@ -30,8 +30,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void PropertiesInMixinAndChild_Mix_OnlyMissingPropertiesToImplement()
         {
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithFullName");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithFullName));
             var mixinField = personClass.FindMixinReference("_name");
 
             var child = new ClassFactory(sourceCode.Semantic).Create(personClass);
@@ -47,8 +47,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void PropertiesInBaseClass_Mix_NoPropertyToImplement()
         {
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("ThirdPersonClass");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(ThirdPersonClass));
             var mixinField = personClass.FindMixinReference("_name");
 
             var child = new ClassFactory(sourceCode.Semantic).Create(personClass);

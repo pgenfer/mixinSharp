@@ -33,6 +33,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\NameMixin.cs" />
+    <Compile Include="Extensions\ClassDeclarationExtension.cs" />
+    <Compile Include="Extensions\MemberDeclarationSyntaxExtension.cs" />
     <Compile Include="Extensions\XmlSyntaxFactory.cs" />
     <Compile Include="ImplementationStrategies\IImplementMemberForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementIndexerForwarding.cs" />

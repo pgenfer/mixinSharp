@@ -12,8 +12,8 @@ namespace MixinRefactoring.Test
         public void MixinClassWithProperty_Include_PropertiesIncluded()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -35,8 +35,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinReference = personClass.FindMixinReference("_interfaceName");
             var semanticModel = sourceCode.Semantic;
             // 2. create instances for mixin and child mixin
@@ -59,8 +59,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithGetterName");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithGetterName));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             // 2. create instances for mixin and child mixin
@@ -82,8 +82,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithGetterName");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithGetterName));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             // 2. create instances for mixin and child mixin
@@ -104,8 +104,8 @@ namespace MixinRefactoring.Test
         public void ChildHasPropertyAlready_Include_OnlyOnePropertyInChild()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithName");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithName));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -123,8 +123,8 @@ namespace MixinRefactoring.Test
         public void ChildHasBaseClassWithProperty_Include_PropertyNotReimplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("DerivedPersonClass");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(DerivedPersonClass));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -142,8 +142,8 @@ namespace MixinRefactoring.Test
         public void ChildHasBaseClassWithBaseClassesWithProperty_Include_PropertyNotReimplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("ThirdPersonClass");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(ThirdPersonClass));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -161,7 +161,7 @@ namespace MixinRefactoring.Test
         public void ChildHasInterfaceWithProperty_Include_PropertyImplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            var sourceCode = new SourceCode(Files.NotCompilable, Files.Name);
             var personClass = sourceCode.Class("DerivedFromInterfaceClass");
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
@@ -182,8 +182,8 @@ namespace MixinRefactoring.Test
         public void MixinWithStaticProperty_Include_PropertyNotImplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithStaticMixin");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithStaticMixin));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -201,8 +201,8 @@ namespace MixinRefactoring.Test
         public void MixinWithGenericProperty_Include_PropertyImplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithGenericMixin");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithGenericMixin));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -223,8 +223,8 @@ namespace MixinRefactoring.Test
         public void MixinWithIndexer_Include_IndexerImplemented()
         {
             // arrange
-            var sourceCode = new SourceCode("Person.cs", "Collection.cs");
-            var personClass = sourceCode.Class("PersonWithIndexer");
+            var sourceCode = new SourceCode(Files.Person, Files.Collection);
+            var personClass = sourceCode.Class(nameof(PersonWithIndexer));
             var mixinReference = personClass.FindMixinReference("_collection");
             var semanticModel = sourceCode.Semantic;
             var mixin = new MixinReferenceFactory(semanticModel).Create(mixinReference);
@@ -242,7 +242,9 @@ namespace MixinRefactoring.Test
         [Test]
         public void ChildWithAbstractProperty_Include_AbstractPropertyOverridden()
         {
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            // we need Person file and NotCompilable because
+            // the base class is defined in Person file
+            var sourceCode = new SourceCode(Files.Person, Files.NotCompilable, Files.Name);
             var personClass = sourceCode.Class("PersonFromAbstractName");
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
@@ -269,8 +271,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void ChildWithOverrideProperty_Include_PropertyOverrideNotCreated()
         {
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
-            var personClass = sourceCode.Class("PersonWithOverriddenProperty");
+            var sourceCode = new SourceCode(Files.Person, Files.Name);
+            var personClass = sourceCode.Class(nameof(PersonWithOverriddenProperty));
             var mixinReference = personClass.FindMixinReference("_name");
             var semanticModel = sourceCode.Semantic;
 

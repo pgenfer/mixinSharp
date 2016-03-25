@@ -104,11 +104,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Integration\Dummys\Person.cs" />
-    <EmbeddedResource Include="Integration\Dummys\Name.cs" />
-    <EmbeddedResource Include="Integration\Dummys\Worker.cs" />
+    <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Compile Include="Integration\Dummys\Person.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\Dummys\Name.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\Dummys\Worker.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Integration\ClassFactoryTest.cs" />
-    <EmbeddedResource Include="Integration\Dummys\Collection.cs" />
+    <Compile Include="Integration\Dummys\Collection.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\CreateRegionTest.cs" />
+    <Compile Include="Integration\Helpers\FileConstants.cs" />
     <Compile Include="Integration\Helpers\SourceCode.cs" />
     <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />

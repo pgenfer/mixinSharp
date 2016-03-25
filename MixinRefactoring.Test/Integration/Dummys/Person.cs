@@ -72,14 +72,7 @@ namespace MixinRefactoring.Test
         private OnlyGetterName _name;
     }
 
-    /// <summary>
-    /// class derived from interface. Since there is no implementation
-    /// of the property, it should be included from the mixin
-    /// </summary>
-    public class DerivedFromInterfaceClass : IName
-    {
-        private OnlyGetterName _name;
-    }
+    
 
     /// <summary>
     /// this class adds another hierarchy level
@@ -248,15 +241,6 @@ namespace MixinRefactoring.Test
     }
 
     /// <summary>
-    /// derived class with a mixin,
-    /// the method of the mixin should override the abstract method
-    /// </summary>
-    public class PersonFromAbstractWork : PersonWithAbstractWork
-    {
-        private Worker _worker;
-    }
-
-    /// <summary>
     /// a class with an abstract method that has the same signature
     /// as the mixin method.
     /// But the method of the mixin should not be implemented,
@@ -297,15 +281,6 @@ namespace MixinRefactoring.Test
     }
 
     /// <summary>
-    /// class where an abstract property must be overridden during code 
-    /// generation
-    /// </summary>
-    public class PersonFromAbstractName : PersonWithAbstractName
-    {
-        private SimpleName _name;
-    }
-
-    /// <summary>
     /// this class has only native data types
     /// and therefore no mixins should be implemented
     /// </summary>
@@ -317,5 +292,83 @@ namespace MixinRefactoring.Test
         private double _double;
         private decimal _decimal;
         private IEnumerable<int> _enumerable;
+    }
+
+    /// <summary>
+    /// class has no regions, so a region should be created
+    /// </summary>
+    public class PersonWithoutRegion
+    {
+        private SimpleName _name;
+    }
+
+    /// <summary>
+    /// class has a region and the region already has a member
+    /// add members to existing region
+    /// </summary>
+    public class PersonWithRegion
+    {
+        private SimpleName _name;
+
+        #region mixin _name
+
+        /// <summary>
+        /// region already has a member
+        /// </summary>
+        private string _aMember;
+
+        #endregion
+    }
+
+    /// <summary>
+    /// class has several nested regions,
+    /// new members should be added to existing class
+    /// </summary>
+    public class PersonWithNestedRegions
+    {
+        private SimpleName _name;
+
+        #region outer region
+
+            #region inner region
+            #endregion
+
+            #region mixin _name
+
+            /// <summary>
+            /// region already has a member
+            /// </summary>
+            private string _aMember;
+
+            #endregion
+
+        #endregion
+    }
+
+    /// <summary>
+    /// class has several nested regions,
+    /// but no region with the same name as the created one
+    /// so it should be created
+    /// </summary>
+    public class PersonWithNestedRegionsButWithoutMixinRegion
+    {
+        private SimpleName _name;
+
+        #region outer region
+
+        #region inner region
+        #endregion
+        #endregion
+    }
+
+    /// <summary>
+    /// region exists but is empty
+    /// </summary>
+    public class PersonWithEmptyRegion
+    {
+        private SimpleName _name;
+
+        #region mixin _name
+        #endregion
     }
 }

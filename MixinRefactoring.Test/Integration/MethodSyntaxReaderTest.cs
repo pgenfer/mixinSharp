@@ -15,8 +15,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Worker.cs");
-            var workerClass = sourceCode.Class("Worker");
+            var sourceCode = new SourceCode(Files.Worker);
+            var workerClass = sourceCode.Class(nameof(Worker));
 
             var methodList = new MethodList();
 
@@ -32,8 +32,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Worker.cs");
-            var workerClass = sourceCode.Class("WorkerWithTool");
+            var sourceCode = new SourceCode(Files.Worker);
+            var workerClass = sourceCode.Class(nameof(WorkerWithTool));
 
             var methodList = new MethodList();
 

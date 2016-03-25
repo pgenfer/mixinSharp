@@ -50,6 +50,7 @@ namespace MixinSharp
             if (!store.CollectionExists(CollectionPath))
                 store.CreateCollection(CollectionPath);
             store?.SetBoolean(CollectionPath, optionName, value);
+            
         }
 
         /// <summary>

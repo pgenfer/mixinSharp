@@ -41,9 +41,9 @@ namespace MixinRefactoring.Test
         [Test]
         public void PropertiesToImplement_WriteSyntax_PropertyStrategyCalled()
         {
-            var sourceCode = new SourceCode("Person.cs","Name.cs");
-            var personClassSource = sourceCode.Class("Person");
-            var nameClassSource = sourceCode.Class("Name");
+            var sourceCode = new SourceCode(Files.Person,Files.Name);
+            var personClassSource = sourceCode.Class(nameof(Person));
+            var nameClassSource = sourceCode.Class(nameof(Name));
       
             var nameClass = new ClassFactory(sourceCode.Semantic).Create(nameClassSource);
 
@@ -59,8 +59,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void OverrideMethodToImplement_WriteSyntax_MethodHasOverrideModifier()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClassSource = sourceCode.Class("PersonWithToString");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClassSource = sourceCode.Class(nameof(PersonWithToString));
             var worker = new MixinReferenceFactory(sourceCode.Semantic).Create(personClassSource.FindMixinReference("_toString"));
             
             var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, "_toString",sourceCode.Semantic);
@@ -78,8 +78,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithIndexer_WriteSyntax_IndexerImplementedInChild()
         {
-            var sourceCode = new SourceCode("Person.cs", "Collection.cs");
-            var personClassSource = sourceCode.Class("PersonWithIndexer");
+            var sourceCode = new SourceCode(Files.Person, Files.Collection);
+            var personClassSource = sourceCode.Class(nameof(PersonWithIndexer));
             var collection = new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(personClassSource.FindMixinReference("_collection"));
 
@@ -94,7 +94,7 @@ namespace MixinRefactoring.Test
         [Test]
         public void MethodWithOverride_WriteSyntax_OverrideImplementedInChild()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            var sourceCode = new SourceCode(Files.NotCompilable, Files.Worker);
             var personClassSource = sourceCode.Class("PersonFromAbstractWork");
             var worker = new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(personClassSource.FindMixinReference("_worker"));
@@ -116,7 +116,7 @@ namespace MixinRefactoring.Test
         [Test]
         public void PropertyWithOverride_WriteSyntax_OverrideImplementedInChild()
         {
-            var sourceCode = new SourceCode("Person.cs", "Name.cs");
+            var sourceCode = new SourceCode(Files.NotCompilable, Files.Name);
             var personClassSource = sourceCode.Class("PersonFromAbstractName");
             var name = new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(personClassSource.FindMixinReference("_name"));

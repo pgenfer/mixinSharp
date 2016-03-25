@@ -22,18 +22,18 @@ namespace MixinRefactoring
         public bool GetOption(string optionName, IServiceProvider serviceProvider)
         {
             var shellSettingsManager = new ShellSettingsManager(serviceProvider);
-            var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+            var store = shellSettingsManager.GetReadOnlySettingsStore(SettingsScope.UserSettings);
             var option = store?.GetBoolean(CollectionPath, optionName, false);
             return option ?? false;
         }
 
-        public void SetOption(string optionName, bool value, IServiceProvider serviceProvider)
-        {
-            var shellSettingsManager = new ShellSettingsManager(serviceProvider);
-            var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            if (!store.CollectionExists(CollectionPath))
-                store.CreateCollection(CollectionPath);
-            store?.SetBoolean(CollectionPath, optionName, value);
-        }
+        //public void SetOption(string optionName, bool value, IServiceProvider serviceProvider)
+        //{
+        //    var shellSettingsManager = new ShellSettingsManager(serviceProvider);
+        //    var store = shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+        //    if (!store.CollectionExists(CollectionPath))
+        //        store.CreateCollection(CollectionPath);
+        //    store?.SetBoolean(CollectionPath, optionName, value);
+        //}
     }
 }

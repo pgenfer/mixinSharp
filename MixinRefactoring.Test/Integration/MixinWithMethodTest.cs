@@ -13,8 +13,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithMethod_Include_MethodsIncluded()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -32,8 +32,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MethodAlreadyImplemented_Include_MethodNotIncluded()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithWorkMethod");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithWorkMethod));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -50,8 +50,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MethodImplementedWithOtherParameter_Include_MethodIncluded()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithOtherWorkMethod");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithOtherWorkMethod));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -68,8 +68,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithStaticMethod_Include_MethodNotIncluded()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithStaticMethodMixin");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithStaticMethodMixin));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -86,8 +86,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithToString_Include_ToStringShouldBeImplemented()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithToString");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithToString));
             var mixinReference = personClass.FindMixinReference("_toString");
             var semanticModel = sourceCode.Semantic;
 
@@ -106,8 +106,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithGenericParameter_Include_MixinImplemented()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithGenericClassMixin");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithGenericClassMixin));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -127,8 +127,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithBaseClass_Include_BothMethodsImplemented()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithDerivedWorker");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithDerivedWorker));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -150,8 +150,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void ChildWithBaseMethod_Include_BaseMethodNotImplemented()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("DerivedPerson");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(DerivedPerson));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -172,7 +172,8 @@ namespace MixinRefactoring.Test
          Description = "If the abstract method is in the base class, override it when including the mixin")]
         public void ChildWithAbstractMethodFromBase_Include_AbstractMethodOverridden()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
+            // file Person with base class is also needed here
+            var sourceCode = new SourceCode(Files.Person, Files.NotCompilable, Files.Worker);
             var personClass = sourceCode.Class("PersonFromAbstractWork");
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
@@ -195,8 +196,8 @@ namespace MixinRefactoring.Test
          Description = "Dont create an override method if the abstract method is declared in the child itself")]
         public void ChildWithAbstractMethod_Include_MethodOverrideNotCreated()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs");
-            var personClass = sourceCode.Class("PersonWithAbstractMethod");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithAbstractMethod));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
@@ -220,8 +221,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void ChildWithOverrideMethod_Include_MethodOverrideNotCreated()
         {
-            var sourceCode = new SourceCode("Person.cs", "Worker.cs"); 
-            var personClass = sourceCode.Class("PersonWithOverriddenMethod");
+            var sourceCode = new SourceCode(Files.Person, Files.Worker); 
+            var personClass = sourceCode.Class(nameof(PersonWithOverriddenMethod));
             var mixinReference = personClass.FindMixinReference("_worker");
             var semanticModel = sourceCode.Semantic;
 
