@@ -30,7 +30,10 @@ namespace MixinRefactoring
                 accessorList = accessorList.Add(getStatement);
             if (setStatement != null)
                 accessorList = accessorList.Add(setStatement);
-            var propertyDeclaration = PropertyDeclaration(ParseTypeName(ReduceQualifiedTypeName(member.Type)), member.Name).WithModifiers(CreateModifiers(member)).WithAccessorList(AccessorList(accessorList));
+            var propertyDeclaration = PropertyDeclaration(ParseTypeName(ReduceQualifiedTypeName(member.Type)), member.Name)
+                .WithModifiers(CreateModifiers(member))
+                .WithAccessorList(AccessorList(accessorList))
+                .WithLeadingTrivia(CreateComment(member.Documentation)); 
             return propertyDeclaration;
         }
     }

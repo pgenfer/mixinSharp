@@ -18,5 +18,6 @@ namespace MixinRefactoring.Test
         public const string Name = "Name.cs";
         public const string Worker = "Worker.cs";
         public const string Collection = "Collection.cs";
+        public const string Comments = "Comments.cs";
     }
 }

@@ -14,6 +14,12 @@ namespace MixinRefactoring
     public class DocumentationComment
     {
         /// <summary>
+        /// store the documentation as string
+        /// used for easier validation during tests
+        /// </summary>
+        private string _documentationString;
+        
+        /// <summary>
         /// stores the documentation, every xml node
         /// is stored in one element.
         /// </summary>
@@ -25,10 +31,25 @@ namespace MixinRefactoring
             if (string.IsNullOrEmpty(comment))
                 return;
             var xmlComment = XDocument.Parse(comment);
-            _elements.AddRange(
+            var xmlElements =
                 xmlComment
                 .Element("member")
                 .Descendants()
+                .ToList();
+
+            // create the string representation of the documentation
+            var stringBuilder = new StringBuilder();
+            // create a string for every new line in the comment
+            // and add a "///" in front of the line
+            var lines = xmlElements
+                .SelectMany(x => x.ToString().Split(new[] { NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                .Select(x => x.Trim())
+                .ToList();
+            lines.ForEach(x => stringBuilder.AppendLine($"/// {x.ToString()}"));
+            _documentationString = stringBuilder.ToString();
+
+            _elements.AddRange(
+                xmlElements
                 .Select(x => new DocumentationElement(
                     x.Name.LocalName, 
                     x.Value,
@@ -37,6 +58,7 @@ namespace MixinRefactoring
 
         public bool HasSummary => _elements.Any();
         public IEnumerable<DocumentationElement> Elements => _elements;
+        public override string ToString() => _documentationString;
 
         /// <summary>
         /// stores an xml document element.
