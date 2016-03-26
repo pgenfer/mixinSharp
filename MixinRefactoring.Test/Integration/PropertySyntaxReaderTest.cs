@@ -15,8 +15,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Person.cs");
-            var personClass = sourceCode.Class("PersonWithName");
+            var sourceCode = new SourceCode(Files.Person);
+            var personClass = sourceCode.Class(nameof(PersonWithName));
 
             var propertyList = new PropertyList();
 

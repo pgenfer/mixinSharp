@@ -17,8 +17,8 @@ namespace MixinRefactoring.Test
         {
             // arrange
             // 1. load source files and get class and mixin declarations
-            var sourceCode = new SourceCode("Person.cs");
-            var personClass = sourceCode.Class("PersonWithNativeTypes");
+            var sourceCode = new SourceCode(Files.Person);
+            var personClass = sourceCode.Class(nameof(PersonWithNativeTypes));
             var fieldDeclarations = personClass.DescendantNodes().OfType<FieldDeclarationSyntax>();
 
             foreach(var fieldDeclaration in fieldDeclarations)

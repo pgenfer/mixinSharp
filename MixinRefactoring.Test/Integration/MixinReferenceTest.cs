@@ -13,8 +13,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void ClassWithMixin_Read_CreateMixin()
         {
-            var sourceCode = new SourceCode("Person.cs","Name.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person,Files.Name);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinField = personClass.FindMixinReference("_name");
 
             var mixinFactory = new MixinReferenceFactory(sourceCode.Semantic);
@@ -27,8 +27,8 @@ namespace MixinRefactoring.Test
         [Test]
         public void ClassWithUnknownMixin_Read_NoMixinCreated()
         {
-            var sourceCode = new SourceCode("Person.cs");
-            var personClass = sourceCode.Class("Person");
+            var sourceCode = new SourceCode(Files.Person);
+            var personClass = sourceCode.Class(nameof(Person));
             var mixinField = personClass.FindMixinReference("_name");
 
             var mixinFactory = new MixinReferenceFactory(sourceCode.Semantic);

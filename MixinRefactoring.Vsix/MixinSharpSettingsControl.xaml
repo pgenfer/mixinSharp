@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="MixinSharp.MixinSharpSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MixinSharp"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+  <StackPanel Orientation="Vertical">
+    <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.CreateRegions}" IsChecked="{Binding CreateRegions}"/>
+    <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.CreateRegionsDescription}" TextWrapping="Wrap"/>
+    <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.IncludeDocumentation}" IsChecked="{Binding IncludeDocumentation}"/>
+    <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.IncludeDocumentationDescription}" TextWrapping="Wrap"/>
+  </StackPanel>
+</UserControl>

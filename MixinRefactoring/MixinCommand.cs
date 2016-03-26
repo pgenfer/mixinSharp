@@ -30,6 +30,10 @@ namespace MixinRefactoring
         /// </summary>
         public ClassDeclarationSyntax OriginalChildSource => _mixinChild?.SourceCode;
         /// <summary>
+        /// the mixin class that will be included in the child
+        /// </summary>
+        public MixinReference Mixin => _mixin;
+        /// <summary>
         /// Checks whether a mixin can be executed.
         /// All parameters for the mixin must be valid and
         /// the mixin must have any members that could be added to the child
@@ -56,11 +60,15 @@ namespace MixinRefactoring
         /// class declaration will be returned.
         /// </summary>
         /// <returns></returns>
-        public SyntaxNode Execute()
+        public SyntaxNode Execute(Settings settings = null)
         {
             if (CanExecute())
             {
-                var syntaxWriter = new IncludeMixinSyntaxWriter(_mixer.MembersToImplement, _mixin.Name, _semanticModel);
+                var syntaxWriter = new IncludeMixinSyntaxWriter(
+                    _mixer.MembersToImplement, 
+                    _mixin.Name, 
+                    _semanticModel,
+                    settings);
                 var newClassDeclaration = syntaxWriter.Visit(_mixinChild.SourceCode);
                 return newClassDeclaration;
             }
