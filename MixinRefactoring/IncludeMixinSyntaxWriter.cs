@@ -85,35 +85,6 @@ namespace MixinRefactoring
             
             // return a new class node with the additional members
             return classDeclaration.AddMembers(membersToAdd);
-        }
-
-        /// <summary>
-        /// add a region begin and a region end before and after the
-        /// first and last method in the list. Note that this method does not
-        /// return the result, instead the given member list is changed directly
-        /// by replacing the members in the list
-        /// </summary>
-        /// <param name="members">list of members that will be enclosed
-        /// by the region. This parameter will also contain the resulting
-        /// modified parameter list</param>
-        //private void EncloseMembersWithRegion(MemberDeclarationSyntax[] members)
-        //{
-        //    var regionBegin = RegionDirectiveTrivia(true)
-        //           .WithHashToken(Token(SyntaxKind.HashToken))
-        //           .WithRegionKeyword(Token(SyntaxKind.RegionKeyword))
-        //           .WithEndOfDirectiveToken(
-        //               Token(TriviaList(PreprocessingMessage($" mixin {_name}")),
-        //               SyntaxKind.EndOfDirectiveToken,
-        //               TriviaList()))
-        //           .WithTrailingTrivia(EndOfLine(NewLine));
-        //    var regionEnd = EndRegionDirectiveTrivia(true);
-        //    // add the region block before the first and after the last member
-        //    var memberCount = members.Length;
-
-        //    members[0] = members[0]
-        //        .WithLeadingTrivia(EndOfLine(NewLine),Trivia(regionBegin));
-        //    members[memberCount-1] = members[memberCount-1]
-        //        .WithTrailingTrivia(Trivia(regionEnd),EndOfLine(NewLine));
-        //}
+        }       
     }
 }

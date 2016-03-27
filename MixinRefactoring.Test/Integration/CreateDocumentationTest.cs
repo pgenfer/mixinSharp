@@ -24,21 +24,10 @@ namespace MixinRefactoring.Test
 
             // act
             var newClassDeclaration = mixinCommand.Execute(settings);
-            // get generated documentation from child class
-            var documentationFromChild = newClassDeclaration
-                .DescendantNodes(descendIntoTrivia: true)
-                .Last(x => x is DocumentationCommentTriviaSyntax)
-                .GetText().ToString();
-            // get generated documentation from mixin
-            var documentationFromMixin = mixinCommand
-                .Mixin
-                .Class
-                .MembersFromThisAndBase
-                .Single()
-                .Documentation
-                .ToString();
-            // compare
-            Assert.AreEqual(documentationFromMixin, documentationFromChild);
+            Assert.IsTrue(
+                ValidationHelpers.HasSameDocumentation(
+                    newClassDeclaration, 
+                    mixinCommand.Mixin));
         }
 
         [Test]

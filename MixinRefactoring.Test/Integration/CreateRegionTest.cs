@@ -1,13 +1,4 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
-using System;
-using NSubstitute;
-using MixinRefactoring;
-using Microsoft.CodeAnalysis.Text;
 
 namespace MixinRefactoring.Test
 {
@@ -35,20 +26,12 @@ namespace MixinRefactoring.Test
             var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinReference);
 
             // act
-            var newClassDeclaration = (ClassDeclarationSyntax)mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(settings);
 
             // assert: the method must be between the region
-            // get begin and end region
-            var beginRegion = newClassDeclaration.FindRegionByText("mixin _name");
-            var endRegion = newClassDeclaration.FindEndRegion("mixin _name");
-            // get all nodes between the regions
-            var span = new TextSpan(beginRegion.Span.End, endRegion.Span.Start);
-            var nodesBetweenRegion = newClassDeclaration.DescendantNodes(span);
-            // check that a property declaration for a "Name" property is there
-            var nameProperty = nodesBetweenRegion
-                .OfType<PropertyDeclarationSyntax>()
-                .FirstOrDefault(x => x.Identifier.ToString() == "Name");
-            Assert.IsNotNull(nameProperty);
+            var isPropertyBetweenRegion = 
+                ValidationHelpers.IsPropertyBetweenRegion(newClassDeclaration, "mixin _name", "Name");
+            Assert.IsTrue(isPropertyBetweenRegion);
         }
 
         [Test]
