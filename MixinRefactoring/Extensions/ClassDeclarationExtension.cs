@@ -153,5 +153,23 @@ namespace MixinRefactoring
             classDeclaration = classDeclaration.AddMembers(memberArray);
             return classDeclaration;
         }
+
+        /// <summary>
+        /// returns the last syntax node of the specific type in the file
+        /// </summary>
+        /// <param name="classDeclaration"></param>
+        /// <returns>the last syntax node in the file or null
+        /// if an element of this type does not exist in the file</returns>
+        public static T GetLastElementInClass<T>(this ClassDeclarationSyntax classDeclaration, bool searchTrivia=true) 
+            where T : SyntaxNode
+        {
+            var node =
+                  classDeclaration
+                    .DescendantNodes(descendIntoTrivia: searchTrivia)
+                    .OfType<T>()
+                    .OrderByDescending(x => x.SpanStart)
+                    .FirstOrDefault();
+            return node;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.CodeAnalysis;
+using NUnit.Framework;
 
 namespace MixinRefactoring.Test
 {
@@ -62,6 +63,32 @@ namespace MixinRefactoring.Test
         public void EmptyRegionExists_AddMembers_MembersAddedToExistingRegion()
         {
             CheckThatMembersAreInRegion<PersonWithEmptyRegion>();
+        }
+
+        /// <summary>
+        /// this test should verify that bug
+        /// https://github.com/pgenfer/mixinSharp/issues/9
+        /// is fixed (regions of two or more mixins are nested
+        /// instead of sequentially)
+        /// </summary>
+        [Test]
+        public void ChildWithTwoMixins_AddMembers_RegionAddedAfterLastRegion()
+        {
+            // arrange
+            var sourceCode = new SourceCode(Files.Person, Files.Name,Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithTwoMixins));
+            var workerMixin = personClass.FindMixinReference("_worker");
+            var settings = new Settings(createRegions: true);
+            // act: add the second mixin
+            var mixinCommand = new MixinCommand(sourceCode.Semantic, workerMixin);
+            var newClassDeclaration = mixinCommand.Execute(settings);
+
+            // get the region directive for the second mixin and ensure
+            // that it is AFTER the first endregion directive
+            var beginRegion = newClassDeclaration.FindRegionByText("mixin _worker");
+            var endRegion = newClassDeclaration.FindEndRegion("mixin _name");
+
+            Assert.IsTrue(beginRegion.SpanStart > endRegion.SpanStart);
         }
     }
 }
