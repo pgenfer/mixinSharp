@@ -95,5 +95,24 @@ namespace MixinSharp {
                 return ResourceManager.GetString("IncludeDocumentationDescription", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initialize mixin instance via constructor injection.
+        /// </summary>
+        public static string InjectMixins {
+            get {
+                return ResourceManager.GetString("InjectMixins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When this option is set, code will be generated to initialize the mixin  fields via constructor injection.
+        ///Either a new constructor will be generated  in the child class or an existing one will be extended..
+        /// </summary>
+        public static string InjectMixinsDocumentation {
+            get {
+                return ResourceManager.GetString("InjectMixinsDocumentation", resourceCulture);
+            }
+        }
     }
 }

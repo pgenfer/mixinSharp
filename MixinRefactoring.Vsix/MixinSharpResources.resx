@@ -129,4 +129,11 @@
   <data name="IncludeDocumentationDescription" xml:space="preserve">
     <value>If members in the mixin have a code documentation, their documentation will also be added to the generated forwarding methods if this option is selected.</value>
   </data>
+  <data name="InjectMixins" xml:space="preserve">
+    <value>Initialize mixin instance via constructor injection</value>
+  </data>
+  <data name="InjectMixinsDocumentation" xml:space="preserve">
+    <value>When this option is set, code will be generated to initialize the mixin  fields via constructor injection.
+Either a new constructor will be generated  in the child class or an existing one will be extended.</value>
+  </data>
 </root>

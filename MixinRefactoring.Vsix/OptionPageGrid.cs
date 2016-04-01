@@ -75,6 +75,16 @@ namespace MixinSharp
         }
 
         /// <summary>
+        /// if set, mixin instances will be injected into 
+        /// the childs constructor
+        /// </summary>
+        public bool InjectMixins
+        {
+            get { return GetOption(nameof(InjectMixins), Site); }
+            set { SetOption(nameof(InjectMixins),value, Site); }
+        }
+
+        /// <summary>
         /// returns the WPF user control (which holds the actual user interface
         /// for setting the options)
         /// </summary>

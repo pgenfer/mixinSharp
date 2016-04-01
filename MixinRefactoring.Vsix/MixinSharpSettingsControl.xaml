@@ -6,10 +6,12 @@
              xmlns:local="clr-namespace:MixinSharp"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-  <StackPanel Orientation="Vertical">
-    <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.CreateRegions}" IsChecked="{Binding CreateRegions}"/>
-    <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.CreateRegionsDescription}" TextWrapping="Wrap"/>
-    <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.IncludeDocumentation}" IsChecked="{Binding IncludeDocumentation}"/>
-    <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.IncludeDocumentationDescription}" TextWrapping="Wrap"/>
-  </StackPanel>
+    <StackPanel Orientation="Vertical">
+        <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.CreateRegions}" IsChecked="{Binding CreateRegions}"/>
+        <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.CreateRegionsDescription}" TextWrapping="Wrap"/>
+        <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.IncludeDocumentation}" IsChecked="{Binding IncludeDocumentation}"/>
+        <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.IncludeDocumentationDescription}" TextWrapping="Wrap"/>
+        <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.InjectMixins}" IsChecked="{Binding InjectMixins}"/>
+        <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.InjectMixinsDocumentation}" TextWrapping="Wrap"/>
+    </StackPanel>
 </UserControl>

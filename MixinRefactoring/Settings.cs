@@ -26,6 +26,7 @@ namespace MixinRefactoring
         {
             CreateRegions = _serializer.GetOption(nameof(CreateRegions), serviceProvider);
             IncludeDocumentation = _serializer.GetOption(nameof(IncludeDocumentation), serviceProvider);
+            InjectMixins = _serializer.GetOption(nameof(InjectMixins), serviceProvider);
         }
 
         /// <summary>
@@ -33,14 +34,17 @@ namespace MixinRefactoring
         /// instead it uses default settings
         /// </summary>
         public Settings(
-            bool createRegions=false,
-            bool includeDocumentation= false)
+            bool createRegions = false,
+            bool includeDocumentation = false,
+            bool injectMixins = false)
         {
             CreateRegions = createRegions;
             IncludeDocumentation = includeDocumentation;
+            InjectMixins = injectMixins;
         }
 
         public bool CreateRegions { get; }
         public bool IncludeDocumentation { get; }
+        public bool InjectMixins { get; }
     }
 }
