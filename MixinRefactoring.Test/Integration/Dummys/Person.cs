@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+#pragma warning disable 169
+
 namespace MixinRefactoring.Test
 {
     /// <summary>
@@ -369,6 +371,33 @@ namespace MixinRefactoring.Test
         private SimpleName _name;
 
         #region mixin _name
+        #endregion
+    }
+
+    /// <summary>
+    /// this class has already one mixin with a region
+    /// the second one should be added by the test
+    /// </summary>
+    public class PersonWithTwoMixins
+    {
+        private NameMixin _name;
+        private Worker _worker;
+
+        #region mixin _name
+        public string Name
+        {
+            get
+            {
+                return _name.Name;
+            }
+
+            set
+            {
+                _name.Name = value;
+            }
+        }
+
+        public override string ToString() => _name.ToString();
         #endregion
     }
 }

@@ -27,11 +27,23 @@ namespace MixinRefactoring
             var regionEnd = EndRegionDirectiveTrivia(true);
             // add the region block before the first and after the last member
             var memberCount = members.Length;
-
-            members[0] = members[0]
-                .WithLeadingTrivia(EndOfLine(NewLine), Trivia(regionBegin));
-            members[memberCount - 1] = members[memberCount - 1]
-                .WithTrailingTrivia(Trivia(regionEnd), EndOfLine(NewLine));
+            // add new trivias at the beginning of the
+            // node, but also use the existing trivias of the node
+            var firstMember = members[0];
+            members[0] = firstMember
+                .WithLeadingTrivia(
+                new SyntaxTriviaList()
+                    .Add(EndOfLine(NewLine))
+                    .Add(Trivia(regionBegin))
+                    .AddRange(firstMember.GetLeadingTrivia()));
+            // add region after the trivias that already exist
+            var lastMember = members[memberCount - 1];
+            members[memberCount - 1] = lastMember
+                .WithTrailingTrivia(
+                new SyntaxTriviaList()
+                .AddRange(lastMember.GetTrailingTrivia())
+                .Add(Trivia(regionEnd))
+                .Add(EndOfLine(NewLine)));
             return members;
         }
     }

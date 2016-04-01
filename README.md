@@ -11,7 +11,7 @@ For the ouside standing caller it looks like that the child instance is handling
  
 ## why are they useful?
 
-Compared to classical inheritance, mixins have some advantages. Please check the wiki for a more detailed comparison between the both approaches.  
+Compared to classical inheritance, mixins have some advantages. Please check the [wiki](https://github.com/pgenfer/mixinSharp/wiki/Mixins---An-Overview) for a more detailed comparison between the both approaches.  
 Unfortunately, C# does not support mixins directly on a language level, that's where mixinSharp comes into play by offering a refactoring step that automatically creates the required mixin code.
 
 ## a simple example

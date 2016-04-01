@@ -68,52 +68,54 @@ namespace MixinRefactoring
             // add regions if there is something to generate
             if (_settings.CreateRegions)
             {
-                // the text that will be written in the regions headline
                 var regionCaption = $" mixin {_name}";
+                // if a region with the same name already exists
+                // insert the new members into this region
                 if (classDeclaration.HasRegion(regionCaption))
                 {
                     var newClassDeclaration = classDeclaration.AddMembersIntoRegion(
                         regionCaption, membersToAdd);
                     return newClassDeclaration;
                 }
-                else
+                else // otherwise wrap a new region block around the members
                 {
                     // add new region block around the members
                     membersToAdd.AddRegionAround(regionCaption);
                 }
             }
-            
+
             // return a new class node with the additional members
+            // problem with AddMembers is that it adds the new code
+            // after the last syntax node, so when a region exists in the class
+            // the code will be added before the region end, this leads to the bug
+            // https://github.com/pgenfer/mixinSharp/issues/9
+            // where the newly created region is nested into the old one.
+            // a solution is to ensure that the members are added after any endregion directive
+
+            // check if there is an end region in the file
+            var lastEndRegion = classDeclaration.GetLastElementInClass<EndRegionDirectiveTriviaSyntax>();
+            // only interesting if there is an end region directive at all
+            if(lastEndRegion != null)
+            {
+                var lastSyntaxNode = classDeclaration.GetLastElementInClass<SyntaxNode>(false);
+                if (lastSyntaxNode != lastEndRegion && lastSyntaxNode.SpanStart < lastEndRegion.Span.End)
+                {
+                    // special case here: there is an end region directive at the end of the class
+                    // so we must add our members AFTER this endregion (by removing it and adding it before the first member)
+                    var newClassDeclaration = classDeclaration.RemoveNode(lastEndRegion, SyntaxRemoveOptions.AddElasticMarker);
+                    if (membersToAdd.Length > 0)
+                    {
+                        membersToAdd[0] = membersToAdd[0].WithLeadingTrivia(
+                            new SyntaxTriviaList()
+                            .Add(Trivia(EndRegionDirectiveTrivia(true)))
+                            .Add(EndOfLine(NewLine))
+                            .AddRange(membersToAdd[0].GetLeadingTrivia()));
+                        return newClassDeclaration.AddMembers(membersToAdd);
+                    }
+                }
+            }
+
             return classDeclaration.AddMembers(membersToAdd);
-        }
-
-        /// <summary>
-        /// add a region begin and a region end before and after the
-        /// first and last method in the list. Note that this method does not
-        /// return the result, instead the given member list is changed directly
-        /// by replacing the members in the list
-        /// </summary>
-        /// <param name="members">list of members that will be enclosed
-        /// by the region. This parameter will also contain the resulting
-        /// modified parameter list</param>
-        //private void EncloseMembersWithRegion(MemberDeclarationSyntax[] members)
-        //{
-        //    var regionBegin = RegionDirectiveTrivia(true)
-        //           .WithHashToken(Token(SyntaxKind.HashToken))
-        //           .WithRegionKeyword(Token(SyntaxKind.RegionKeyword))
-        //           .WithEndOfDirectiveToken(
-        //               Token(TriviaList(PreprocessingMessage($" mixin {_name}")),
-        //               SyntaxKind.EndOfDirectiveToken,
-        //               TriviaList()))
-        //           .WithTrailingTrivia(EndOfLine(NewLine));
-        //    var regionEnd = EndRegionDirectiveTrivia(true);
-        //    // add the region block before the first and after the last member
-        //    var memberCount = members.Length;
-
-        //    members[0] = members[0]
-        //        .WithLeadingTrivia(EndOfLine(NewLine),Trivia(regionBegin));
-        //    members[memberCount-1] = members[memberCount-1]
-        //        .WithTrailingTrivia(Trivia(regionEnd),EndOfLine(NewLine));
-        //}
+        }       
     }
 }

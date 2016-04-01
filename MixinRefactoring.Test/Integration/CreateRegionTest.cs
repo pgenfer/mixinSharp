@@ -1,13 +1,5 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
-using System;
-using NSubstitute;
-using MixinRefactoring;
-using Microsoft.CodeAnalysis.Text;
+﻿using Microsoft.CodeAnalysis;
+using NUnit.Framework;
 
 namespace MixinRefactoring.Test
 {
@@ -35,20 +27,12 @@ namespace MixinRefactoring.Test
             var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinReference);
 
             // act
-            var newClassDeclaration = (ClassDeclarationSyntax)mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(settings);
 
             // assert: the method must be between the region
-            // get begin and end region
-            var beginRegion = newClassDeclaration.FindRegionByText("mixin _name");
-            var endRegion = newClassDeclaration.FindEndRegion("mixin _name");
-            // get all nodes between the regions
-            var span = new TextSpan(beginRegion.Span.End, endRegion.Span.Start);
-            var nodesBetweenRegion = newClassDeclaration.DescendantNodes(span);
-            // check that a property declaration for a "Name" property is there
-            var nameProperty = nodesBetweenRegion
-                .OfType<PropertyDeclarationSyntax>()
-                .FirstOrDefault(x => x.Identifier.ToString() == "Name");
-            Assert.IsNotNull(nameProperty);
+            var isPropertyBetweenRegion = 
+                ValidationHelpers.IsPropertyBetweenRegion(newClassDeclaration, "mixin _name", "Name");
+            Assert.IsTrue(isPropertyBetweenRegion);
         }
 
         [Test]
@@ -79,6 +63,32 @@ namespace MixinRefactoring.Test
         public void EmptyRegionExists_AddMembers_MembersAddedToExistingRegion()
         {
             CheckThatMembersAreInRegion<PersonWithEmptyRegion>();
+        }
+
+        /// <summary>
+        /// this test should verify that bug
+        /// https://github.com/pgenfer/mixinSharp/issues/9
+        /// is fixed (regions of two or more mixins are nested
+        /// instead of sequentially)
+        /// </summary>
+        [Test]
+        public void ChildWithTwoMixins_AddMembers_RegionAddedAfterLastRegion()
+        {
+            // arrange
+            var sourceCode = new SourceCode(Files.Person, Files.Name,Files.Worker);
+            var personClass = sourceCode.Class(nameof(PersonWithTwoMixins));
+            var workerMixin = personClass.FindMixinReference("_worker");
+            var settings = new Settings(createRegions: true);
+            // act: add the second mixin
+            var mixinCommand = new MixinCommand(sourceCode.Semantic, workerMixin);
+            var newClassDeclaration = mixinCommand.Execute(settings);
+
+            // get the region directive for the second mixin and ensure
+            // that it is AFTER the first endregion directive
+            var beginRegion = newClassDeclaration.FindRegionByText("mixin _worker");
+            var endRegion = newClassDeclaration.FindEndRegion("mixin _name");
+
+            Assert.IsTrue(beginRegion.SpanStart > endRegion.SpanStart);
         }
     }
 }

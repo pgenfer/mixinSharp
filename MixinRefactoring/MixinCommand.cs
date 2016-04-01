@@ -60,7 +60,7 @@ namespace MixinRefactoring
         /// class declaration will be returned.
         /// </summary>
         /// <returns></returns>
-        public SyntaxNode Execute(Settings settings = null)
+        public ClassDeclarationSyntax Execute(Settings settings = null)
         {
             if (CanExecute())
             {
@@ -69,7 +69,7 @@ namespace MixinRefactoring
                     _mixin.Name, 
                     _semanticModel,
                     settings);
-                var newClassDeclaration = syntaxWriter.Visit(_mixinChild.SourceCode);
+                var newClassDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(_mixinChild.SourceCode);
                 return newClassDeclaration;
             }
 

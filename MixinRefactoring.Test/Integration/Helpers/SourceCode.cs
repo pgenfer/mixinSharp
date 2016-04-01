@@ -14,24 +14,75 @@ namespace MixinRefactoring.Test
     /// helper class for interaction with source code.
     /// The class takes several source code files as parameters
     /// and allows access to the syntax and semantic information
-    /// of the classes
+    /// of the classes.
+    /// This class now also has a fluent API to add source code
+    /// on the fly. Before using the fluent API, ensure that you call New() to erase
+    /// all existing content (if desired) and at the end, call Compile() to generate
+    /// a compilation unit and a semantic model from the collected source code.
     /// </summary>
     public class SourceCode
     {
-        private readonly SyntaxTree _syntaxTree;
-        private readonly SemanticModel _semanticModel;
+        private SyntaxTree _syntaxTree;
+        private SemanticModel _semanticModel;
+        private readonly List<string> _fileContent = new List<string>();
 
         public SourceCode(params string[] codeFiles)
         {
-            var sourceCodes = codeFiles.Select(x => ReadDummyData(x));
-            _syntaxTree = CSharpSyntaxTree.ParseText(string.Concat(sourceCodes));
+            AddFiles(codeFiles).Compile();
+        }
+
+        private void CreateSemanticModelFromSource(IEnumerable<string> fileContent)
+        {
+            _syntaxTree = CSharpSyntaxTree.ParseText(string.Concat(fileContent));
 
             var compilation = CSharpCompilation.Create(
-                "temp", 
+                "temp",
                 syntaxTrees: new[] { _syntaxTree },
                 // add reference to system assembly (for standard data types)
                 references: MetaDataReferenceResolver.ResolveSystemAssemblies());
-            _semanticModel  = compilation.GetSemanticModel(_syntaxTree);
+            _semanticModel = compilation.GetSemanticModel(_syntaxTree);
+        }
+
+        /// <summary>
+        /// fluent API, resets the file list that
+        /// were used to generate the source code
+        /// </summary>
+        /// <returns></returns>
+        public SourceCode New()
+        {
+            _fileContent.Clear();
+            return this;
+        }
+
+        /// <summary>
+        /// add new files to the list of files for this source code
+        /// </summary>
+        /// <param name="fileNames"></param>
+        /// <returns></returns>
+        public SourceCode AddFiles(params string[] fileNames)
+        {
+            _fileContent.AddRange(fileNames.Select(x => ReadDummyData(x)).ToList());
+            return this;
+        }
+
+        /// <summary>
+        /// adds the content of a file to this source code
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public SourceCode AddSource(string content)
+        {
+            _fileContent.Add(content);
+            return this;
+        }
+
+        /// <summary>
+        /// creates the semantic model out of all the
+        /// source code that was added to this instance
+        /// </summary>
+        public void Compile()
+        {
+            CreateSemanticModelFromSource(_fileContent);
         }
 
         public ClassDeclarationSyntax Class(string className) => _syntaxTree.GetRoot().FindClassByName(className);

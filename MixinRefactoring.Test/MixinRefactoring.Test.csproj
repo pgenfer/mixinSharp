@@ -128,6 +128,7 @@
     <Compile Include="Integration\Helpers\FileConstants.cs" />
     <Compile Include="Integration\Helpers\SourceCode.cs" />
     <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
+    <Compile Include="Integration\Helpers\ValidationHelpers.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />
     <Compile Include="Integration\MixerTest.cs" />
     <Compile Include="Integration\MixinReferenceTest.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Integration\ParameterSyntaxReaderTest.cs" />
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
     <Compile Include="Integration\MixinCommandTest.cs" />
+    <Compile Include="Integration\RegionAndDocumentationTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
