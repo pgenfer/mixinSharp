@@ -18,5 +18,11 @@ namespace MixinRefactoring
         {
             SourceCode = classDeclaration;
         }
+
+        /// <summary>
+        /// flag that is set when the class has a constructor declaration,
+        /// otherwise false
+        /// </summary>
+        public bool HasConstructor { get; set; }
     }
 }

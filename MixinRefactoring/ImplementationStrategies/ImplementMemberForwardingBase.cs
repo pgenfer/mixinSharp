@@ -25,7 +25,10 @@ namespace MixinRefactoring
             get;
         }
 
-        protected ImplementMemberForwardingBase(string mixinReferenceName, SemanticModel semanticModel, Settings settings)
+        protected ImplementMemberForwardingBase(
+            string mixinReferenceName, 
+            SemanticModel semanticModel, 
+            Settings settings)
         {
             Name = mixinReferenceName;
             _semantic = semanticModel;
@@ -61,7 +64,7 @@ namespace MixinRefactoring
         /// <returns></returns>
         protected string ReduceQualifiedTypeName(ITypeSymbol type)
         {
-            return type.ToMinimalDisplayString(_semantic, _classDeclarationPosition);
+            return type.ReduceQualifiedTypeName(_semantic, _classDeclarationPosition);
         }
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace MixinRefactoring
             {
                 var syntaxWriter = new IncludeMixinSyntaxWriter(
                     _mixer.MembersToImplement, 
-                    _mixin.Name, 
+                    _mixin, 
                     _semanticModel,
                     settings);
                 var newClassDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(_mixinChild.SourceCode);

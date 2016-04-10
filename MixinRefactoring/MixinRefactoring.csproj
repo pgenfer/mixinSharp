@@ -34,13 +34,17 @@
   <ItemGroup>
     <Compile Include="Common\NameMixin.cs" />
     <Compile Include="Extensions\ClassDeclarationExtension.cs" />
+    <Compile Include="Extensions\ConstructorDeclarationExtension.cs" />
     <Compile Include="Extensions\MemberDeclarationSyntaxExtension.cs" />
+    <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Extensions\TypeSymbolExtension.cs" />
     <Compile Include="Extensions\XmlSyntaxFactory.cs" />
     <Compile Include="ImplementationStrategies\IImplementMemberForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementIndexerForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementMemberForwardingBase.cs" />
     <Compile Include="ImplementationStrategies\ImplementMethodForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementPropertyForwarding.cs" />
+    <Compile Include="ImplementationStrategies\InjectConstructorImplementationStrategy.cs" />
     <Compile Include="IncludeMixinSyntaxWriter.cs" />
     <Compile Include="MemberComparer.cs" />
     <Compile Include="MetaData\Class.cs" />
@@ -49,6 +53,7 @@
     <Compile Include="Extensions\MetaDataReferenceResolver.cs" />
     <Compile Include="Extensions\SyntaxNodeExtension.cs" />
     <Compile Include="MetaData\ClassWithSourceCode.cs" />
+    <Compile Include="MetaData\ClassWithTypeSymbol.cs" />
     <Compile Include="MetaData\DocumentationComment.cs" />
     <Compile Include="MetaData\IMethodList.cs" />
     <Compile Include="MetaData\IndexerProperty.cs" />
@@ -73,6 +78,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsSerializer.cs" />
     <Compile Include="SyntaxReader\BaseClassSyntaxReader.cs" />
+    <Compile Include="SyntaxReader\CountConstructorReader.cs" />
     <Compile Include="SyntaxReader\FieldSyntaxReader.cs" />
     <Compile Include="SyntaxReader\MethodSyntaxReader.cs" />
     <Compile Include="SyntaxReader\ParameterSyntaxReader.cs" />

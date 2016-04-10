@@ -13,9 +13,9 @@ namespace MixinRefactoring
     public class MixinReference
     {
         private NameMixin _name = new NameMixin();
-        public Class Class { get; }
+        public ClassWithTypeSymbol Class { get; }
 
-        public MixinReference(string name,Class type)
+        public MixinReference(string name, ClassWithTypeSymbol type)
         {
             Name = name;
             Class = type;

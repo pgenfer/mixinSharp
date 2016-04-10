@@ -29,12 +29,17 @@ namespace MixinRefactoring
             methodReader.Visit(classDeclaration);
             var baseClassReader = new BaseClassSyntaxReader(@class, _semantic);
             baseClassReader.Visit(classDeclaration);
+            // we could skip this if inject mixin option is not set
+            var constructorCountReader = new CountConstructorReader();
+            constructorCountReader.Visit(classDeclaration);
+            @class.HasConstructor = constructorCountReader.HasConstructor;
+
             return @class;
         }
 
-        public Class Create(ITypeSymbol classSymbol)
+        public ClassWithTypeSymbol Create(ITypeSymbol classSymbol)
         {
-            var @class = new Class();
+            var @class = new ClassWithTypeSymbol(classSymbol);
             @class.Name = classSymbol.Name;
             var propertyReader = new PropertySymbolReader(@class);
             propertyReader.VisitSymbol(classSymbol);

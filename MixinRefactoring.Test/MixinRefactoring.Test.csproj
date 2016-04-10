@@ -107,8 +107,12 @@
     <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Compile Include="Integration\ConstructorInjectionTest.cs" />
     <Compile Include="Integration\CreateDocumentationTest.cs" />
     <Compile Include="Integration\Dummys\Comments.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\Dummys\Constructor.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\Dummys\Person.cs">

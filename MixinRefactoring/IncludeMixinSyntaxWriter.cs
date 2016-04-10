@@ -17,17 +17,20 @@ namespace MixinRefactoring
     public class IncludeMixinSyntaxWriter : CSharpSyntaxRewriter
     {
         private readonly IEnumerable<Member> _members;
-        private readonly string _name;
+        private readonly MixinReference _mixin;
         private readonly SemanticModel _semantic;
         private readonly Settings _settings;
+        private bool _SourceClassHasConstructor = false;
+        private InjectConstructorImplementationStrategy _injectMixinIntoConstructor;
+
         public IncludeMixinSyntaxWriter(
             IEnumerable<Member> membersToImplement, 
-            string mixinReferenceName, 
+            MixinReference mixin, 
             SemanticModel semanticModel, 
             Settings settings = null)
         {
             _members = membersToImplement;
-            _name = mixinReferenceName;
+            _mixin = mixin;
             _semantic = semanticModel;
             _settings = settings ?? new Settings();
         }
@@ -45,22 +48,59 @@ namespace MixinRefactoring
         {
             var implementationStrategies = new Dictionary<Type, IImplementMemberForwarding>
             {
-                [typeof(Method)] = new ImplementMethodForwarding(_name, _semantic, _settings),
-                [typeof(IndexerProperty)] = new ImplementIndexerForwarding(_name, _semantic, _settings),
-                [typeof(Property)] = new ImplementPropertyForwarding(_name, _semantic, _settings)
+                [typeof(Method)] = new ImplementMethodForwarding(name, _semantic, _settings),
+                [typeof(IndexerProperty)] = new ImplementIndexerForwarding(name, _semantic, _settings),
+                [typeof(Property)] = new ImplementPropertyForwarding(name, _semantic, _settings)
             };
             return implementationStrategies;
         }
 
+        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            node = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node);
+            if (_settings.InjectMixins && !node.IsStatic())  // ignore static constructors
+                node = _injectMixinIntoConstructor.ExtendExistingConstructor(node);
+            // remember that class already has a constructor,
+            // so no need to create a new one
+            _SourceClassHasConstructor = true;
+            return node;
+        }
+
+        public override SyntaxNode VisitConstructorInitializer(ConstructorInitializerSyntax node)
+        {
+            node = (ConstructorInitializerSyntax)base.VisitConstructorInitializer(node);
+            if (_settings.InjectMixins)
+                node = _injectMixinIntoConstructor.ExtendConstructorInitialization(node);
+            return node;
+        }
+
+        /// <summary>
+        /// TODO: this methods needs a refactoring. Currently, it seems like
+        /// there is too much logica located here
+        /// </summary>
+        /// <param name="classDeclaration"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
         {
+            var mixinName = _mixin.Name;
             // currently, only three types of member forwardings are possible,
             // there is a strategy for every forwarding implementation
-            var implementationStrategies = CreateStrategies(_name, _semantic, _settings);
-
+            var implementationStrategies = CreateStrategies(mixinName, _semantic, _settings);
             // needed to evaluate whether type names can be reduced (depends on the using statements in the file)
             var positionOfClassInSourceFile = classDeclaration.GetLocation().SourceSpan.Start;
-            // TODO: check here if a strategy is available? But can there be a member without a strategy at all? <= maybe events?
+            // strategy to implement constructor injection
+            _injectMixinIntoConstructor = new InjectConstructorImplementationStrategy(
+                _mixin, _semantic, positionOfClassInSourceFile);
+
+            // base handling will call other visitors
+            classDeclaration = (ClassDeclarationSyntax)base.VisitClassDeclaration(classDeclaration);
+
+            // create a new constructor and add it to the class declaration
+            if (_settings.InjectMixins && _SourceClassHasConstructor)
+                classDeclaration = classDeclaration.AddMembers(
+                    _injectMixinIntoConstructor.CreateNewConstructor(classDeclaration.Identifier.Text));
+            
+            // generate the members that should be implemented            
             var membersToAdd = _members
                 .Select(x => implementationStrategies[x.GetType()].ImplementMember(x, positionOfClassInSourceFile))
                 .Where(x => x != null).ToArray();
@@ -68,20 +108,13 @@ namespace MixinRefactoring
             // add regions if there is something to generate
             if (_settings.CreateRegions)
             {
-                var regionCaption = $" mixin {_name}";
-                // if a region with the same name already exists
-                // insert the new members into this region
+                var regionCaption = $" mixin {mixinName}";
+                // if there is already a region, add members to this one,
+                // otherwise create a new one
                 if (classDeclaration.HasRegion(regionCaption))
-                {
-                    var newClassDeclaration = classDeclaration.AddMembersIntoRegion(
-                        regionCaption, membersToAdd);
-                    return newClassDeclaration;
-                }
-                else // otherwise wrap a new region block around the members
-                {
-                    // add new region block around the members
+                    return classDeclaration.AddMembersIntoRegion(regionCaption, membersToAdd);
+                else
                     membersToAdd.AddRegionAround(regionCaption);
-                }
             }
 
             // return a new class node with the additional members
@@ -102,9 +135,9 @@ namespace MixinRefactoring
                 {
                     // special case here: there is an end region directive at the end of the class
                     // so we must add our members AFTER this endregion (by removing it and adding it before the first member)
-                    var newClassDeclaration = classDeclaration.RemoveNode(lastEndRegion, SyntaxRemoveOptions.AddElasticMarker);
                     if (membersToAdd.Length > 0)
                     {
+                        var newClassDeclaration = classDeclaration.RemoveNode(lastEndRegion, SyntaxRemoveOptions.AddElasticMarker);
                         membersToAdd[0] = membersToAdd[0].WithLeadingTrivia(
                             new SyntaxTriviaList()
                             .Add(Trivia(EndRegionDirectiveTrivia(true)))

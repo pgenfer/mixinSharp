@@ -31,8 +31,8 @@ namespace MixinRefactoring.Test
             }
 
             public IncludeSyntaxWriterTestDummy(
-                IEnumerable<Member> members,string name,IImplementMemberForwarding propertyStrategy)
-                :base(members, name,null)
+                IEnumerable<Member> members,MixinReference mixin, IImplementMemberForwarding propertyStrategy)
+                :base(members, mixin, null)
             {
                 _propertyStrategy = propertyStrategy;
             }            
@@ -48,8 +48,10 @@ namespace MixinRefactoring.Test
             var nameClass = new ClassFactory(sourceCode.Semantic).Create(nameClassSource);
 
             var propertyStrategy = Substitute.For<IImplementMemberForwarding>();
+            // only a test dummy
+            var mixin = new MixinReference("_name", null);            
             
-            var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties, "_name",propertyStrategy);
+            var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties,mixin, propertyStrategy);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
 
             // ensure that the implementMember of the propertyStrategy was called
@@ -63,7 +65,7 @@ namespace MixinRefactoring.Test
             var personClassSource = sourceCode.Class(nameof(PersonWithToString));
             var worker = new MixinReferenceFactory(sourceCode.Semantic).Create(personClassSource.FindMixinReference("_toString"));
             
-            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, "_toString",sourceCode.Semantic);
+            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, worker, sourceCode.Semantic);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
             // check that new person class has a method that is overriden
             var methodDeclaration = newPersonClassSource.DescendantNodes()
@@ -83,7 +85,7 @@ namespace MixinRefactoring.Test
             var collection = new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(personClassSource.FindMixinReference("_collection"));
 
-            var includeWriter = new IncludeMixinSyntaxWriter(collection.Class.Properties, "_collection", sourceCode.Semantic);
+            var includeWriter = new IncludeMixinSyntaxWriter(collection.Class.Properties, collection, sourceCode.Semantic);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
             // check that generated class code has exactly one indexer declaration
             var indexerDeclaration = newPersonClassSource.DescendantNodes()
@@ -101,7 +103,7 @@ namespace MixinRefactoring.Test
             // create a worker method with an override keyword
             var methods = worker.Class.Methods.Select(x => x.Clone(true));
 
-            var includeWriter = new IncludeMixinSyntaxWriter(methods, "_worker", sourceCode.Semantic);
+            var includeWriter = new IncludeMixinSyntaxWriter(methods, worker, sourceCode.Semantic);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
             // check that generated class code has exactly one indexer declaration
             var methodDeclaration = newPersonClassSource.DescendantNodes()
@@ -123,7 +125,7 @@ namespace MixinRefactoring.Test
             // create a worker method with an override keyword
             var properties = name.Class.Properties.Select(x => x.Clone(true));
 
-            var includeWriter = new IncludeMixinSyntaxWriter(properties, "_name", sourceCode.Semantic);
+            var includeWriter = new IncludeMixinSyntaxWriter(properties, name, sourceCode.Semantic);
             var newPersonClassSource = includeWriter.Visit(personClassSource);
             // check that generated class code has exactly one indexer declaration
             var propertyDeclaration = newPersonClassSource.DescendantNodes()

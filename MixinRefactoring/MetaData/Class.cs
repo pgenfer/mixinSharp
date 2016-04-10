@@ -18,11 +18,13 @@ namespace MixinRefactoring
             _properties.AddProperty(newProperty);
             newProperty.Class = this;
         }
+
         public void AddMethod(Method newMethod)
         {
             _methods.AddMethod(newMethod);
             newMethod.Class = this;
         }
+
         public IEnumerable<Property> Properties => _properties;
         public IEnumerable<Method> Methods => _methods;
         public string Name
