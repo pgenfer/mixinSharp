@@ -76,7 +76,7 @@ namespace MixinRefactoring
 
         /// <summary>
         /// TODO: this methods needs a refactoring. Currently, it seems like
-        /// there is too much logica located here
+        /// there is too much logic located here
         /// </summary>
         /// <param name="classDeclaration"></param>
         /// <returns></returns>
@@ -96,7 +96,7 @@ namespace MixinRefactoring
             classDeclaration = (ClassDeclarationSyntax)base.VisitClassDeclaration(classDeclaration);
 
             // create a new constructor and add it to the class declaration
-            if (_settings.InjectMixins && _SourceClassHasConstructor)
+            if (_settings.InjectMixins && !_SourceClassHasConstructor)
                 classDeclaration = classDeclaration.AddMembers(
                     _injectMixinIntoConstructor.CreateNewConstructor(classDeclaration.Identifier.Text));
             

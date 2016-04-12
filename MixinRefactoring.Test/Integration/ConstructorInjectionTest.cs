@@ -139,7 +139,36 @@ namespace MixinRefactoring.Test
         }
 
         // TODO: check default parameter handling:
-        // what if there are some default parameters before in the constructor initalizer that have no values?
-        // in that case, the argument name should be set explicitly
+        // 1.   what if there are some default parameters before in the constructor initalizer that have no values?
+        //      in that case, the argument name should be set explicitly
+        // 2.   Even if all members were generated, it should be possible to generate the constructors 
+        //      (at the moment, the quick action does not open if all members were generated)
+        // 3.   Write test case for syntaxwriter constructor functionality?
+
+        // See this case:
+        //public Person(NameMixin name = null, Worker worker = null) :base()
+        //{
+        //}
+
+        //public Person(int i, NameMixin name = null, Worker worker = null) :this()
+        //{ }
+        // 
+        // this is valid code, the initializer uses the two default parameters and so it
+        // looks as it is empty.
+        //
+        // Now when a mixin is generated, the result looks like this:
+        //public Person(NameMixin name = null, Worker worker = null) :base()
+        //{
+        //     _name = name;
+        //    _worker = worker;
+        //}
+        //
+        //public Person(int i, NameMixin name = null, Worker worker = null) :this(worker)
+        //{ }
+        //
+        //
+        // because it is not realized that the initializer has two default parameters,
+        // another argument is created. The solution here should be to name the argument
+        // explicitly in case any default parameter comes before and is not set
     }
 }
