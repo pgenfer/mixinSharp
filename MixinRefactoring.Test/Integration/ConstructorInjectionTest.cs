@@ -141,8 +141,7 @@ namespace MixinRefactoring.Test
         // TODO: check default parameter handling:
         // 1.   what if there are some default parameters before in the constructor initalizer that have no values?
         //      in that case, the argument name should be set explicitly
-        // 3.   Write test case for syntaxwriter constructor functionality?
-
+     
         // See this case:
         //public Person(NameMixin name = null, Worker worker = null) :base()
         //{

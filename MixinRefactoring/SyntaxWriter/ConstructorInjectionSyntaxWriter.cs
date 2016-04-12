@@ -18,7 +18,7 @@ namespace MixinRefactoring
         private readonly MixinReference _mixin;
         private readonly SemanticModel _semantic;
        
-        private bool _SourceClassHasConstructor = false;
+        private bool _SourceClassHasConstructor;
         private InjectConstructorImplementationStrategy _injectMixinIntoConstructor;
 
 

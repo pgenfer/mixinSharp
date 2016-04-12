@@ -87,19 +87,22 @@ namespace MixinRefactoring
         {
             if (CanExecute(settings))
             {
+                var classDeclaration = _mixinChild.SourceCode;
+                // create constructors if necessary
+                if (settings != null && settings.InjectMixins)
+                {
+                    var constructorSyntaxWriter = new ConstructorInjectionSyntaxWriter(_mixin, semantic);
+                    classDeclaration = (ClassDeclarationSyntax)constructorSyntaxWriter.Visit(classDeclaration);
+                }
+
                 var syntaxWriter = new IncludeMixinSyntaxWriter(
                     _mixer.MembersToImplement, 
                     _mixin,
                     semantic,
                     settings);
-                var newClassDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(_mixinChild.SourceCode);
-                // create constructors if necessary
-                if (settings != null && settings.InjectMixins)
-                {
-                    var constructorSyntaxWriter = new ConstructorInjectionSyntaxWriter(_mixin, semantic);
-                    newClassDeclaration = (ClassDeclarationSyntax)constructorSyntaxWriter.Visit(newClassDeclaration);
-                }
-                return newClassDeclaration;
+                classDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(classDeclaration);
+                
+                return classDeclaration;
             }
 
             return _mixinChild.SourceCode;
