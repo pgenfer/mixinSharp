@@ -15,7 +15,7 @@ namespace MixinRefactoring.Test
             var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinClass);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
             Assert.IsTrue(
                 ValidationHelpers.HasSameDocumentation(
                     newClassDeclaration, 

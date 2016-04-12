@@ -24,7 +24,12 @@ namespace MixinRefactoring
             var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
             // check if mixin could be executed
             var mixinCommand = new MixinCommand(model, fieldDeclarationNode);
-            if (!mixinCommand.CanExecute())
+            
+            // get service provider and read settings from storage
+            var serviceProvider = Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider;
+            var settings = new Settings(serviceProvider);
+
+            if (!mixinCommand.CanExecute(settings))
                 return;
             var action = CodeAction.Create(
                 $"Include mixin: '{mixinCommand.MixinFieldName}'", 
@@ -47,9 +52,9 @@ namespace MixinRefactoring
             var settings = new Settings(serviceProvider);
 
             var model = await document.GetSemanticModelAsync(cancellationToken);
-            if (mixinCommand.CanExecute())
+            if (mixinCommand.CanExecute(settings))
             {
-                var newClassDeclaration = mixinCommand.Execute(settings);
+                var newClassDeclaration = mixinCommand.Execute(model,settings);
                 var root = await model.SyntaxTree.GetRootAsync(cancellationToken);
                 var newRoot = root.ReplaceNode(mixinCommand.OriginalChildSource, newClassDeclaration);
                 var newDocument = document.WithSyntaxRoot(newRoot);

@@ -27,7 +27,7 @@ namespace MixinRefactoring.Test
             var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinReference);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
 
             // assert: the method must be between the region
             var isPropertyBetweenRegion = 
@@ -81,7 +81,7 @@ namespace MixinRefactoring.Test
             var settings = new Settings(createRegions: true);
             // act: add the second mixin
             var mixinCommand = new MixinCommand(sourceCode.Semantic, workerMixin);
-            var newClassDeclaration = mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
 
             // get the region directive for the second mixin and ensure
             // that it is AFTER the first endregion directive

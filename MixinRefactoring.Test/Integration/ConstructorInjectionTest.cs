@@ -141,8 +141,6 @@ namespace MixinRefactoring.Test
         // TODO: check default parameter handling:
         // 1.   what if there are some default parameters before in the constructor initalizer that have no values?
         //      in that case, the argument name should be set explicitly
-        // 2.   Even if all members were generated, it should be possible to generate the constructors 
-        //      (at the moment, the quick action does not open if all members were generated)
         // 3.   Write test case for syntaxwriter constructor functionality?
 
         // See this case:

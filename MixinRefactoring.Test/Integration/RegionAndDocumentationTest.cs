@@ -23,7 +23,7 @@ namespace MixinRefactoring.Test
             var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinClass);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(settings);
+            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
 
             // assert: there should be a region and a documentation
             var isPropertyBetweenRegion = IsPropertyBetweenRegion(

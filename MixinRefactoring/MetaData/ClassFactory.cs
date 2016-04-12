@@ -30,10 +30,9 @@ namespace MixinRefactoring
             var baseClassReader = new BaseClassSyntaxReader(@class, _semantic);
             baseClassReader.Visit(classDeclaration);
             // we could skip this if inject mixin option is not set
-            var constructorCountReader = new CountConstructorReader();
+            var constructorCountReader = new ConstructorSyntaxReader(@class,_semantic);
             constructorCountReader.Visit(classDeclaration);
-            @class.HasConstructor = constructorCountReader.HasConstructor;
-
+            
             return @class;
         }
 

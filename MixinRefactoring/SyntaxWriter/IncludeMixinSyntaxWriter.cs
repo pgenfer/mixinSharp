@@ -20,9 +20,7 @@ namespace MixinRefactoring
         private readonly MixinReference _mixin;
         private readonly SemanticModel _semantic;
         private readonly Settings _settings;
-        private bool _SourceClassHasConstructor = false;
-        private InjectConstructorImplementationStrategy _injectMixinIntoConstructor;
-
+    
         public IncludeMixinSyntaxWriter(
             IEnumerable<Member> membersToImplement, 
             MixinReference mixin, 
@@ -55,28 +53,9 @@ namespace MixinRefactoring
             return implementationStrategies;
         }
 
-        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-        {
-            node = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node);
-            if (_settings.InjectMixins && !node.IsStatic())  // ignore static constructors
-                node = _injectMixinIntoConstructor.ExtendExistingConstructor(node);
-            // remember that class already has a constructor,
-            // so no need to create a new one
-            _SourceClassHasConstructor = true;
-            return node;
-        }
-
-        public override SyntaxNode VisitConstructorInitializer(ConstructorInitializerSyntax node)
-        {
-            node = (ConstructorInitializerSyntax)base.VisitConstructorInitializer(node);
-            if (_settings.InjectMixins)
-                node = _injectMixinIntoConstructor.ExtendConstructorInitialization(node);
-            return node;
-        }
-
         /// <summary>
-        /// TODO: this methods needs a refactoring. Currently, it seems like
-        /// there is too much logic located here
+        /// creates a new class declaration where members are delegated to the mixin
+        /// reference
         /// </summary>
         /// <param name="classDeclaration"></param>
         /// <returns></returns>
@@ -88,18 +67,7 @@ namespace MixinRefactoring
             var implementationStrategies = CreateStrategies(mixinName, _semantic, _settings);
             // needed to evaluate whether type names can be reduced (depends on the using statements in the file)
             var positionOfClassInSourceFile = classDeclaration.GetLocation().SourceSpan.Start;
-            // strategy to implement constructor injection
-            _injectMixinIntoConstructor = new InjectConstructorImplementationStrategy(
-                _mixin, _semantic, positionOfClassInSourceFile);
-
-            // base handling will call other visitors
-            classDeclaration = (ClassDeclarationSyntax)base.VisitClassDeclaration(classDeclaration);
-
-            // create a new constructor and add it to the class declaration
-            if (_settings.InjectMixins && !_SourceClassHasConstructor)
-                classDeclaration = classDeclaration.AddMembers(
-                    _injectMixinIntoConstructor.CreateNewConstructor(classDeclaration.Identifier.Text));
-            
+           
             // generate the members that should be implemented            
             var membersToAdd = _members
                 .Select(x => implementationStrategies[x.GetType()].ImplementMember(x, positionOfClassInSourceFile))

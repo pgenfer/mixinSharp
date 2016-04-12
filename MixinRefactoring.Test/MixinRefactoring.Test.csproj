@@ -143,6 +143,7 @@
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
     <Compile Include="Integration\MixinCommandTest.cs" />
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
+    <Compile Include="Unit\MixinCommandUnitTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

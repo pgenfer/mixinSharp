@@ -45,7 +45,8 @@
     <Compile Include="ImplementationStrategies\ImplementMethodForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementPropertyForwarding.cs" />
     <Compile Include="ImplementationStrategies\InjectConstructorImplementationStrategy.cs" />
-    <Compile Include="IncludeMixinSyntaxWriter.cs" />
+    <Compile Include="SyntaxWriter\ConstructorInjectionSyntaxWriter.cs" />
+    <Compile Include="SyntaxWriter\IncludeMixinSyntaxWriter.cs" />
     <Compile Include="MemberComparer.cs" />
     <Compile Include="MetaData\Class.cs" />
     <Compile Include="MetaData\ClassFactory.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Extensions\SyntaxNodeExtension.cs" />
     <Compile Include="MetaData\ClassWithSourceCode.cs" />
     <Compile Include="MetaData\ClassWithTypeSymbol.cs" />
+    <Compile Include="MetaData\Constructor.cs" />
     <Compile Include="MetaData\DocumentationComment.cs" />
     <Compile Include="MetaData\IMethodList.cs" />
     <Compile Include="MetaData\IndexerProperty.cs" />
@@ -78,7 +80,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsSerializer.cs" />
     <Compile Include="SyntaxReader\BaseClassSyntaxReader.cs" />
-    <Compile Include="SyntaxReader\CountConstructorReader.cs" />
+    <Compile Include="SyntaxReader\ConstructorSyntaxReader.cs" />
     <Compile Include="SyntaxReader\FieldSyntaxReader.cs" />
     <Compile Include="SyntaxReader\MethodSyntaxReader.cs" />
     <Compile Include="SyntaxReader\ParameterSyntaxReader.cs" />

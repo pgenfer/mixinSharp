@@ -15,13 +15,19 @@ namespace MixinRefactoring
         private NameMixin _name = new NameMixin();
         public ClassWithTypeSymbol Class { get; }
 
+        /// <summary>
+        /// only for test cases, don't use in production code
+        /// </summary>
+        public MixinReference()
+        { }
+
         public MixinReference(string name, ClassWithTypeSymbol type)
         {
             Name = name;
             Class = type;
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return _name.Name; }
             private set { _name.Name = value; }

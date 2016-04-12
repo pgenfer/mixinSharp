@@ -9,16 +9,24 @@ namespace MixinRefactoring
     /// </summary>
     public class MixinCommand
     {
-        private readonly SemanticModel _semanticModel;
         private readonly ClassWithSourceCode _mixinChild;
         private readonly MixinReference _mixin;
         private Mixer _mixer = null;
         public MixinCommand(SemanticModel model, FieldDeclarationSyntax mixinFieldDeclaration)
+            :this(
+                 new ClassFactory(model).Create((ClassDeclarationSyntax)mixinFieldDeclaration.Parent), 
+                 new MixinReferenceFactory(model).Create(mixinFieldDeclaration))
         {
-            _semanticModel = model;
-            var classDeclaration = mixinFieldDeclaration.Parent as ClassDeclarationSyntax;
-            _mixin = new MixinReferenceFactory(model).Create(mixinFieldDeclaration);
-            _mixinChild = new ClassFactory(model).Create(classDeclaration);
+            // code is now in constructor initialization
+            //var classDeclaration = mixinFieldDeclaration.Parent as ClassDeclarationSyntax;
+            //_mixin = new MixinReferenceFactory(model).Create(mixinFieldDeclaration);
+            //_mixinChild = new ClassFactory(model).Create(classDeclaration);
+        }
+
+        public MixinCommand(ClassWithSourceCode mixinChild, MixinReference mixin)
+        {
+            _mixinChild = mixinChild;
+            _mixin = mixin;
         }
 
         /// <summary>
@@ -39,7 +47,7 @@ namespace MixinRefactoring
         /// the mixin must have any members that could be added to the child
         /// </summary>
         /// <returns></returns>
-        public bool CanExecute()
+        public bool CanExecute(Settings settings = null)
         {
             if (_mixin == null || _mixinChild == null)
                 return false;
@@ -50,7 +58,22 @@ namespace MixinRefactoring
                 _mixer.IncludeMixinInChild(_mixin, _mixinChild);
             }
 
-            return _mixer.MembersToImplement.Any();
+            // command can be executed if we either have to forward members or extend a constructor
+            return _mixer.MembersToImplement.Any() || NeedsConstructorExtension(settings);
+        }
+
+        /// <summary>
+        /// checks if a constructor must be extended or created for the
+        /// mixin child (in case the InjectMixin option is set)
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public bool NeedsConstructorExtension(Settings settings)
+        {
+            if (settings == null || !settings.InjectMixins)
+                return false;
+            return !(_mixinChild.AllConstructorsHaveParameter(_mixin.Name.ConvertFieldNameToParameterName()) &&
+                  _mixinChild.HasConstructor);
         }
 
         /// <summary>
@@ -60,16 +83,22 @@ namespace MixinRefactoring
         /// class declaration will be returned.
         /// </summary>
         /// <returns></returns>
-        public ClassDeclarationSyntax Execute(Settings settings = null)
+        public ClassDeclarationSyntax Execute(SemanticModel semantic, Settings settings = null)
         {
-            if (CanExecute())
+            if (CanExecute(settings))
             {
                 var syntaxWriter = new IncludeMixinSyntaxWriter(
                     _mixer.MembersToImplement, 
-                    _mixin, 
-                    _semanticModel,
+                    _mixin,
+                    semantic,
                     settings);
                 var newClassDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(_mixinChild.SourceCode);
+                // create constructors if necessary
+                if (settings != null && settings.InjectMixins)
+                {
+                    var constructorSyntaxWriter = new ConstructorInjectionSyntaxWriter(_mixin, semantic);
+                    newClassDeclaration = (ClassDeclarationSyntax)constructorSyntaxWriter.Visit(newClassDeclaration);
+                }
                 return newClassDeclaration;
             }
 
