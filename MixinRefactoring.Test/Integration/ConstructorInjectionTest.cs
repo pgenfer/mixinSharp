@@ -138,34 +138,79 @@ namespace MixinRefactoring.Test
                     x.Type.GetText().ToString().Trim() == nameof(Name)));
         }
 
-        // TODO: check default parameter handling:
-        // 1.   what if there are some default parameters before in the constructor initalizer that have no values?
-        //      in that case, the argument name should be set explicitly
-     
-        // See this case:
-        //public Person(NameMixin name = null, Worker worker = null) :base()
-        //{
-        //}
 
-        //public Person(int i, NameMixin name = null, Worker worker = null) :this()
-        //{ }
-        // 
-        // this is valid code, the initializer uses the two default parameters and so it
-        // looks as it is empty.
-        //
-        // Now when a mixin is generated, the result looks like this:
-        //public Person(NameMixin name = null, Worker worker = null) :base()
-        //{
-        //     _name = name;
-        //    _worker = worker;
-        //}
-        //
-        //public Person(int i, NameMixin name = null, Worker worker = null) :this(worker)
-        //{ }
-        //
-        //
-        // because it is not realized that the initializer has two default parameters,
-        // another argument is created. The solution here should be to name the argument
-        // explicitly in case any default parameter comes before and is not set
+        [Test(Description = "Use explicit naming in initializer because of default argument in initializer")]
+        public void ConstructorWithDefaultArgumentInInitializer_Generate_UseExplicitNaming()
+        {
+            // arrange
+            var sourceCode = new SourceCode(Files.Constructor, Files.Name,Files.Worker);
+            var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
+            var mixinClass = 
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(childClass.FindMixinReference("_worker"));
+            var strategy = 
+                new InjectConstructorImplementationStrategy(
+                    mixinClass, sourceCode.Semantic, childClass.SpanStart);
+            // get the initializer that does not have any parameters
+            var oldConstructorInitializer = childClass.DescendantNodes()
+                .OfType<ConstructorInitializerSyntax>()
+                .Single(x => x.ArgumentList.Arguments.Count == 0);
+            // act
+            var newInitializer = strategy.ExtendConstructorInitialization(oldConstructorInitializer);
+
+            // assert: initializer should have explicit naming now
+            Assert.AreEqual(1, newInitializer.ArgumentList.Arguments.Count);
+            Assert.AreEqual("worker",newInitializer.ArgumentList.Arguments[0].NameColon.Name.GetText().ToString());
+        }
+
+        [Test(
+            Description = "Do not use explicit naming in initializer because previous default parameter is already set")]
+        public void ConstructorWithArgumentInInitializer_Generate_DontUseExplicitNaming()
+        {
+            // arrange
+            var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker);
+            var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
+            var mixinClass =
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(childClass.FindMixinReference("_worker"));
+            var strategy =
+                new InjectConstructorImplementationStrategy(
+                    mixinClass, sourceCode.Semantic, childClass.SpanStart);
+            // get the initializer that does not have any parameters
+            var oldConstructorInitializer = childClass.DescendantNodes()
+                .OfType<ConstructorInitializerSyntax>()
+                .Single(x => x.ArgumentList.Arguments.Count == 1);
+            // act
+            var newInitializer = strategy.ExtendConstructorInitialization(oldConstructorInitializer);
+
+            // assert: initializer should have two parameters
+            Assert.AreEqual(2, newInitializer.ArgumentList.Arguments.Count);
+            Assert.IsNull(newInitializer.ArgumentList.Arguments[1].NameColon);
+        }
+
+        [Test(
+           Description = "There is already an explicit named argument, so use a second explicit name in initializer")]
+        public void ConstructorWithExplicitNamedArgumentInInitializer_Generate_UseExplicitNamingAgain()
+        {
+            // arrange
+            var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker);
+            var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
+            var mixinClass =
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(childClass.FindMixinReference("_name"));
+            var strategy =
+                new InjectConstructorImplementationStrategy(
+                    mixinClass, sourceCode.Semantic, childClass.SpanStart);
+            // get the only initializer that uses a named argument
+            var oldConstructorInitializer = childClass.DescendantNodes()
+                .OfType<ConstructorInitializerSyntax>()
+                .Single(x => x.ArgumentList.Arguments.Any(y => y.NameColon != null));
+            // act
+            var newInitializer = strategy.ExtendConstructorInitialization(oldConstructorInitializer);
+
+            // assert: initializer should have two parameters, both with explicit naming
+            Assert.AreEqual(2, newInitializer.ArgumentList.Arguments.Count);
+            Assert.AreEqual(2,newInitializer.ArgumentList.Arguments.Count(x => x.NameColon != null));
+        }
     }
 }

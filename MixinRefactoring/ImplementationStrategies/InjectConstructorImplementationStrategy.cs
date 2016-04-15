@@ -121,20 +121,24 @@ namespace MixinRefactoring
                 return oldConstructorInitializer;
             var parameterName = _mixin.Name.ConvertFieldNameToParameterName();
 
+            // arguments that are already used in the constructor initializer
+            var arguments = oldConstructorInitializer.ArgumentList.Arguments;
+
             // the initializer can have default parameters that are not visible in the syntax tree,
             // therefore we have to use some additional semantic information here
             var useArgumentName = false;
             var initalizerSymbol = _semantic.GetSymbolInfo(oldConstructorInitializer).Symbol as IMethodSymbol;
             if (initalizerSymbol != null)
             {
-                // check if there are any default parameters in the ctor,
-                // if yes, do an explicit naming here
-                if (initalizerSymbol.Parameters.Any(x => x.HasExplicitDefaultValue))
-                {
-                    useArgumentName = true;
-                }
+                // new mixin parameter is always added at the end, but if there is a default parameter before
+                // that is not set, we must use explicit naming
+                var firstDefaultArgument = initalizerSymbol.Parameters.FirstOrDefault(x => x.HasExplicitDefaultValue);
+                // we have a default argument and it is not our mixin itself => use explicit naming here
+                useArgumentName = 
+                    firstDefaultArgument != null &&  // there must be a parameter with possible default argument before
+                    firstDefaultArgument.Name != parameterName && // this should not be our new parameter itself
+                    !arguments.Any(x => x.GetText().ToString() == firstDefaultArgument.Name); // and the parameter should not be set in the initializer
             }
-            var arguments = oldConstructorInitializer.ArgumentList.Arguments;
             // if there is already a parameter with the same name, skip further processing
             var alreadyHasParameter = arguments.Any(x => x.GetText().ToString() == parameterName);
             if (alreadyHasParameter)

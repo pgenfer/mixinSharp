@@ -99,4 +99,55 @@ namespace MixinRefactoring.Test
             _name = name;
         }
     }
+
+    /// <summary>
+    /// class that has constructor initializers and
+    /// mixins
+    /// </summary>
+    public class ChildWitDefaultParameters
+    {
+        private Name _name;
+        private Worker _worker;
+
+        /// <summary>
+        /// constructor has default parameters for both mixins
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="worker"></param>
+        public ChildWitDefaultParameters(Name name = null,Worker worker = null)
+        {
+        }
+
+        /// <summary>
+        /// if constructor is extended,
+        /// explicit naming must be used because only
+        /// second parameter will be set
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="worker"></param>
+        public ChildWitDefaultParameters(int i, Worker worker) : this()
+        { }
+
+        /// <summary>
+        /// when extended with worker,
+        /// no explicit naming is necessary because
+        /// first parameter is set explicitly
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="name"></param>
+        /// <param name="worker"></param>
+        public ChildWitDefaultParameters(int i,Name name,Worker worker) : this(name)
+        { }
+
+        /// <summary>
+        /// when extended with worker,
+        /// no explicit naming is necessary because
+        /// first parameter is set explicitly
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="name"></param>
+        /// <param name="worker"></param>
+        public ChildWitDefaultParameters(string s, Name name, Worker worker) : this(worker:worker)
+        { }
+    }
 }
