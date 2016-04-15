@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -126,31 +127,65 @@ namespace MixinRefactoring
 
             // the initializer can have default parameters that are not visible in the syntax tree,
             // therefore we have to use some additional semantic information here
-            var useArgumentName = false;
             var initalizerSymbol = _semantic.GetSymbolInfo(oldConstructorInitializer).Symbol as IMethodSymbol;
             if (initalizerSymbol != null)
             {
-                // new mixin parameter is always added at the end, but if there is a default parameter before
-                // that is not set, we must use explicit naming
-                var firstDefaultArgument = initalizerSymbol.Parameters.FirstOrDefault(x => x.HasExplicitDefaultValue);
-                // we have a default argument and it is not our mixin itself => use explicit naming here
-                useArgumentName = 
-                    firstDefaultArgument != null &&  // there must be a parameter with possible default argument before
-                    firstDefaultArgument.Name != parameterName && // this should not be our new parameter itself
-                    !arguments.Any(x => x.GetText().ToString() == firstDefaultArgument.Name); // and the parameter should not be set in the initializer
+                // store all ctor arguments in a list
+                // and remember if the argument has an explicit value (or will get one because it is the 
+                // parameter for our mixin
+                var constructorArguments =
+                    initalizerSymbol.Parameters.Select(x => new
+                    {
+                        x.Name,
+                        IsSet = arguments.Any(y => y.GetText().ToString() == x.Name) || x.Name == parameterName,
+                    })
+                    .ToArray();
+
+                var newArguments = new List<ArgumentSyntax>();
+                // rule: if there is an argument BEFORE 
+                for (var i = 0; i < constructorArguments.Length; i++)
+                {
+                    // first parameter never needs explicit naming
+                    if (i > 0)
+                    {
+                        var previousArgument = constructorArguments[i - 1];
+                        if (!previousArgument.IsSet) // previous argument is not set, so we need naming here
+                            newArguments.Add(Argument(NameColon(parameterName), default(SyntaxToken),
+                                IdentifierName(constructorArguments[i].Name)));
+                        else
+                            newArguments.Add(Argument(IdentifierName(constructorArguments[i].Name)));
+                    }
+                    else if(constructorArguments[i].IsSet)
+                        newArguments.Add(Argument(IdentifierName(constructorArguments[i].Name)));
+                }
+
+                var newConstructorInitializer = oldConstructorInitializer.WithArgumentList(ArgumentList().AddArguments(newArguments.ToArray()));
+                return newConstructorInitializer;
             }
+            return oldConstructorInitializer;
+
+
+            //// new mixin parameter is always added at the end, but if there is a default parameter before
+            //// that is not set, we must use explicit naming
+            //var firstDefaultArgument = initalizerSymbol.Parameters.FirstOrDefault(x => x.HasExplicitDefaultValue);
+            //// we have a default argument and it is not our mixin itself => use explicit naming here
+            //useArgumentName = 
+            //    firstDefaultArgument != null &&  // there must be a parameter with possible default argument before
+            //    firstDefaultArgument.Name != parameterName && // this should not be our new parameter itself
+            //    arguments.All(x => x.GetText().ToString() != firstDefaultArgument.Name); // and the parameter should not be set in the initializer
+            //}
             // if there is already a parameter with the same name, skip further processing
-            var alreadyHasParameter = arguments.Any(x => x.GetText().ToString() == parameterName);
-            if (alreadyHasParameter)
-                return oldConstructorInitializer;
+            //var alreadyHasParameter = arguments.Any(x => x.GetText().ToString() == parameterName);
+            //if (alreadyHasParameter)
+            //    return oldConstructorInitializer;
 
-            var argument = useArgumentName
-                ? Argument(NameColon(parameterName), default(SyntaxToken), IdentifierName(parameterName))
-                : Argument(IdentifierName(parameterName));
+            //var argument = useArgumentName
+            //    ? Argument(NameColon(parameterName), default(SyntaxToken), IdentifierName(parameterName))
+            //    : Argument(IdentifierName(parameterName));
 
-            var newConstructorInitializer = oldConstructorInitializer.AddArgumentListArguments(argument);
-                
-            return newConstructorInitializer;
+            //var newConstructorInitializer = oldConstructorInitializer.AddArgumentListArguments(argument);
+
+            //return newConstructorInitializer;
         } 
 
         public ConstructorDeclarationSyntax CreateNewConstructor(string className)
