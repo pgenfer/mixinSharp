@@ -164,9 +164,14 @@ namespace MixinRefactoring.Test
         }
 
         [Test(
-            Description = "Do not use explicit naming in initializer because previous default parameter is already set")]
+            Description = "Do not use explicit naming in initializer because previous parameter is already set")]
         public void ConstructorWithArgumentInInitializer_Generate_DontUseExplicitNaming()
         {
+            // the ctor looks like this
+            // ctor(int i,Name name,Worker worker) : this(name)
+            // the result should look like
+            // ctor(int i,Name name,Worker worker) : this(name, worker)
+
             // arrange
             var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker);
             var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
@@ -176,10 +181,12 @@ namespace MixinRefactoring.Test
             var strategy =
                 new InjectConstructorImplementationStrategy(
                     mixinClass, sourceCode.Semantic, childClass.SpanStart);
-            // get the initializer that does not have any parameters
+            // get the initializer that has only one parameter
             var oldConstructorInitializer = childClass.DescendantNodes()
                 .OfType<ConstructorInitializerSyntax>()
-                .Single(x => x.ArgumentList.Arguments.Count == 1);
+                .Single(x => 
+                    x.ArgumentList.Arguments.Count == 1 && 
+                    x.ArgumentList.Arguments.All(y => y.NameColon == null));
             // act
             var newInitializer = strategy.ExtendConstructorInitialization(oldConstructorInitializer);
 
@@ -189,9 +196,14 @@ namespace MixinRefactoring.Test
         }
 
         [Test(
-           Description = "There is already an explicit named argument, so use a second explicit name in initializer")]
+           Description = "Remove explicit naming when its not necessary anymore")]
         public void ConstructorWithExplicitNamedArgumentInInitializer_Generate_UseExplicitNamingAgain()
         {
+            // the ctor looks like this
+            // ctor(int i,Name name,Worker worker) : this(worker:worker)
+            // the result should look like (the explicit naming will be removed because the order is unambiguous
+            // ctor(int i,Name name,Worker worker) : this(name, worker)
+
             // arrange
             var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker);
             var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
@@ -210,7 +222,7 @@ namespace MixinRefactoring.Test
 
             // assert: initializer should have two parameters, both with explicit naming
             Assert.AreEqual(2, newInitializer.ArgumentList.Arguments.Count);
-            Assert.AreEqual(2,newInitializer.ArgumentList.Arguments.Count(x => x.NameColon != null));
+            Assert.AreEqual(0,newInitializer.ArgumentList.Arguments.Count(x => x.NameColon != null));
         }
     }
 }

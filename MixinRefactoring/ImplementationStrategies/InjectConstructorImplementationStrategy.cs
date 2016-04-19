@@ -105,7 +105,7 @@ namespace MixinRefactoring
                     .AddBodyStatements(CreateAssigmentStatementForConstructorBody(parameterName));
             }
             return newConstructor;
-        }      
+        }  
         
         /// <summary>
         /// the constructor initializer will be extended
@@ -123,69 +123,87 @@ namespace MixinRefactoring
             var parameterName = _mixin.Name.ConvertFieldNameToParameterName();
 
             // arguments that are already used in the constructor initializer
-            var arguments = oldConstructorInitializer.ArgumentList.Arguments;
+            var arguments = oldConstructorInitializer
+                .ArgumentList
+                .Arguments
+                .ToArray();
 
             // the initializer can have default parameters that are not visible in the syntax tree,
             // therefore we have to use some additional semantic information here
             var initalizerSymbol = _semantic.GetSymbolInfo(oldConstructorInitializer).Symbol as IMethodSymbol;
             if (initalizerSymbol != null)
             {
-                // store all ctor arguments in a list
-                // and remember if the argument has an explicit value (or will get one because it is the 
-                // parameter for our mixin
-                var constructorArguments =
-                    initalizerSymbol.Parameters.Select(x => new
-                    {
-                        x.Name,
-                        IsSet = arguments.Any(y => y.GetText().ToString() == x.Name) || x.Name == parameterName,
-                    })
-                    .ToArray();
+                var constructorArguments = new List<ConstructorArgument>();
 
-                var newArguments = new List<ArgumentSyntax>();
-                // rule: if there is an argument BEFORE 
-                for (var i = 0; i < constructorArguments.Length; i++)
+                // special case: the initializer does not have any parameters yet
+                // so we simply add one
+                if(initalizerSymbol.Parameters.Length == 0)
                 {
-                    // first parameter never needs explicit naming
-                    if (i > 0)
-                    {
-                        var previousArgument = constructorArguments[i - 1];
-                        if (!previousArgument.IsSet) // previous argument is not set, so we need naming here
-                            newArguments.Add(Argument(NameColon(parameterName), default(SyntaxToken),
-                                IdentifierName(constructorArguments[i].Name)));
-                        else
-                            newArguments.Add(Argument(IdentifierName(constructorArguments[i].Name)));
-                    }
-                    else if(constructorArguments[i].IsSet)
-                        newArguments.Add(Argument(IdentifierName(constructorArguments[i].Name)));
+                    return oldConstructorInitializer
+                        .AddArgumentListArguments(
+                            Argument(IdentifierName(parameterName)));
                 }
 
-                var newConstructorInitializer = oldConstructorInitializer.WithArgumentList(ArgumentList().AddArguments(newArguments.ToArray()));
+                // otherwise, try to map the arguments from the initializer
+                // with the parameters of the constructor and add the new argument
+                // at the correct position
+                for (var i=0; i < initalizerSymbol.Parameters.Length;i++)
+                {
+                    var parameter = initalizerSymbol.Parameters[i];
+                    // this constructor argument will hold our new mixin
+                    if (parameter.Name == parameterName)
+                    {
+                        constructorArguments.Add(
+                            new ConstructorArgument(
+                                parameter.Name,
+                                expression: IdentifierName(parameterName),
+                                isMixinParameter: true));
+                    }
+                    else
+                    {
+                        // we either have an argument with an explicit name
+                        // or we have an argument at the same position
+                        // or we can ommit this parameter
+                        ArgumentSyntax argument = arguments
+                            .Where(x => x.NameColon != null)
+                            .FirstOrDefault(x => x.NameColon.Name.GetText().ToString() == parameter.Name);
+                        // argument identified by name or by position
+                        if (argument == null)
+                            if (arguments.Length > i)
+                                argument = arguments[i];
+                        if (argument != null)
+                            constructorArguments.Add(new ConstructorArgument(parameter.Name,expression: argument.Expression));
+                        else // no argument found => argument was omitted
+                            constructorArguments.Add(new ConstructorArgument(parameter.Name,canBeOmitted:true));
+                    }
+                }
+
+                // now we have to check again if we must use explicit naming
+                // this is the case if a previous parameter is omitted but
+                // the current one is not
+                ConstructorArgument previous = null;
+                foreach (var constructorArgument in constructorArguments)
+                {
+                    constructorArgument.NeedsExplicitNaming =
+                        previous != null &&
+                        previous.CanBeOmitted &&
+                        !constructorArgument.CanBeOmitted;
+                    previous = constructorArgument;
+                }                    
+
+                // create the new initializer by recreating the complete argument list
+                var newConstructorInitializer = oldConstructorInitializer
+                    .WithArgumentList(ArgumentList()
+                    .AddArguments(constructorArguments
+                        .Where(x => x.Expression != null)
+                        .Select(x => x.NeedsExplicitNaming ? 
+                            Argument(NameColon(x.Name), default(SyntaxToken),x.Expression) : 
+                            Argument(x.Expression))                           
+                        .ToArray()));
                 return newConstructorInitializer;
             }
+
             return oldConstructorInitializer;
-
-
-            //// new mixin parameter is always added at the end, but if there is a default parameter before
-            //// that is not set, we must use explicit naming
-            //var firstDefaultArgument = initalizerSymbol.Parameters.FirstOrDefault(x => x.HasExplicitDefaultValue);
-            //// we have a default argument and it is not our mixin itself => use explicit naming here
-            //useArgumentName = 
-            //    firstDefaultArgument != null &&  // there must be a parameter with possible default argument before
-            //    firstDefaultArgument.Name != parameterName && // this should not be our new parameter itself
-            //    arguments.All(x => x.GetText().ToString() != firstDefaultArgument.Name); // and the parameter should not be set in the initializer
-            //}
-            // if there is already a parameter with the same name, skip further processing
-            //var alreadyHasParameter = arguments.Any(x => x.GetText().ToString() == parameterName);
-            //if (alreadyHasParameter)
-            //    return oldConstructorInitializer;
-
-            //var argument = useArgumentName
-            //    ? Argument(NameColon(parameterName), default(SyntaxToken), IdentifierName(parameterName))
-            //    : Argument(IdentifierName(parameterName));
-
-            //var newConstructorInitializer = oldConstructorInitializer.AddArgumentListArguments(argument);
-
-            //return newConstructorInitializer;
         } 
 
         public ConstructorDeclarationSyntax CreateNewConstructor(string className)
@@ -198,6 +216,33 @@ namespace MixinRefactoring
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddBodyStatements(CreateAssigmentStatementForConstructorBody(parameterName));
             return constructor;
+        }
+
+        /// <summary>
+        /// this is just a little helper class
+        /// used to organize the mapping information
+        /// between a constructor parameter and its corresponding
+        /// argument in the initializers list
+        /// </summary>
+        internal class ConstructorArgument
+        {
+            public string Name { get; }
+            public bool CanBeOmitted { get; }
+            public ExpressionSyntax Expression { get; }
+            public bool IsMixinParameter { get; }
+            public bool NeedsExplicitNaming { get; set; }
+
+            public ConstructorArgument(
+                string name,
+                bool canBeOmitted = false,
+                ExpressionSyntax expression = null,
+                bool isMixinParameter = false)
+            {
+                Name = name;
+                CanBeOmitted = canBeOmitted;
+                Expression = expression;
+                IsMixinParameter = isMixinParameter;
+            }
         }
     }   
 }
