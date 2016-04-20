@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 #pragma warning disable 169
+#pragma warning disable 649
 
 namespace MixinRefactoring.Test
 {

@@ -205,7 +205,7 @@ namespace MixinRefactoring.Test
             // ctor(int i,Name name,Worker worker) : this(name, worker)
 
             // arrange
-            var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker);
+            var sourceCode = new SourceCode(Files.Constructor, Files.Name, Files.Worker); 
             var childClass = sourceCode.Class(nameof(ChildWitDefaultParameters));
             var mixinClass =
                 new MixinReferenceFactory(sourceCode.Semantic)

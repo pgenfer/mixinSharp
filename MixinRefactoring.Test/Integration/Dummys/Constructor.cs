@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable 169
+
 /// <summary>
 /// this file contains test dummies for testing the constructor functionality
 /// </summary>
