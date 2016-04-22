@@ -29,6 +29,8 @@ namespace MixinRefactoring
             methodReader.Visit(classDeclaration);
             var baseClassReader = new BaseClassSyntaxReader(@class, _semantic);
             baseClassReader.Visit(classDeclaration);
+            var interfaceReader = new InterfaceSyntaxReader(@class.Interfaces, _semantic);
+            interfaceReader.Visit(classDeclaration);
             // we could skip this if inject mixin option is not set
             var constructorCountReader = new ConstructorSyntaxReader(@class,_semantic);
             constructorCountReader.Visit(classDeclaration);
@@ -48,6 +50,9 @@ namespace MixinRefactoring
             if (classSymbol.BaseType != null && 
                 classSymbol.BaseType.SpecialType != SpecialType.System_Object)
                 @class.BaseClass = Create(classSymbol.BaseType);
+            // add interfaces to interface list
+            foreach (var @interface in classSymbol.AllInterfaces)
+                @class.Interfaces.AddInterface(new Interface(@interface.Name));
             return @class;
         }
     }

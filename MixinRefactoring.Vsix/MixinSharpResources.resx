@@ -117,6 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddMixinInterfacesToChildClass" xml:space="preserve">
+    <value>Add mixin interfaces to child class</value>
+  </data>
+  <data name="AddMixinInterfacesToChildClassDescription" xml:space="preserve">
+    <value>Check this option to add all interfaces of the mixin to the child's interface list.
+The interface implementations will delegate the calls to the mixin instance.</value>
+  </data>
   <data name="CreateRegions" xml:space="preserve">
     <value>Create region block</value>
   </data>

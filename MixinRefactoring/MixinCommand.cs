@@ -101,6 +101,12 @@ namespace MixinRefactoring
                     semantic,
                     settings);
                 classDeclaration = (ClassDeclarationSyntax)syntaxWriter.Visit(classDeclaration);
+
+                if(settings != null && settings.AddInterfacesToChild)
+                {
+                    var addInterfacesSyntaxWriter = new AddInterfacesToChildSyntaxWriter(_mixin);
+                    classDeclaration = (ClassDeclarationSyntax)addInterfacesSyntaxWriter.Visit(classDeclaration);
+                }
                 
                 return classDeclaration;
             }

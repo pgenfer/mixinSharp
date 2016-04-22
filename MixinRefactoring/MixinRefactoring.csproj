@@ -45,6 +45,10 @@
     <Compile Include="ImplementationStrategies\ImplementMethodForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementPropertyForwarding.cs" />
     <Compile Include="ImplementationStrategies\InjectConstructorImplementationStrategy.cs" />
+    <Compile Include="MetaData\Interface.cs" />
+    <Compile Include="MetaData\InterfaceList.cs" />
+    <Compile Include="SyntaxReader\InterfaceSyntaxReader.cs" />
+    <Compile Include="SyntaxWriter\AddInterfacesToChildSyntaxWriter.cs" />
     <Compile Include="SyntaxWriter\ConstructorInjectionSyntaxWriter.cs" />
     <Compile Include="SyntaxWriter\IncludeMixinSyntaxWriter.cs" />
     <Compile Include="MemberComparer.cs" />

@@ -85,6 +85,16 @@ namespace MixinSharp
         }
 
         /// <summary>
+        /// interfaces implemented by the mixin will also 
+        /// be added to the child's interface list
+        /// </summary>
+        public bool AddInterfacesToChild
+        {
+            get { return GetOption(nameof(AddInterfacesToChild), Site); }
+            set { SetOption(nameof(AddInterfacesToChild),value, Site); }
+        }
+
+        /// <summary>
         /// returns the WPF user control (which holds the actual user interface
         /// for setting the options)
         /// </summary>

@@ -13,6 +13,8 @@ namespace MixinRefactoring
         private PropertyList _properties = new PropertyList();
         private MethodList _methods = new MethodList();
         private readonly NameMixin _name = new NameMixin();
+        private readonly InterfaceList _interfaces = new InterfaceList();
+
         public void AddProperty(Property newProperty)
         {
             _properties.AddProperty(newProperty);
@@ -25,19 +27,13 @@ namespace MixinRefactoring
             newMethod.Class = this;
         }
 
+        public InterfaceList Interfaces => _interfaces;
         public IEnumerable<Property> Properties => _properties;
         public IEnumerable<Method> Methods => _methods;
         public string Name
         {
-            get
-            {
-                return _name.Name;
-            }
-
-            set
-            {
-                _name.Name = value;
-            }
+            get { return _name.Name; }
+            set { _name.Name = value; }
         }
 
         public Class BaseClass

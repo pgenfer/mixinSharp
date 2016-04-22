@@ -61,6 +61,25 @@ namespace MixinSharp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add mixin interfaces to child class.
+        /// </summary>
+        public static string AddMixinInterfacesToChildClass {
+            get {
+                return ResourceManager.GetString("AddMixinInterfacesToChildClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check this option to add all interfaces of the mixin to the child&apos;s interface list.
+        ///The interface implementations will delegate the calls to the mixin instance..
+        /// </summary>
+        public static string AddMixinInterfacesToChildClassDescription {
+            get {
+                return ResourceManager.GetString("AddMixinInterfacesToChildClassDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create region block.
         /// </summary>
         public static string CreateRegions {

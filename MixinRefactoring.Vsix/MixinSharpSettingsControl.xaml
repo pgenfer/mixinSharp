@@ -13,5 +13,7 @@
         <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.IncludeDocumentationDescription}" TextWrapping="Wrap"/>
         <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.InjectMixins}" IsChecked="{Binding InjectMixins}"/>
         <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.InjectMixinsDocumentation}" TextWrapping="Wrap"/>
+        <CheckBox Margin="10,10,10,5" Content="{x:Static local:MixinSharpResources.AddMixinInterfacesToChildClass}" IsChecked="{Binding AddInterfacesToChild}"/>
+        <TextBlock Margin="30,0,0,10" Text="{x:Static local:MixinSharpResources.AddMixinInterfacesToChildClassDescription}" TextWrapping="Wrap"/>
     </StackPanel>
 </UserControl>
