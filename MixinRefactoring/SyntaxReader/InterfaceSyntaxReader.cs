@@ -28,7 +28,7 @@ namespace MixinRefactoring
                 // this time, only check for interfaces
                 if (baseClassTypeSymbol.TypeKind == TypeKind.Interface)
                     _interfaces.AddInterface(
-                        new Interface(baseClassTypeSymbol.Name));
+                        new Interface(baseClassTypeSymbol));
             }
         }
     }

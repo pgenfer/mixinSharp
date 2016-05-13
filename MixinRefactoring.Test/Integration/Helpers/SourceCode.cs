@@ -24,6 +24,7 @@ namespace MixinRefactoring.Test
     {
         private SyntaxTree _syntaxTree;
         private SemanticModel _semanticModel;
+        private Compilation _compilation;
         private readonly List<string> _fileContent = new List<string>();
 
         public SourceCode(params string[] codeFiles)
@@ -35,12 +36,12 @@ namespace MixinRefactoring.Test
         {
             _syntaxTree = CSharpSyntaxTree.ParseText(string.Concat(fileContent));
 
-            var compilation = CSharpCompilation.Create(
+            _compilation = CSharpCompilation.Create(
                 "temp",
                 syntaxTrees: new[] { _syntaxTree },
                 // add reference to system assembly (for standard data types)
                 references: MetaDataReferenceResolver.ResolveSystemAssemblies());
-            _semanticModel = compilation.GetSemanticModel(_syntaxTree);
+            _semanticModel = _compilation.GetSemanticModel(_syntaxTree);
         }
 
         /// <summary>
@@ -87,6 +88,16 @@ namespace MixinRefactoring.Test
 
         public ClassDeclarationSyntax Class(string className) => _syntaxTree.GetRoot().FindClassByName(className);
         public FieldDeclarationSyntax MixinInClass(string className,string mixin) => Class(className).FindMixinReference(mixin);
+        public ITypeSymbol GetTypeByName(string className)
+        {
+            var classDeclaration = Class(className);
+            if (classDeclaration == null)
+            {
+                var typeSymbol = _compilation.GetTypeByMetadataName($"MixinRefactoring.Test.{className}");
+                return typeSymbol;
+            }
+            return Semantic.GetDeclaredSymbol(classDeclaration);
+        }
         public SyntaxTree Syntax => _syntaxTree;
         public SemanticModel Semantic => _semanticModel;   
     }

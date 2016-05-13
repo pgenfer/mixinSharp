@@ -88,6 +88,7 @@ namespace MixinRefactoring
             if (CanExecute(settings))
             {
                 var classDeclaration = _mixinChild.SourceCode;
+                var positionInSource = classDeclaration.GetLocation().SourceSpan.Start;
                 // create constructors if necessary
                 if (settings != null && settings.InjectMixins)
                 {
@@ -104,8 +105,9 @@ namespace MixinRefactoring
 
                 if(settings != null && settings.AddInterfacesToChild)
                 {
-                    var addInterfacesSyntaxWriter = new AddInterfacesToChildSyntaxWriter(_mixin);
-                    classDeclaration = (ClassDeclarationSyntax)addInterfacesSyntaxWriter.Visit(classDeclaration);
+
+                    var interfaceWriter = new AddInterfacesToChildSyntaxWriter(_mixin, semantic, positionInSource);
+                    classDeclaration = (ClassDeclarationSyntax)interfaceWriter.Visit(classDeclaration);
                 }
                 
                 return classDeclaration;

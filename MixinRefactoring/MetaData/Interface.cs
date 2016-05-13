@@ -1,4 +1,6 @@
-﻿namespace MixinRefactoring
+﻿using Microsoft.CodeAnalysis;
+
+namespace MixinRefactoring
 {
     /// <summary>
     /// representation of an interface
@@ -9,16 +11,23 @@
     public class Interface
     {
         private readonly NameMixin _name = new NameMixin();
+        private readonly ITypeSymbol _interfaceType;
 
-        public Interface(string name)
+        public Interface(ITypeSymbol interfaceType)
         {
-            Name = name;
+            _interfaceType = interfaceType;
+            Name = _interfaceType.Name;
         }
 
         public string Name
         {
             get { return _name.Name; }
             set { _name.Name = value; }
+        }
+
+        public string GetReducedTypeName(SemanticModel semantic,int positionInClass)
+        {
+            return _interfaceType.ReduceQualifiedTypeName(semantic, positionInClass);
         }
 
         public override string ToString() => _name.ToString();

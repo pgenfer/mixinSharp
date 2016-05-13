@@ -12,49 +12,61 @@ namespace MixinRefactoring
 {
     public class AddInterfacesToChildSyntaxWriter : CSharpSyntaxRewriter
     {
-        private readonly MixinReference _mixin;
+        private readonly InterfaceList _mixinInterfaces;
         private bool _hasInterfaceList = false;
+        private readonly SemanticModel _semantic;
+        private readonly int _positionOfChildClassInCode;
 
-        public AddInterfacesToChildSyntaxWriter(MixinReference mixin)
+        public AddInterfacesToChildSyntaxWriter(
+            MixinReference mixin,
+            SemanticModel model,
+            // needed to reduce type names depending on namespaces
+            int positionOfChildClassInCode)
         {
-            _mixin = mixin;
+            _mixinInterfaces = new InterfaceList();
+            if (mixin.Class.IsInterface)
+                _mixinInterfaces.AddInterface(mixin.Class.AsInterface());
+            else
+                foreach (var @interface in mixin.Class.Interfaces)
+                    _mixinInterfaces.AddInterface(@interface);
+            _semantic = model;
+            _positionOfChildClassInCode = positionOfChildClassInCode;
+        }
+
+        protected string ReduceQualifiedTypeName(ITypeSymbol type)
+        {
+            return type.ReduceQualifiedTypeName(_semantic, _positionOfChildClassInCode);
         }
 
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             var classDeclaration = (ClassDeclarationSyntax)base.VisitClassDeclaration(node);
             if (!_hasInterfaceList)
-                classDeclaration = classDeclaration
-                    .AddBaseListTypes(_mixin.Class.Interfaces
-                    .Select(x => SimpleBaseType(IdentifierName(x.Name)))
-                    .ToArray());
-            return classDeclaration;
-        }
-
-        public override SyntaxNode VisitSimpleBaseType(SimpleBaseTypeSyntax node)
-        {
-            foreach (var @interface in _mixin.Class.Interfaces)
             {
-                if (node.Type.GetText().ToString() == @interface.Name)
-                {
-                    _hasInterfaceList = true;
-                }
+                classDeclaration = classDeclaration
+                    .AddBaseListTypes(_mixinInterfaces
+                    .Select(x => SimpleBaseType(IdentifierName(
+                        x.GetReducedTypeName(_semantic,_positionOfChildClassInCode))))
+                    .ToArray());
+                // there is always a trailing newline
+                // when we add the base, so skip it by recreating the identifer
+                // of the class
+                classDeclaration = classDeclaration
+                    .WithIdentifier(Identifier(classDeclaration.Identifier.Text));
+                var text = classDeclaration.GetText().ToString();
             }
-            return node;
+            return classDeclaration;
         }
 
         public override SyntaxNode VisitBaseList(BaseListSyntax node)
         {
             _hasInterfaceList = true;
-            BaseListSyntax result = node;
-            foreach (var @interface in _mixin.Class.Interfaces)
-            {
-                if (!node.Types.Any(x => x.Type.GetText().ToString() == @interface.Name))
-                {
-                    result = result.AddTypes(SimpleBaseType(IdentifierName(@interface.Name)));
-                    
-                }
-            }
+            var remainingMixinInterfaces = _mixinInterfaces
+                .Select(x => x.GetReducedTypeName(_semantic, _positionOfChildClassInCode))
+                .Except(node.Types.Select(x => x.TypeName()))
+                .Select(x => SimpleBaseType(IdentifierName(x)))
+                .ToArray();
+            var result = node.AddTypes(remainingMixinInterfaces);
             return result;
         }
     }

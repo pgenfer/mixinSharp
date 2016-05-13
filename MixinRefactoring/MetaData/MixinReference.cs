@@ -13,7 +13,7 @@ namespace MixinRefactoring
     public class MixinReference
     {
         private NameMixin _name = new NameMixin();
-        public ClassWithTypeSymbol Class { get; }
+        public virtual ClassWithTypeSymbol Class { get; }
 
         /// <summary>
         /// only for test cases, don't use in production code

@@ -107,12 +107,16 @@
     <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Compile Include="Integration\AddInterfacesToChildSyntaxWriterTest.cs" />
     <Compile Include="Integration\ConstructorInjectionTest.cs" />
     <Compile Include="Integration\CreateDocumentationTest.cs" />
     <Compile Include="Integration\Dummys\Comments.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\Dummys\Constructor.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\Dummys\Interface.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\Dummys\Person.cs">
@@ -134,6 +138,7 @@
     <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
     <Compile Include="Integration\Helpers\ValidationHelpers.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />
+    <Compile Include="Integration\InterfaceListTest.cs" />
     <Compile Include="Integration\MixerTest.cs" />
     <Compile Include="Integration\MixinReferenceTest.cs" />
     <Compile Include="Integration\MixinWithMethodTest.cs" />

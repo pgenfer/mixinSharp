@@ -27,7 +27,7 @@ namespace MixinRefactoring
             newMethod.Class = this;
         }
 
-        public InterfaceList Interfaces => _interfaces;
+        public virtual InterfaceList Interfaces => _interfaces;
         public IEnumerable<Property> Properties => _properties;
         public IEnumerable<Method> Methods => _methods;
         public string Name

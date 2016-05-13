@@ -51,8 +51,8 @@ namespace MixinRefactoring
                 classSymbol.BaseType.SpecialType != SpecialType.System_Object)
                 @class.BaseClass = Create(classSymbol.BaseType);
             // add interfaces to interface list
-            foreach (var @interface in classSymbol.AllInterfaces)
-                @class.Interfaces.AddInterface(new Interface(@interface.Name));
+            foreach (var @interface in classSymbol.Interfaces)
+                @class.Interfaces.AddInterface(new Interface(@interface));
             return @class;
         }
     }

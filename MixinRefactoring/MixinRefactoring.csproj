@@ -38,6 +38,7 @@
     <Compile Include="Extensions\MemberDeclarationSyntaxExtension.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\TypeSymbolExtension.cs" />
+    <Compile Include="Extensions\BaseTypeSyntaxExtension.cs" />
     <Compile Include="Extensions\XmlSyntaxFactory.cs" />
     <Compile Include="ImplementationStrategies\IImplementMemberForwarding.cs" />
     <Compile Include="ImplementationStrategies\ImplementIndexerForwarding.cs" />

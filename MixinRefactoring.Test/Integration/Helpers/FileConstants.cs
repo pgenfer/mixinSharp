@@ -20,5 +20,6 @@ namespace MixinRefactoring.Test
         public const string Collection = "Collection.cs";
         public const string Comments = "Comments.cs";
         public const string Constructor = "Constructor.cs";
+        public const string Interface = "Interface.cs";
     }
 }
