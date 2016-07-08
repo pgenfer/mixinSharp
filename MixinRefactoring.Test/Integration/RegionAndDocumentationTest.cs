@@ -18,12 +18,14 @@ namespace MixinRefactoring.Test
             // arrange
             var sourceCode = new SourceCode(Files.Comments);
             var childClass = sourceCode.Class(nameof(Child));
-            var mixinClass = childClass.FindMixinReference("_mixinWithProperty");
+            var mixinClass = 
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(childClass.FindMixinReference("_mixinWithProperty"));
             var settings = new Settings(includeDocumentation: true,createRegions: true);
-            var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinClass);
+            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinClass);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
+            var newClassDeclaration = mixinCommand.Execute(childClass, sourceCode.Semantic,settings);
 
             // assert: there should be a region and a documentation
             var isPropertyBetweenRegion = IsPropertyBetweenRegion(

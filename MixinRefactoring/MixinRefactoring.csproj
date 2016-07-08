@@ -32,6 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Commands\AddMixinToBaseListCommand.cs" />
+    <Compile Include="Commands\CompositeCommand.cs" />
+    <Compile Include="Commands\CreateMixinFromBaseClass.cs" />
+    <Compile Include="Commands\CreateMixinFromFieldDeclarationCommand.cs" />
+    <Compile Include="Commands\IMixinCommand.cs" />
+    <Compile Include="Commands\InjectMixinsIntoChildCommand.cs" />
+    <Compile Include="Commands\MixinCommandBase.cs" />
     <Compile Include="Common\NameMixin.cs" />
     <Compile Include="Extensions\ClassDeclarationExtension.cs" />
     <Compile Include="Extensions\ConstructorDeclarationExtension.cs" />

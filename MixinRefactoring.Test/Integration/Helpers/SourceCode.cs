@@ -87,6 +87,7 @@ namespace MixinRefactoring.Test
         }
 
         public ClassDeclarationSyntax Class(string className) => _syntaxTree.GetRoot().FindClassByName(className);
+        public ClassWithSourceCode CreateClass(string className) => new ClassFactory(Semantic).Create(Class(className));
         public FieldDeclarationSyntax MixinInClass(string className,string mixin) => Class(className).FindMixinReference(mixin);
         public ITypeSymbol GetTypeByName(string className)
         {

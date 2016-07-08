@@ -10,12 +10,17 @@ namespace MixinRefactoring.Test
             // arrange
             var sourceCode = new SourceCode(Files.Comments);
             var childClass = sourceCode.Class(nameof(Child));
-            var mixinClass = childClass.FindMixinReference(mixinReferenceName);
+            var mixinClass = new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(childClass.FindMixinReference(mixinReferenceName));
             var settings = new Settings(includeDocumentation: true);
-            var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinClass);
+            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinClass);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
+            var newClassDeclaration = mixinCommand.Execute(
+                childClass,
+                sourceCode.Semantic,
+                settings);
+
             Assert.IsTrue(
                 ValidationHelpers.HasSameDocumentation(
                     newClassDeclaration, 

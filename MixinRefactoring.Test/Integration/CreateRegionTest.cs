@@ -22,12 +22,14 @@ namespace MixinRefactoring.Test
             // arrange
             var sourceCode = new SourceCode(Files.Person, Files.Name);
             var personClass = sourceCode.Class(typeof(T).Name);
-            var mixinReference = personClass.FindMixinReference("_name");
+            var mixinReference = 
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(personClass.FindMixinReference("_name"));
             var settings = new Settings(createRegions: true);
-            var mixinCommand = new MixinCommand(sourceCode.Semantic, mixinReference);
+            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinReference);
 
             // act
-            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
+            var newClassDeclaration = mixinCommand.Execute(personClass,sourceCode.Semantic,settings);
 
             // assert: the method must be between the region
             var isPropertyBetweenRegion = 
@@ -77,11 +79,13 @@ namespace MixinRefactoring.Test
             // arrange
             var sourceCode = new SourceCode(Files.Person, Files.Name,Files.Worker);
             var personClass = sourceCode.Class(nameof(PersonWithTwoMixins));
-            var workerMixin = personClass.FindMixinReference("_worker");
+            var workerMixin = 
+                new MixinReferenceFactory(sourceCode.Semantic)
+                .Create(personClass.FindMixinReference("_worker"));
             var settings = new Settings(createRegions: true);
             // act: add the second mixin
-            var mixinCommand = new MixinCommand(sourceCode.Semantic, workerMixin);
-            var newClassDeclaration = mixinCommand.Execute(sourceCode.Semantic,settings);
+            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(workerMixin);
+            var newClassDeclaration = mixinCommand.Execute(personClass, sourceCode.Semantic,settings);
 
             // get the region directive for the second mixin and ensure
             // that it is AFTER the first endregion directive

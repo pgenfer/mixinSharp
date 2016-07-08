@@ -107,9 +107,13 @@
     <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Compile Include="Integration\CommandTests\AddMixinToBaseListCommandTest.cs" />
     <Compile Include="Integration\AddInterfacesToChildSyntaxWriterTest.cs" />
     <Compile Include="Integration\ConstructorInjectionTest.cs" />
     <Compile Include="Integration\CreateDocumentationTest.cs" />
+    <Compile Include="Integration\Dummys\ChildClass.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Integration\Dummys\Comments.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
@@ -117,6 +121,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\Dummys\Interface.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Integration\Dummys\Mixin.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\Dummys\Person.cs">
@@ -146,9 +153,10 @@
     <Compile Include="Integration\MethodSyntaxReaderTest.cs" />
     <Compile Include="Integration\ParameterSyntaxReaderTest.cs" />
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
-    <Compile Include="Integration\MixinCommandTest.cs" />
+    <Compile Include="Integration\CommandTests\CreateMixinFromFieldDeclarationCommandTest.cs" />
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
-    <Compile Include="Unit\MixinCommandUnitTest.cs" />
+    <Compile Include="Integration\IntegrationTestBase.cs" />
+    <Compile Include="Unit\InjectMixinCommandUnitTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,6 +9,7 @@ namespace MixinRefactoring
         public void AddInterface(Interface @interface) => _interfaces.Add(@interface);
         public IEnumerator<Interface> GetEnumerator() => _interfaces.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => _interfaces.GetEnumerator();
+        public bool IsEmpty => _interfaces.Count == 0;
         public InterfaceList() { }
         public InterfaceList(params Interface[] interfaces)
         {

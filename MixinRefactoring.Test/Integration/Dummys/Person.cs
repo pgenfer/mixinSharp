@@ -401,4 +401,13 @@ namespace MixinRefactoring.Test
         public override string ToString() => _name.ToString();
         #endregion
     }
+
+    /// <summary>
+    /// this class has just a simple mixin.
+    /// The mixin does not have any interfaces
+    /// </summary>
+    public class PersonWithSimpleMixin
+    {
+        SimpleName _name;
+    }
 }
