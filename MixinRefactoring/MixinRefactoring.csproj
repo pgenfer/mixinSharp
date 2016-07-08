@@ -83,7 +83,6 @@
     <Compile Include="MetaData\Property.cs" />
     <Compile Include="MetaData\PropertyList.cs" />
     <Compile Include="Mixer.cs" />
-    <Compile Include="MixinCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticReader\MethodSymbolReader.cs" />
     <Compile Include="SemanticReader\ParameterSymbolReader.cs" />
