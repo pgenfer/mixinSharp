@@ -36,7 +36,7 @@ namespace MixinRefactoring
             // check if mixin could be executed
             var mixin = new MixinReferenceFactory(model).Create(fieldDeclarationNode);
             var childClass = new ClassFactory(model).Create(childClassDeclaration);
-            var mixinCommand = new CompositeCommand(mixin);
+            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(fieldDeclarationNode,model);
             
             // get service provider and read settings from storage
             var serviceProvider = Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider;

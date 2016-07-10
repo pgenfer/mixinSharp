@@ -26,7 +26,7 @@ namespace MixinRefactoring.Test
                 new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(personClass.FindMixinReference("_name"));
             var settings = new Settings(createRegions: true);
-            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinReference);
+            var mixinCommand = new IncludeMixinCommand(mixinReference);
 
             // act
             var newClassDeclaration = mixinCommand.Execute(personClass,sourceCode.Semantic,settings);
@@ -84,7 +84,7 @@ namespace MixinRefactoring.Test
                 .Create(personClass.FindMixinReference("_worker"));
             var settings = new Settings(createRegions: true);
             // act: add the second mixin
-            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(workerMixin);
+            var mixinCommand = new IncludeMixinCommand(workerMixin);
             var newClassDeclaration = mixinCommand.Execute(personClass, sourceCode.Semantic,settings);
 
             // get the region directive for the second mixin and ensure

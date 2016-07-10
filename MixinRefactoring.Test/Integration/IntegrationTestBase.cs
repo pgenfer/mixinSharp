@@ -25,9 +25,29 @@ namespace MixinRefactoring.Test
         }
 
         protected ClassWithSourceCode CreateClass(string className) => _sourceCode.CreateClass(className);
+
+        /// <summary>
+        /// creates a mixin reference
+        /// </summary>
+        /// <param name="child">child class where the mixin reference is placed</param>
+        /// <param name="mixinField">name of the field in the child class
+        /// that references the mixin</param>
+        /// <returns></returns>
         protected MixinReference CreateMixinReference(ClassWithSourceCode child, string mixinField) => 
             new MixinReferenceFactory(_sourceCode.Semantic).Create(
                 _sourceCode.MixinInClass(child.Name, mixinField));
+        /// <summary>
+        /// creates a mixin reference
+        /// </summary>
+        /// <param name="mixinName">name of the mixin reference</param>
+        /// <param name="mixinTypeName">name of the type the mixin reference should be</param>
+        /// <returns></returns>
+        protected MixinReference CreateMixinReference(string mixinName, string mixinTypeName) =>
+            new MixinReference(mixinName, new ClassFactory(Semantic)
+                .Create(_sourceCode.GetTypeByName(mixinTypeName)));
+        /// <summary>
+        /// returns the semantic model
+        /// </summary>
         protected SemanticModel Semantic => _sourceCode.Semantic;
     }
 }

@@ -11,8 +11,9 @@ namespace MixinRefactoring.Test
 {
     public class CreateMixinFromFieldDeclarationCommandTest : IntegrationTestBase
     {
-        [Test(Description=
-            "Checks that mixins cannot be created from field declarations with system types (e.g. 'int _mixin' will not work)")]
+        [TestDescription(
+            @"Checks that mixins cannot be created from field declarations 
+            with system types (e.g. 'int _mixin' will not work)")]
         public void ClassWithNativeFields_CanExecuteMixinCommand_CannotExecute()
         {
             WithSourceFiles(Files.Person);
@@ -24,7 +25,7 @@ namespace MixinRefactoring.Test
             foreach (var fieldDeclaration in fieldDeclarations)
             {
                 var mixin = mixinFactory.Create(fieldDeclaration);
-                var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixin);
+                var mixinCommand = new IncludeMixinCommand(mixin);
                 Assert.IsFalse(mixinCommand.CanExecute(person));
             }
         }

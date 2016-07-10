@@ -15,4 +15,12 @@ namespace MixinRefactoring.Test
     {
         private SimpleMixin _mixin;
     }
+
+    /// <summary>
+    /// this is a simple child class that does not 
+    /// have any reference field to a mixin
+    /// </summary>
+    public class SimpleChildClassWithoutField
+    {
+    }
 }

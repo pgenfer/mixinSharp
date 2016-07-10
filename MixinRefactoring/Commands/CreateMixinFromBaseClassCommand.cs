@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 namespace MixinRefactoring
 {
     /// <summary>
-    /// Composite command that includes a mixin into a child class.
-    /// A reference to the mixin is already defined as a field in the child class.
+    /// A composite command that includes a mixin to a child class by generating
+    /// the mixin from an interface of the child class.
+    /// A reference field to the mixin instance will also be created in the child class.
     /// </summary>
-    public class CreateMixinFromFieldDeclarationCommand : CompositeCommand
+    public class CreateMixinFromBaseClass : CompositeCommand
     {
-        public CreateMixinFromFieldDeclarationCommand(
-            FieldDeclarationSyntax mixinFieldDeclaration,
+        public CreateMixinFromBaseClass(
+            SimpleBaseTypeSyntax baseType,
             SemanticModel semantic):
-            base(new MixinReferenceFactory(semantic).Create(mixinFieldDeclaration))
+            base(new MixinReferenceFactory(semantic).Create(baseType))
         {
         }
 
@@ -25,6 +26,7 @@ namespace MixinRefactoring
         {
             return new IMixinCommand[]
             {
+                new AddFieldDeclarationForMixinCommand(mixin),
                 new IncludeMixinCommand(mixin),
                 new AddMixinToBaseListCommand(mixin),
                 new InjectMixinsIntoChildCommand(mixin),

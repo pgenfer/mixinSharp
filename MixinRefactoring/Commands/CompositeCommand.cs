@@ -8,19 +8,28 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MixinRefactoring
 {
-    public class CompositeCommand : IMixinCommand
+    /// <summary>
+    /// base class for commands composed of other commands.
+    /// A composite command will execute all its commands
+    /// sequentially and will create 
+    /// </summary>
+    public abstract class CompositeCommand : IMixinCommand
     {
-        IMixinCommand[] _commands;
-      
-        public CompositeCommand(MixinReference mixin)
-        {
-            _commands = new IMixinCommand[]
-            {
-                new CreateMixinFromFieldDeclarationCommand(mixin),
-                new AddMixinToBaseListCommand(mixin),
-                new InjectMixinsIntoChildCommand(mixin),
-            };
+        private readonly IMixinCommand[] _commands;
+        
+              
+        protected CompositeCommand(MixinReference mixin)
+        {            
+            _commands = CreateCommands(mixin);
         }
+
+        /// <summary>
+        /// must be implemented by derived classes. Should
+        /// return all commands that are part of this composition.
+        /// </summary>
+        /// <returns>List of commands that are part of this composition in their correct order.</returns>
+        protected abstract IMixinCommand[] CreateCommands(MixinReference mixin);
+        
 
         public bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
         {
@@ -50,7 +59,7 @@ namespace MixinRefactoring
                 // after creating the new syntax tree, get a new semantic model
                 semantic = compilation.GetSemanticModel(newSyntaxTree);
                 // also retrieve the class declaration from the new syntax tree
-                childDeclaration = semantic.SyntaxTree.GetRoot().FindClassByName(childClassName);
+                childDeclaration = newRoot.FindClassByName(childClassName);
             }
             return childDeclaration;
         }

@@ -23,5 +23,17 @@ namespace MixinRefactoring
             fieldSyntaxReader.Visit(mixinFieldDeclaration);
             return fieldSyntaxReader.MixinReference;
         }
+
+        public MixinReference Create(SimpleBaseTypeSyntax typeOfMixinNode)
+        {
+            var typeOfMixin = _semantic.GetTypeInfo(typeOfMixinNode).Type;
+            // type could not be resolved => return here
+            if (typeOfMixin.TypeKind == TypeKind.Error)
+                return null;
+
+            var mixinClass = new ClassFactory(_semantic).Create(typeOfMixin);
+            var mixinName = mixinClass.Name.ConvertTypeNameToFieldName();
+            return new MixinReference(mixinName, mixinClass);
+        }
     }
 }

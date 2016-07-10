@@ -13,7 +13,7 @@ namespace MixinRefactoring.Test
             var mixinClass = new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(childClass.FindMixinReference(mixinReferenceName));
             var settings = new Settings(includeDocumentation: true);
-            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinClass);
+            var mixinCommand = new IncludeMixinCommand(mixinClass);
 
             // act
             var newClassDeclaration = mixinCommand.Execute(

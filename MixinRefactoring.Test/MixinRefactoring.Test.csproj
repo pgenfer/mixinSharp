@@ -107,7 +107,9 @@
     <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Compile Include="Integration\CommandTests\AddMixinToBaseListCommandTest.cs" />
+    <Compile Include="Extensions\StringExtensionTest.cs" />
+    <Compile Include="Integration\Commands\AddFieldDeclarationForMixinCommandTests.cs" />
+    <Compile Include="Integration\Commands\AddMixinToBaseListCommandTest.cs" />
     <Compile Include="Integration\AddInterfacesToChildSyntaxWriterTest.cs" />
     <Compile Include="Integration\ConstructorInjectionTest.cs" />
     <Compile Include="Integration\CreateDocumentationTest.cs" />
@@ -142,6 +144,7 @@
     <Compile Include="Integration\CreateRegionTest.cs" />
     <Compile Include="Integration\Helpers\FileConstants.cs" />
     <Compile Include="Integration\Helpers\SourceCode.cs" />
+    <Compile Include="Integration\Helpers\TestDescriptionAttribute.cs" />
     <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
     <Compile Include="Integration\Helpers\ValidationHelpers.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />
@@ -153,7 +156,7 @@
     <Compile Include="Integration\MethodSyntaxReaderTest.cs" />
     <Compile Include="Integration\ParameterSyntaxReaderTest.cs" />
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
-    <Compile Include="Integration\CommandTests\CreateMixinFromFieldDeclarationCommandTest.cs" />
+    <Compile Include="Integration\Commands\CreateMixinFromFieldDeclarationCommandTest.cs" />
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
     <Compile Include="Integration\IntegrationTestBase.cs" />
     <Compile Include="Unit\InjectMixinCommandUnitTest.cs" />

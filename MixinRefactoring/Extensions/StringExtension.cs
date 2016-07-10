@@ -24,5 +24,28 @@ namespace MixinRefactoring
             // default case: just add an additional _
             return $"_{fieldName}";
         }
+
+        /// <summary>
+        /// tries to convert a useful field name from a given type name.
+        /// Leading "I"s will be removed, also trailing "Mixin"s.
+        /// Example:
+        /// INamedMixin => _namedMixin
+        /// NamedMixin => _namedMixin
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        public static string ConvertTypeNameToFieldName(this string typeName)
+        {
+            var fieldName = typeName;
+            if (fieldName.StartsWith("I") && fieldName.Length > 1)
+                fieldName = fieldName.Remove(0,1);
+            if (fieldName.Length > 0)
+            {
+                var temp = fieldName;
+                fieldName = temp.Remove(0, 1).Insert(0, fieldName[0].ToString().ToLower());
+            }
+            fieldName = $"_{fieldName}";
+            return fieldName;
+        }
     }
 }

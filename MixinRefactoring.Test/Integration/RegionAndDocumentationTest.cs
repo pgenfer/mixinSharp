@@ -22,7 +22,7 @@ namespace MixinRefactoring.Test
                 new MixinReferenceFactory(sourceCode.Semantic)
                 .Create(childClass.FindMixinReference("_mixinWithProperty"));
             var settings = new Settings(includeDocumentation: true,createRegions: true);
-            var mixinCommand = new CreateMixinFromFieldDeclarationCommand(mixinClass);
+            var mixinCommand = new IncludeMixinCommand(mixinClass);
 
             // act
             var newClassDeclaration = mixinCommand.Execute(childClass, sourceCode.Semantic,settings);
