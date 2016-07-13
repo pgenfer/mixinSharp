@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinRefactoring.Test", "MixinRefactoring.Test\MixinRefactoring.Test.csproj", "{9552C614-3678-4203-B9F8-667D7D26EEDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinRefactoring", "MixinRefactoring\MixinRefactoring.csproj", "{0DEC3D36-5FF7-4FCD-B8E7-AD29C153E169}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinRefactoring.Vsix", "MixinRefactoring.Vsix\MixinRefactoring.Vsix.csproj", "{F44B6481-CA7E-4376-B109-1AA3373FCA72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B97EB891-6F38-4F47-B34E-A8A70AB8250A}"
+	ProjectSection(SolutionItems) = preProject
+		OneOrMoreErrorsOccurred.txt = OneOrMoreErrorsOccurred.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

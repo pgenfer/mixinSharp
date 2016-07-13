@@ -107,9 +107,10 @@
     <EmbeddedResource Include="Integration\Dummys\NotCompilable.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Compile Include="Commands\CreateMixinFromInterfaceTestCommand.cs" />
     <Compile Include="Extensions\StringExtensionTest.cs" />
-    <Compile Include="Integration\Commands\AddFieldDeclarationForMixinCommandTests.cs" />
-    <Compile Include="Integration\Commands\AddMixinToBaseListCommandTest.cs" />
+    <Compile Include="Commands\AddFieldDeclarationForMixinCommandTests.cs" />
+    <Compile Include="Commands\AddMixinToBaseListCommandTest.cs" />
     <Compile Include="Integration\AddInterfacesToChildSyntaxWriterTest.cs" />
     <Compile Include="Integration\ConstructorInjectionTest.cs" />
     <Compile Include="Integration\CreateDocumentationTest.cs" />
@@ -137,28 +138,28 @@
     <Compile Include="Integration\Dummys\Worker.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Integration\ClassFactoryTest.cs" />
+    <Compile Include="MetaData\ClassFactoryTest.cs" />
     <Compile Include="Integration\Dummys\Collection.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Integration\CreateRegionTest.cs" />
-    <Compile Include="Integration\Helpers\FileConstants.cs" />
-    <Compile Include="Integration\Helpers\SourceCode.cs" />
-    <Compile Include="Integration\Helpers\TestDescriptionAttribute.cs" />
-    <Compile Include="Integration\Helpers\TestResourceLoader.cs" />
-    <Compile Include="Integration\Helpers\ValidationHelpers.cs" />
+    <Compile Include="Helpers\FileConstants.cs" />
+    <Compile Include="Helpers\SourceCode.cs" />
+    <Compile Include="Helpers\TestDescriptionAttribute.cs" />
+    <Compile Include="Helpers\TestResourceLoader.cs" />
+    <Compile Include="Helpers\ValidationHelpers.cs" />
     <Compile Include="Integration\IncludeMixinSyntaxWriterTest.cs" />
     <Compile Include="Integration\InterfaceListTest.cs" />
     <Compile Include="Integration\MixerTest.cs" />
-    <Compile Include="Integration\MixinReferenceTest.cs" />
     <Compile Include="Integration\MixinWithMethodTest.cs" />
     <Compile Include="Integration\MixinWithPropertyTest.cs" />
     <Compile Include="Integration\MethodSyntaxReaderTest.cs" />
     <Compile Include="Integration\ParameterSyntaxReaderTest.cs" />
     <Compile Include="Integration\PropertySyntaxReaderTest.cs" />
-    <Compile Include="Integration\Commands\CreateMixinFromFieldDeclarationCommandTest.cs" />
+    <Compile Include="Commands\CreateMixinFromFieldDeclarationCommandTest.cs" />
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
     <Compile Include="Integration\IntegrationTestBase.cs" />
+    <Compile Include="MetaData\MixinReferenceFactoryTest.cs" />
     <Compile Include="Unit\InjectMixinCommandUnitTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />

@@ -1,0 +1,7 @@
+When opening the context menu for refactorings during debugging and a message box with the text
+"One or more errors occurred" appears, try the following
+
+Go to the directory 
+C:\Users\<UserName>\AppData\Local\Microsoft\VisualStudio
+Delete the folder 14.0Roslyn.
+This forces a reset of the VS instances that are started for the debug session.

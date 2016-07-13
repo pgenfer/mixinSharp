@@ -14,4 +14,12 @@ namespace MixinRefactoring.Test
     {
         public string Property { get; set; }
     }
+
+    /// <summary>
+    /// an simple interface with one method
+    /// </summary>
+    public interface IMixinInterface
+    {
+        void Method();
+    }
 }

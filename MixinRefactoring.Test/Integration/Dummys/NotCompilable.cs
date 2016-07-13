@@ -37,4 +37,11 @@ namespace MixinRefactoring.Test
     {
         private SimpleName _name;
     }
+
+    /// <summary>
+    /// A child class that has an interface, used to implement
+    /// by a mixin
+    /// </summary>
+    public class SimpleChildClassWithInterface : IMixinInterface
+    { }
 }

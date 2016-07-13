@@ -16,11 +16,22 @@ namespace MixinRefactoring
     public abstract class CompositeCommand : IMixinCommand
     {
         private readonly IMixinCommand[] _commands;
+
+        /// <summary>
+        /// reference to the mixin that is used by the command
+        /// </summary>
+        public MixinReference Mixin { get; }
+
+        /// <summary>
+        /// name of the command is used in the code refactoring context menu
+        /// </summary>
+        public abstract string Title { get; }
         
               
         protected CompositeCommand(MixinReference mixin)
         {            
             _commands = CreateCommands(mixin);
+            Mixin = mixin;
         }
 
         /// <summary>
@@ -31,7 +42,7 @@ namespace MixinRefactoring
         protected abstract IMixinCommand[] CreateCommands(MixinReference mixin);
         
 
-        public bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
+        public virtual bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
         {
             var canExecute = false;
             // check that at least one command is executable

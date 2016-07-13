@@ -17,6 +17,21 @@ namespace MixinRefactoring
                 .FirstOrDefault(x => x.Identifier.ToString() == name);
         }
 
+        /// <summary>
+        /// returns the first parent class where this syntax node is placed in
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static ClassDeclarationSyntax FindContainingClass(this SyntaxNode node)
+        {
+            if (node == null)
+                return null;
+            ClassDeclarationSyntax classDeclaration = node as ClassDeclarationSyntax;
+            if (classDeclaration != null)
+                return classDeclaration;
+            return FindContainingClass(node.Parent);
+        }
+
         public static FieldDeclarationSyntax FindMixinReference(this SyntaxNode node, string name)
         {
             return node.DescendantNodes()

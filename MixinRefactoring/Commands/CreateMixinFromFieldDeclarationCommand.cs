@@ -21,6 +21,8 @@ namespace MixinRefactoring
         {
         }
 
+        public override string Title => $"Include mixin: '{Mixin.Name}'";
+
         protected override IMixinCommand[] CreateCommands(MixinReference mixin)
         {
             return new IMixinCommand[]
