@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="mixinSharp..6af25ee5-c001-4b3b-85f4-e7785ff466f0" Version="1.3" Language="en-US" Publisher="Patric Genfer" />
+    <Identity Id="mixinSharp..6af25ee5-c001-4b3b-85f4-e7785ff466f0" Version="1.4" Language="en-US" Publisher="Patric Genfer" />
     <DisplayName>mixinSharp</DisplayName>
     <Description xml:space="preserve">A code refactoring extension that adds mixin support to C# by auto generating the required code.</Description>
     <MoreInfo>https://github.com/pgenfer/mixinSharp/wiki</MoreInfo>
