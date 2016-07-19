@@ -25,7 +25,7 @@ namespace MixinRefactoring
         public override bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
         {
             // this feature is only available if the mixin class is an interface
-            if (!Mixin.Class.IsInterface)
+            if (Mixin == null || !Mixin.Class.IsInterface)
                 return false;
             return base.CanExecute(childClass, settings);
         }

@@ -43,7 +43,7 @@ namespace MixinRefactoring
             var serviceProvider = Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider;
             var settings = new Settings(serviceProvider);
 
-            var childClassDeclaration = node.FindContainingClass(); ;
+            var childClassDeclaration = node.FindContainingClass();
             var childClass = new ClassFactory(model).Create(childClassDeclaration);
             if (!command.CanExecute(childClass, settings))
                 return;

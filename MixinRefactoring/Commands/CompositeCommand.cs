@@ -44,6 +44,8 @@ namespace MixinRefactoring
 
         public virtual bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
         {
+            if (Mixin == null)
+                return false;
             var canExecute = false;
             // check that at least one command is executable
             foreach (var command in _commands)
