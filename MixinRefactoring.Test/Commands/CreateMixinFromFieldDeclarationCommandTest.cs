@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using MixinRefactoring;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,15 @@ namespace MixinRefactoring.Test
                 var mixinCommand = new IncludeMixinCommand(mixin);
                 Assert.IsFalse(mixinCommand.CanExecute(person));
             }
+        }
+
+        [TestDescription("command should not execute if mixin is not valid")]
+        public void CreateMixinFromFieldDeclarationCommand_NoMixin()
+        {
+            var command = new CreateMixinFromFieldDeclarationCommand(null);
+            var childClass = NSubstitute.Substitute.For<ClassWithSourceCode>();
+
+            Assert.False(command.CanExecute(childClass));
         }
     }
 }

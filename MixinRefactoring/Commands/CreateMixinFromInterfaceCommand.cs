@@ -18,9 +18,16 @@ namespace MixinRefactoring
         public CreateMixinFromInterfaceCommand(
             SimpleBaseTypeSyntax baseType,
             SemanticModel semantic):
-            base(new MixinReferenceFactory(semantic).Create(baseType))
+            this(new MixinReferenceFactory(semantic).Create(baseType))
         {
         }
+
+        /// <summary>
+        /// constructor that takes a mixin directly. Can be used for testing.
+        /// </summary>
+        /// <param name="mixin">reference to the mixin</param>
+        public CreateMixinFromInterfaceCommand(MixinReference mixin):base(mixin)
+        { }
 
         public override bool CanExecute(ClassWithSourceCode childClass, Settings settings = null)
         {

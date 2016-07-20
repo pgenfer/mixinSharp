@@ -17,9 +17,16 @@ namespace MixinRefactoring
         public CreateMixinFromFieldDeclarationCommand(
             FieldDeclarationSyntax mixinFieldDeclaration,
             SemanticModel semantic):
-            base(new MixinReferenceFactory(semantic).Create(mixinFieldDeclaration))
+            this(new MixinReferenceFactory(semantic).Create(mixinFieldDeclaration))
         {
         }
+
+        /// <summary>
+        /// constructor that takes a mixin directly. Can be used for testing
+        /// </summary>
+        /// <param name="mixin"></param>
+        public CreateMixinFromFieldDeclarationCommand(MixinReference mixin):base(mixin)
+        { }
 
         public override string Title => $"Include mixin: '{Mixin.Name}'";
 

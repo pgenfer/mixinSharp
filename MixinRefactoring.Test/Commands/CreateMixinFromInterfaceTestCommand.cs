@@ -27,5 +27,14 @@ namespace MixinRefactoring.Test
             Assert.IsTrue(result.Members.Any(x => x is FieldDeclarationSyntax));
             Assert.IsTrue(result.Members.Any(x => x is MemberDeclarationSyntax));
         }
+
+        [TestDescription("command cannot be executed if mixin is not valid")]
+        public void CreateMixinFromInterfaceCommand_NoMixin()
+        {
+            var command = new CreateMixinFromInterfaceCommand(null);
+            var childClass = NSubstitute.Substitute.For<ClassWithSourceCode>();
+
+            Assert.IsFalse(command.CanExecute(childClass));
+        }
     }
 }
