@@ -31,9 +31,15 @@ namespace MixinRefactoring
             if (string.IsNullOrEmpty(comment))
                 return;
             var xmlComment = XDocument.Parse(comment);
-            var xmlElements =
-                xmlComment
-                .Element("member")
+
+            // comments can either have a "member" or a "doc" element enclosing them
+            var contentElement = xmlComment.Elements("member").FirstOrDefault();
+            if (contentElement == null)
+                contentElement = xmlComment.Elements("doc").FirstOrDefault();
+            if (contentElement == null)
+                return;
+
+            var xmlElements = contentElement
                 .Descendants()
                 .ToList();
 
