@@ -38,17 +38,27 @@ namespace MixinRefactoring
             bool createRegions = false,
             bool includeDocumentation = false,
             bool injectMixins = false,
-            bool addInterfacesToChild = false)
+            bool addInterfacesToChild = false,
+            bool avoidLineBreaksInProperties = true)
         {
             CreateRegions = createRegions;
             IncludeDocumentation = includeDocumentation;
             InjectMixins = injectMixins;
             AddInterfacesToChild = addInterfacesToChild;
+            AvoidLineBreaksInProperties = avoidLineBreaksInProperties;
         }
 
         public bool CreateRegions { get; }
         public bool IncludeDocumentation { get; }
         public bool InjectMixins { get; }
         public bool AddInterfacesToChild { get; }
+        /// <summary>
+        /// if set, properties will avoid line breaks
+        /// in accessor definitions. The whole accessor
+        /// will be printed in one line, like
+        /// get {return x;}
+        /// set {x = value;}
+        /// </summary>
+        public bool AvoidLineBreaksInProperties { get; } = true;
     }
 }

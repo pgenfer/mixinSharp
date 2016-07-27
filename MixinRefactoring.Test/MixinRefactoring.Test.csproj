@@ -160,6 +160,7 @@
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
     <Compile Include="Integration\IntegrationTestBase.cs" />
     <Compile Include="MetaData\MixinReferenceFactoryTest.cs" />
+    <Compile Include="Strategies\ImplementPropertyForwardingTest.cs" />
     <Compile Include="Unit\InjectMixinCommandUnitTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />

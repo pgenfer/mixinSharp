@@ -99,6 +99,7 @@
     <Compile Include="SyntaxReader\ParameterSyntaxReader.cs" />
     <Compile Include="SyntaxReader\PropertySyntaxReader.cs" />
     <Compile Include="SyntaxReader\SyntaxWalkerWithSemantic.cs" />
+    <Compile Include="SyntaxWriter\RemoveWhitespaceWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -19,7 +19,7 @@ namespace MixinRefactoring
         private readonly SemanticModel _semantic;
         // we need the position of the class in source file to reduce qualified names
         private int _classDeclarationPosition;
-        private readonly Settings _settings;
+        protected readonly Settings _settings;
         public string Name
         {
             get;
