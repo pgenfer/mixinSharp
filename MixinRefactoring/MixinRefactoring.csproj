@@ -45,6 +45,7 @@
     <Compile Include="Extensions\ClassDeclarationExtension.cs" />
     <Compile Include="Extensions\ConstructorDeclarationExtension.cs" />
     <Compile Include="Extensions\MemberDeclarationSyntaxExtension.cs" />
+    <Compile Include="Extensions\ParameterSyntaxExpression.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\TypeSymbolExtension.cs" />
     <Compile Include="Extensions\BaseTypeSyntaxExtension.cs" />

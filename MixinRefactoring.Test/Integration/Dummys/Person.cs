@@ -231,7 +231,11 @@ namespace MixinRefactoring.Test
 
         public void LambdaMethod()
         {
-            Action<int> action = x => System.Console.WriteLine(x);
+            Action<int> action = x => Console.WriteLine(x);
+            // this line should ensure that
+            // https://github.com/pgenfer/mixinSharp/issues/20
+            // does also work now
+            Action<int, int> actionWithTwoParameters = (x, y) => Console.WriteLine(x);
         }
     }
 
