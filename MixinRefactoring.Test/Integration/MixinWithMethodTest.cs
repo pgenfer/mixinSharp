@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MixinRefactoring.Test
 {
-    [TestFixture]
-    public class MixinWithMethodTest
+    public class MixinWithMethodTest : IntegrationTestBase
     {
         [Test]
         public void MixinWithMethod_Include_MethodsIncluded()
@@ -235,6 +235,22 @@ namespace MixinRefactoring.Test
             // there should not be any method to override,
             // because the child itself already overrides the method
             Assert.AreEqual(0, mixer.MethodsToImplement.Count());
+        }
+
+        [TestDescription(
+            @"Check that issue https://github.com/pgenfer/mixinSharp/issues/21 is fixed.
+              Private and protected methods should be ignored during generation")]
+        public void ChildHasHiddenMethods_Include_MethodsNotGenerated()
+        {
+            WithSourceFiles(Files.ChildClass, Files.Mixin);
+
+            var child = CreateClass(nameof(ChildClassWithHiddenMethodMixin));
+            var mixin = CreateMixinReference(child, "_mixin");
+
+            var includeMixin = new IncludeMixinCommand(mixin);
+            var generatedClass = includeMixin.Execute(child.SourceCode, Semantic);
+
+            Assert.IsEmpty(generatedClass.Members.OfType<MethodDeclarationSyntax>());
         }
     }
 }

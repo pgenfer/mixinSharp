@@ -23,6 +23,11 @@ namespace MixinRefactoring
             if (methodSymbol.IsStatic)
                 return;
 
+            // skip methods that are not visible to the outside world
+            if (methodSymbol.DeclaredAccessibility == Accessibility.Private ||
+                methodSymbol.DeclaredAccessibility == Accessibility.Protected)
+                return;
+
             // skip all property accessors and ctors
             if (methodSymbol.MethodKind == MethodKind.Ordinary)
             {
@@ -31,14 +36,14 @@ namespace MixinRefactoring
                     methodSymbol.OverriddenMethod
                     ?.ContainingType.SpecialType == SpecialType.System_Object;
                 var method = new Method(
-                    methodSymbol.Name, 
-                    methodSymbol.ReturnType, 
-                    isOverrideFromObject);
-
-                method.IsAbstract = methodSymbol.IsAbstract;
-                method.IsOverride = methodSymbol.IsOverride;
-                
-                method.Documentation = new DocumentationComment(methodSymbol.GetDocumentationCommentXml());
+                    methodSymbol.Name,
+                    methodSymbol.ReturnType,
+                    isOverrideFromObject)
+                {
+                    IsAbstract = methodSymbol.IsAbstract,
+                    IsOverride = methodSymbol.IsOverride,
+                    Documentation = new DocumentationComment(methodSymbol.GetDocumentationCommentXml())
+                };
 
                 var parameterReader = new ParameterSymbolReader(method);
                 parameterReader.VisitSymbol(methodSymbol);

@@ -2,11 +2,11 @@
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MixinRefactoring.Test
 {
-    [TestFixture]
-    public class MixinWithPropertyTest
+    public class MixinWithPropertyTest : IntegrationTestBase
     {
         [Test]
         public void MixinClassWithProperty_Include_PropertiesIncluded()
@@ -284,6 +284,22 @@ namespace MixinRefactoring.Test
 
             // no property to override because child overrides it already
             Assert.AreEqual(0, mixer.PropertiesToImplement.Count());
+        }
+
+        [TestDescription(
+            @"Check that issue https://github.com/pgenfer/mixinSharp/issues/21 is fixed.
+              Private and protected members should be ignored during generation")]
+        public void ChildHasHiddenProperties_Include_PropertiesNotGenerated()
+        {
+            WithSourceFiles(Files.ChildClass, Files.Mixin);
+
+            var child = CreateClass(nameof(ChildClassWithHiddenPropertyMixin));
+            var mixin = CreateMixinReference(child, "_mixin");
+
+            var includeMixin = new IncludeMixinCommand(mixin);
+            var generatedClass = includeMixin.Execute(child.SourceCode, Semantic);
+
+            Assert.IsEmpty(generatedClass.Members.OfType<PropertyDeclarationSyntax>());
         }
     }
 }

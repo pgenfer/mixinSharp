@@ -9,7 +9,7 @@ namespace MixinRefactoring
 {
     public class PropertySymbolReader : SemanticTypeReaderBase
     {
-        private IPropertyList _properties;
+        private readonly IPropertyList _properties;
         public PropertySymbolReader(IPropertyList properties)
         {
             _properties = properties;
@@ -22,29 +22,50 @@ namespace MixinRefactoring
             if (propertySymbol.IsStatic)
                 return;
 
+            // we ignore private and protected memebers
+            var hasGetter = propertySymbol.GetMethod != null &&
+                      !(propertySymbol.GetMethod.DeclaredAccessibility == Accessibility.Private ||
+                        propertySymbol.GetMethod.DeclaredAccessibility == Accessibility.Protected);
+            var hasSetter = propertySymbol.SetMethod != null &&
+                      !(propertySymbol.SetMethod.DeclaredAccessibility == Accessibility.Private ||
+                        propertySymbol.SetMethod.DeclaredAccessibility == Accessibility.Protected);
+
+            // property has no accessors or accessors are not accessible => skip property
+            if (!hasSetter && !hasGetter)
+                return;
+
             Property property = null;
 
             if (propertySymbol.IsIndexer) // symbol is an indexer property
             {
                 var indexerProperty = new IndexerProperty(
                     propertySymbol.Type,
-                    propertySymbol.GetMethod != null,
-                    propertySymbol.SetMethod != null);
+                    hasGetter,
+                    hasSetter);
                 var parameterReader = new ParameterSymbolReader(indexerProperty);
                 parameterReader.VisitSymbol(propertySymbol);
-                property = indexerProperty;                    
+                property = indexerProperty;
             }
             else // symbol is a normal property
             {
                 property = new Property(
                     propertySymbol.Name,
                     propertySymbol.Type,
-                    propertySymbol.GetMethod != null,
-                    propertySymbol.SetMethod != null);
+                    hasGetter,
+                    hasSetter);
             }
             property.IsAbstract = propertySymbol.IsAbstract;
             property.IsOverride = propertySymbol.IsOverride;
 
+            // store information if accessors are internal,
+            // we will need this for the generation later
+            property.IsGetterInternal = hasGetter &&
+                                        propertySymbol.GetMethod.DeclaredAccessibility == 
+                                        Accessibility.Internal;
+            property.IsSetterInternal = hasSetter &&
+                                        propertySymbol.SetMethod.DeclaredAccessibility == 
+                                        Accessibility.Internal;
+                    
             property.Documentation = new DocumentationComment(propertySymbol.GetDocumentationCommentXml());
 
             _properties.AddProperty(property);

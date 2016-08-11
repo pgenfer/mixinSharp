@@ -11,7 +11,8 @@ namespace MixinRefactoring
     /// </summary>
     public class ImplementIndexerForwarding : ImplementMemberForwardingBase<IndexerProperty>
     {
-        public ImplementIndexerForwarding(string mixinReferenceName, SemanticModel semanticModel, Settings settings): base (mixinReferenceName, semanticModel, settings)
+        public ImplementIndexerForwarding(MixinReference mixin, SemanticModel semanticModel, Settings settings): 
+            base (mixin, semanticModel, settings)
         {
         }
 

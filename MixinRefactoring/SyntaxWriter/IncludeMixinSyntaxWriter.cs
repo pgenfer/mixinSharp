@@ -37,18 +37,18 @@ namespace MixinRefactoring
         /// method is virtual, so derived classes can override it to create
         /// different strategies (e.g. for testing)
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="mixin"></param>
         /// <param name="semantic"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
         protected virtual Dictionary<Type, IImplementMemberForwarding> CreateStrategies(
-            string name, SemanticModel semantic, Settings settings)
+            MixinReference mixin, SemanticModel semantic, Settings settings)
         {
             var implementationStrategies = new Dictionary<Type, IImplementMemberForwarding>
             {
-                [typeof(Method)] = new ImplementMethodForwarding(name, _semantic, _settings),
-                [typeof(IndexerProperty)] = new ImplementIndexerForwarding(name, _semantic, _settings),
-                [typeof(Property)] = new ImplementPropertyForwarding(name, _semantic, _settings)
+                [typeof(Method)] = new ImplementMethodForwarding(mixin, _semantic, _settings),
+                [typeof(IndexerProperty)] = new ImplementIndexerForwarding(mixin, _semantic, _settings),
+                [typeof(Property)] = new ImplementPropertyForwarding(mixin, _semantic, _settings)
             };
             return implementationStrategies;
         }
@@ -64,7 +64,7 @@ namespace MixinRefactoring
             var mixinName = _mixin.Name;
             // currently, only three types of member forwardings are possible,
             // there is a strategy for every forwarding implementation
-            var implementationStrategies = CreateStrategies(mixinName, _semantic, _settings);
+            var implementationStrategies = CreateStrategies(_mixin, _semantic, _settings);
             // needed to evaluate whether type names can be reduced (depends on the using statements in the file)
             var positionOfClassInSourceFile = classDeclaration.GetLocation().SourceSpan.Start;
            

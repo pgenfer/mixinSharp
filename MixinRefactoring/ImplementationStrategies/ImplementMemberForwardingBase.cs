@@ -16,9 +16,10 @@ namespace MixinRefactoring
     /// <typeparam name = "T">type of the member that should be forwarded</typeparam>
     public abstract class ImplementMemberForwardingBase<T> : IImplementMemberForwarding where T : Member
     {
-        private readonly SemanticModel _semantic;
+        protected readonly MixinReference _mixin;
+        protected readonly SemanticModel _semantic;
         // we need the position of the class in source file to reduce qualified names
-        private int _classDeclarationPosition;
+        protected int _classDeclarationPosition;
         protected readonly Settings _settings;
         public string Name
         {
@@ -26,11 +27,12 @@ namespace MixinRefactoring
         }
 
         protected ImplementMemberForwardingBase(
-            string mixinReferenceName, 
+            MixinReference mixin, 
             SemanticModel semanticModel, 
             Settings settings)
         {
-            Name = mixinReferenceName;
+            Name = mixin.Name;
+            _mixin = mixin;
             _semantic = semanticModel;
             _settings = settings;
         }
@@ -41,9 +43,28 @@ namespace MixinRefactoring
         /// Enables a dispatch so that correct method of derived class can be called
         /// </summary>
         /// <param name = "member"></param>
+        /// <param name="positionOfClassInSourceFile"></param>
         /// <returns></returns>
         public MemberDeclarationSyntax ImplementMember(Member member, int positionOfClassInSourceFile)
         {
+            // if member is internal, we must check its accessibility
+            if (member.IsInternal)
+            {
+                // actually, if there are more than one members with this name
+                // it should not matter which one we take as long as it also is internal
+                var memberSymbol = _mixin.Class.TypeSymbol
+                    .GetMembers(member.Name)
+                    .FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Internal);
+
+                if (memberSymbol != null)
+                {
+                    var isAccessible = _semantic.IsAccessible(positionOfClassInSourceFile, memberSymbol);
+                    // member cannot be reached from this position in code => don't generate member forwarding
+                    if (!isAccessible)
+                        return null;
+                }
+            }
+            
             _classDeclarationPosition = positionOfClassInSourceFile;
             return ImplementMember((T)member);
         }

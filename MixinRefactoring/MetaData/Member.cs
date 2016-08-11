@@ -8,7 +8,7 @@ namespace MixinRefactoring
 {
     public abstract class Member
     {
-        private NameMixin _name = new NameMixin();
+        private readonly NameMixin _name = new NameMixin();
 
         /// <summary>
         /// the class where this member is declared.
@@ -46,6 +46,10 @@ namespace MixinRefactoring
         /// </summary>
         public bool IsOverride { get; set; }
         /// <summary>
+        /// flag that determines whether this member is declared as internal
+        /// </summary>
+        public virtual bool IsInternal { get; protected set; }
+        /// <summary>
         /// creates a copy of the given instance, 
         /// should be implemented by derived classes
         /// </summary>
@@ -64,10 +68,10 @@ namespace MixinRefactoring
             copy.IsOverride = needsOverrideKeywork;
             copy.Documentation = Documentation; // both hold the same reference, check if this might become a problem
             // if this member will have an override keyword, it cannot be abstract
-            copy.IsAbstract = needsOverrideKeywork ? false : IsAbstract;
+            copy.IsAbstract = !needsOverrideKeywork && IsAbstract;
             return copy;
-        } 
-        
+        }
+
         /// <summary>
         /// stores the comment of this member (if any)
         /// </summary>

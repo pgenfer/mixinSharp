@@ -11,7 +11,7 @@ namespace MixinRefactoring
     /// </summary>
     public class ImplementMethodForwarding : ImplementMemberForwardingBase<Method>
     {
-        public ImplementMethodForwarding(string mixinReferenceName, SemanticModel semanticModel, Settings settings): base (mixinReferenceName, semanticModel, settings)
+        public ImplementMethodForwarding(MixinReference mixin, SemanticModel semanticModel, Settings settings): base (mixin, semanticModel, settings)
         {
         }
 

@@ -22,7 +22,10 @@ namespace MixinRefactoring.Test
             /// </summary>
             private readonly IImplementMemberForwarding _propertyStrategy;
 
-            protected override Dictionary<Type, IImplementMemberForwarding> CreateStrategies(string name, SemanticModel semantic, Settings settings)
+            protected override Dictionary<Type, IImplementMemberForwarding> CreateStrategies(
+                MixinReference mixin, 
+                SemanticModel semantic, 
+                Settings settings)
             {
                 return new Dictionary<Type, IImplementMemberForwarding>()
                 {
@@ -52,7 +55,7 @@ namespace MixinRefactoring.Test
             var mixin = new MixinReference("_name", null);            
             
             var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties,mixin, propertyStrategy);
-            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            includeWriter.Visit(personClassSource);
 
             // ensure that the implementMember of the propertyStrategy was called
             propertyStrategy.Received().ImplementMember(Arg.Any<Member>(), Arg.Any<int>());          

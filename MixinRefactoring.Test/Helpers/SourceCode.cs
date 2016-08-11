@@ -32,6 +32,23 @@ namespace MixinRefactoring.Test
             AddFiles(codeFiles).Compile();
         }
 
+        /// <summary>
+        /// empty constructor can be used when loading
+        /// external assemblies
+        /// </summary>
+        public SourceCode() { }
+
+        public void CompileFromAssemblyOfType(Type externalType)
+        {
+            _syntaxTree = CSharpSyntaxTree.ParseText(string.Empty);
+            var externalAssembly = MetadataReference.CreateFromFile(externalType.Assembly.Location);
+            _compilation = CSharpCompilation.Create(
+                    "temp",
+                    syntaxTrees: new[] { _syntaxTree },
+                    references: new[] { externalAssembly });
+            _semanticModel = _compilation.GetSemanticModel(_syntaxTree);
+        }
+
         private void CreateSemanticModelFromSource(IEnumerable<string> fileContent)
         {
             _syntaxTree = CSharpSyntaxTree.ParseText(string.Concat(fileContent));
@@ -62,7 +79,7 @@ namespace MixinRefactoring.Test
         /// <returns></returns>
         public SourceCode AddFiles(params string[] fileNames)
         {
-            _fileContent.AddRange(fileNames.Select(x => ReadDummyData(x)).ToList());
+            _fileContent.AddRange(fileNames.Select(ReadDummyData).ToList());
             return this;
         }
 
@@ -88,7 +105,7 @@ namespace MixinRefactoring.Test
 
         public ClassDeclarationSyntax Class(string className) => _syntaxTree.GetRoot().FindClassByName(className);
         public ClassWithSourceCode CreateClass(string className) => new ClassFactory(Semantic).Create(Class(className));
-        public FieldDeclarationSyntax MixinInClass(string className,string mixin) => Class(className).FindMixinReference(mixin);
+        public FieldDeclarationSyntax MixinInClass(string className, string mixin) => Class(className).FindMixinReference(mixin);
         public ITypeSymbol GetTypeByName(string className)
         {
             var classDeclaration = Class(className);
@@ -100,6 +117,6 @@ namespace MixinRefactoring.Test
             return Semantic.GetDeclaredSymbol(classDeclaration);
         }
         public SyntaxTree Syntax => _syntaxTree;
-        public SemanticModel Semantic => _semanticModel;   
+        public SemanticModel Semantic => _semanticModel;
     }
 }

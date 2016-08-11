@@ -15,14 +15,6 @@ namespace MixinRefactoring
     {
         private Mixer _mixer = null;
 
-        /// <summary>
-        /// creates the command object
-        /// </summary>
-        /// <param name="model">Semantic model of the source code containing the
-        /// child class and the mixin</param>
-        /// <param name="mixinFieldDeclaration">
-        /// Field Declaration of the mixin within the child class
-        /// </param>
         public IncludeMixinCommand(MixinReference mixin):base(mixin)
         {            
         }

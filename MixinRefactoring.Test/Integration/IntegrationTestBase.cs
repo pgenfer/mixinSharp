@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MixinRefactoring.Test
 {
@@ -22,6 +23,12 @@ namespace MixinRefactoring.Test
         protected void WithSourceFiles(params string[] sourceFiles)
         {
             _sourceCode = new SourceCode(sourceFiles);
+        }
+
+        protected void WithExternalAssemblyFromType(Type externalType)
+        {
+            _sourceCode = new SourceCode();
+            _sourceCode.CompileFromAssemblyOfType(externalType);
         }
 
         protected ClassWithSourceCode CreateClass(string className) => _sourceCode.CreateClass(className);

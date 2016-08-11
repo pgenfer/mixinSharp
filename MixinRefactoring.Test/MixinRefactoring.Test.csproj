@@ -138,6 +138,7 @@
     <Compile Include="Integration\Dummys\Worker.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Integration\PropertySymbolReaderTest.cs" />
     <Compile Include="MetaData\ClassFactoryTest.cs" />
     <Compile Include="Integration\Dummys\Collection.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -174,6 +175,10 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MixinRefactoring.test.dummies\MixinRefactoring.test.dummies.csproj">
+      <Project>{510e10d1-4588-40f4-9852-86df45ac2738}</Project>
+      <Name>MixinRefactoring.test.dummies</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MixinRefactoring\MixinRefactoring.csproj">
       <Project>{0dec3d36-5ff7-4fcd-b8e7-ad29c153e169}</Project>
       <Name>MixinRefactoring</Name>

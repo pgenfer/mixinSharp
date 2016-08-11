@@ -13,17 +13,16 @@ namespace MixinRefactoring
     {
         private readonly MemberComparer _memberCompare = new MemberComparer();
         private readonly List<Member> _membersToImplement = new List<Member>();
-        public Mixer()
-        {
-        }
-
+      
         public void IncludeMixinInChild(MixinReference mixin, ClassWithSourceCode child)
         {
             var childMembers = child.MembersFromThisAndBase;
             var mixinMembers = mixin.Class.MembersFromThisAndBase;
             foreach(var mixinMember in mixinMembers)
             {
-                var membersWithSameSignatureInChild = childMembers.Where(x => _memberCompare.IsSameAs(x, mixinMember));
+                var membersWithSameSignatureInChild = childMembers
+                    .Where(x => _memberCompare.IsSameAs(x, mixinMember))
+                    .ToList();
                 // 1. case: method does not exist in child => implement it
                 if (!membersWithSameSignatureInChild.Any())
                     _membersToImplement.Add(mixinMember.Clone());
@@ -31,8 +30,11 @@ namespace MixinRefactoring
                 {
                     // member is declared as abstract in a base class of child
                     // but not in child itself
-                    var abstractMembers = membersWithSameSignatureInChild.Where(
-                        x => x.IsAbstract && x.Class != child && !child.HasOverride(x));
+                    var abstractMembers = membersWithSameSignatureInChild
+                        .Where(x => 
+                            x.IsAbstract && 
+                            x.Class != child && 
+                            !child.HasOverride(x));
                     _membersToImplement.AddRange(abstractMembers.Select(x => x.Clone(true)));
                 }
             }

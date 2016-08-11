@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using System;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -12,21 +13,61 @@ namespace MixinRefactoring
 {
     public class ImplementPropertyForwarding : ImplementMemberForwardingBase<Property>
     {
-        private RemoveWhitespaceVisitor _removeWhitespace = new RemoveWhitespaceVisitor();
+        private readonly RemoveWhitespaceVisitor _removeWhitespace = new RemoveWhitespaceVisitor();
         private bool _first = true;
 
         public ImplementPropertyForwarding(
-            string mixinReferenceName, 
+            MixinReference mixin, 
             SemanticModel semanticModel, 
             Settings settings): 
-            base (mixinReferenceName, semanticModel, settings)
+            base (mixin, semanticModel, settings)
         {
         }
 
         private readonly SyntaxTrivia _newLine = SyntaxTrivia(SyntaxKind.EndOfLineTrivia, NewLine);
 
+        /// <summary>
+        /// method checks if the accessors of this property
+        /// can be reached.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns>A tuple with two boolean flags.
+        /// The first boolean determines whether the setter is available,
+        /// the second flag says if the getter can be reached.</returns>
+        public Tuple<bool, bool> PropertyAccessorsCanBeReached(Property property)
+        {
+            var setterAccessible = property.HasSetter;
+            var getterAccessible = property.HasGetter;
+
+            if (property.IsGetterInternal || property.IsSetterInternal)
+            {
+                var propertySymbol = _mixin.Class.TypeSymbol
+                    .GetMembers(property.Name)
+                    .OfType<IPropertySymbol>()
+                    .FirstOrDefault();
+                if (propertySymbol != null)
+                {
+                    // accessor can be reached if there is a setter and
+                    // this setter is either not internal or it is internal
+                    // and accessable
+                    setterAccessible = 
+                        property.HasSetter && (!property.IsSetterInternal || 
+                        _semantic.IsAccessible(_classDeclarationPosition,propertySymbol.SetMethod));
+                    getterAccessible = 
+                        property.HasGetter && (!property.IsGetterInternal ||
+                        _semantic.IsAccessible(_classDeclarationPosition,propertySymbol.GetMethod));
+                }
+            }
+            return Tuple.Create(setterAccessible, getterAccessible); 
+        }
+
         protected override MemberDeclarationSyntax ImplementMember(Property member)
         {
+            var propertyAccess = PropertyAccessorsCanBeReached(member);
+            var hasSetter = propertyAccess.Item1;
+            var hasGetter = propertyAccess.Item2;
+            var isReadOnly = hasGetter && !hasSetter;
+            
             // access to member (like: "_mixin.Property")
             var memberAccess = MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression, 
@@ -36,7 +77,7 @@ namespace MixinRefactoring
             PropertyDeclarationSyntax propertyDeclaration = null;
 
             // in case only getter => use expression body
-            if (member.IsReadOnly)
+            if (isReadOnly)
             {
                 propertyDeclaration = PropertyDeclaration(
                     ParseTypeName(ReduceQualifiedTypeName(member.Type)),
@@ -51,12 +92,12 @@ namespace MixinRefactoring
                 var accessorStatements = new List<AccessorDeclarationSyntax>();
 
                 // generate getter
-                if (member.HasGetter)
+                if (hasGetter)
                     accessorStatements.Add(
                         AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                         .AddBodyStatements(ReturnStatement(memberAccess)));
                 // generate setter
-                if(member.HasSetter)
+                if(hasSetter)
                     accessorStatements.Add(
                         AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                         .AddBodyStatements(ExpressionStatement(AssignmentExpression(
