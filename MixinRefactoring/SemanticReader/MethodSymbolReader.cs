@@ -42,6 +42,7 @@ namespace MixinRefactoring
                 {
                     IsAbstract = methodSymbol.IsAbstract,
                     IsOverride = methodSymbol.IsOverride,
+                    IsInternal = methodSymbol.DeclaredAccessibility.HasFlag(Accessibility.Internal),
                     Documentation = new DocumentationComment(methodSymbol.GetDocumentationCommentXml())
                 };
 

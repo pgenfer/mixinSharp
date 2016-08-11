@@ -48,7 +48,7 @@ namespace MixinRefactoring
         /// <summary>
         /// flag that determines whether this member is declared as internal
         /// </summary>
-        public virtual bool IsInternal { get; protected set; }
+        public virtual bool IsInternal { get; set; }
         /// <summary>
         /// creates a copy of the given instance, 
         /// should be implemented by derived classes
@@ -69,6 +69,7 @@ namespace MixinRefactoring
             copy.Documentation = Documentation; // both hold the same reference, check if this might become a problem
             // if this member will have an override keyword, it cannot be abstract
             copy.IsAbstract = !needsOverrideKeywork && IsAbstract;
+            copy.IsInternal = IsInternal;
             return copy;
         }
 

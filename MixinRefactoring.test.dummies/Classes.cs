@@ -25,6 +25,17 @@ namespace MixinRefactoring.Test
     }
 
     /// <summary>
+    /// mixin with an internal method
+    /// </summary>
+    public class MixinWithInternalMethod
+    {
+        /// <summary>
+        /// this method should not be generated
+        /// </summary>
+        internal void InternalMethod() { }
+    }
+
+    /// <summary>
     /// this is just a marker class used to load the assembly
     /// where this class is placed in
     /// </summary>

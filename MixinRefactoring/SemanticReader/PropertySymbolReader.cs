@@ -60,11 +60,11 @@ namespace MixinRefactoring
             // store information if accessors are internal,
             // we will need this for the generation later
             property.IsGetterInternal = hasGetter &&
-                                        propertySymbol.GetMethod.DeclaredAccessibility == 
-                                        Accessibility.Internal;
+                                        propertySymbol.GetMethod
+                                        .DeclaredAccessibility.HasFlag(Accessibility.Internal);
             property.IsSetterInternal = hasSetter &&
-                                        propertySymbol.SetMethod.DeclaredAccessibility == 
-                                        Accessibility.Internal;
+                                        propertySymbol.SetMethod
+                                        .DeclaredAccessibility.HasFlag(Accessibility.Internal);
                     
             property.Documentation = new DocumentationComment(propertySymbol.GetDocumentationCommentXml());
 
