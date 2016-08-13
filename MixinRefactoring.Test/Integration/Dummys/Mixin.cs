@@ -63,5 +63,13 @@ namespace MixinRefactoring.Test
     {
         internal string Property { get; set; }
     }
+
+    /// <summary>
+    /// mixin has an event member
+    /// </summary>
+    public class MixinWithEvent
+    {
+        public event EventHandler EventInMixin;
+    }
 }
 

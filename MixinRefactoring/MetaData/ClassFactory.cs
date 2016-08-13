@@ -21,31 +21,43 @@ namespace MixinRefactoring
 
         public ClassWithSourceCode Create(ClassDeclarationSyntax classDeclaration)
         {
-            var @class = new ClassWithSourceCode(classDeclaration);
-            @class.Name = classDeclaration.Identifier.ToString();
-            var propertyReader = new PropertySyntaxReader(@class, _semantic);
-            propertyReader.Visit(classDeclaration);
-            var methodReader = new MethodSyntaxReader(@class, _semantic);
-            methodReader.Visit(classDeclaration);
-            var baseClassReader = new BaseClassSyntaxReader(@class, _semantic);
-            baseClassReader.Visit(classDeclaration);
-            var interfaceReader = new InterfaceSyntaxReader(@class.Interfaces, _semantic);
-            interfaceReader.Visit(classDeclaration);
-            // we could skip this if inject mixin option is not set
-            var constructorCountReader = new ConstructorSyntaxReader(@class,_semantic);
-            constructorCountReader.Visit(classDeclaration);
-            
+            var @class = new ClassWithSourceCode(classDeclaration)
+            {
+                Name = classDeclaration.Identifier.ToString()
+            };
+
+            // create readers for reading syntax members
+            var syntaxReaders = new SyntaxWalkerWithSemantic[]
+            {
+                new PropertySyntaxReader(@class, _semantic),
+                new MethodSyntaxReader(@class, _semantic),
+                new EventSyntaxReader(@class, _semantic),
+                new BaseClassSyntaxReader(@class, _semantic),
+                new InterfaceSyntaxReader(@class.Interfaces, _semantic),
+                new ConstructorSyntaxReader(@class, _semantic)
+            };
+
+            foreach (var syntaxReader in syntaxReaders)
+                syntaxReader.Visit(classDeclaration);
+
             return @class;
         }
 
         public ClassWithTypeSymbol Create(ITypeSymbol classSymbol)
         {
-            var @class = new ClassWithTypeSymbol(classSymbol);
-            @class.Name = classSymbol.Name;
-            var propertyReader = new PropertySymbolReader(@class);
-            propertyReader.VisitSymbol(classSymbol);
-            var methodReader = new MethodSymbolReader(@class);
-            methodReader.VisitSymbol(classSymbol);
+            var @class = new ClassWithTypeSymbol(classSymbol) {Name = classSymbol.Name};
+
+            // create readers for reading symbol members
+            var symbolReaders = new SemanticTypeReaderBase[]
+            {
+                new PropertySymbolReader(@class),
+                new MethodSymbolReader(@class),
+                new EventSymbolReader(@class)
+            };
+
+            foreach (var symbolReader in symbolReaders)
+                symbolReader.VisitSymbol(classSymbol);
+
             // search base classes until we reach System.Object where we stop
             if (classSymbol.BaseType != null && 
                 classSymbol.BaseType.SpecialType != SpecialType.System_Object)

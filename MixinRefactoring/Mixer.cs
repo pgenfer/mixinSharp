@@ -43,5 +43,6 @@ namespace MixinRefactoring
         public IEnumerable<Member> MembersToImplement => _membersToImplement;
         public IEnumerable<Property> PropertiesToImplement => _membersToImplement.OfType<Property>();
         public IEnumerable<Method> MethodsToImplement => _membersToImplement.OfType<Method>();
+        public IEnumerable<Event> EventsToImplement => _membersToImplement.OfType<Event>();
     }
 }

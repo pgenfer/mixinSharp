@@ -8,10 +8,11 @@ namespace MixinRefactoring
     /// was either read from source code or from
     /// a type symbol
     /// </summary>
-    public class Class : IMethodList, IPropertyList
+    public class Class : IMethodList, IPropertyList, IEventList
     {
-        private PropertyList _properties = new PropertyList();
-        private MethodList _methods = new MethodList();
+        private readonly PropertyList _properties = new PropertyList();
+        private readonly MethodList _methods = new MethodList();
+        private readonly EventList _events = new EventList();
         private readonly NameMixin _name = new NameMixin();
         private readonly InterfaceList _interfaces = new InterfaceList();
 
@@ -30,6 +31,8 @@ namespace MixinRefactoring
         public virtual InterfaceList Interfaces => _interfaces;
         public IEnumerable<Property> Properties => _properties;
         public IEnumerable<Method> Methods => _methods;
+        public IEnumerable<Event> Events => _events;
+
         public string Name
         {
             get { return _name.Name; }
@@ -50,6 +53,7 @@ namespace MixinRefactoring
                 var members = new List<Member>();
                 members.AddRange(Properties);
                 members.AddRange(Methods);
+                members.AddRange(Events);
                 if (BaseClass != null)
                     members.AddRange(BaseClass.MembersFromThisAndBase);
                 return members;
@@ -69,5 +73,7 @@ namespace MixinRefactoring
                 .Where(x => memberComparer.IsSameAs(x, abstractMember));
             return sameMembers.Any();
         }
+
+        public void AddEvent(Event @event) => _events.AddEvent(@event);
     }
 }

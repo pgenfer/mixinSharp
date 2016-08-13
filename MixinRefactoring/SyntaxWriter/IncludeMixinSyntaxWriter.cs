@@ -48,7 +48,8 @@ namespace MixinRefactoring
             {
                 [typeof(Method)] = new ImplementMethodForwarding(mixin, _semantic, _settings),
                 [typeof(IndexerProperty)] = new ImplementIndexerForwarding(mixin, _semantic, _settings),
-                [typeof(Property)] = new ImplementPropertyForwarding(mixin, _semantic, _settings)
+                [typeof(Property)] = new ImplementPropertyForwarding(mixin, _semantic, _settings),
+                [typeof(Event)] = new ImplementEventForwarding(mixin,_semantic,_settings)
             };
             return implementationStrategies;
         }

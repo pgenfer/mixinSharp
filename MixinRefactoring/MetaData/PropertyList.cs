@@ -5,7 +5,7 @@ namespace MixinRefactoring
 {
     public class PropertyList : IPropertyList, IEnumerable<Property>
     {
-        private List<Property> _properties = new List<Property>();
+        private readonly List<Property> _properties = new List<Property>();
         public void AddProperty(Property newProperty) => _properties.Add(newProperty);
         public void AddProperties(IEnumerable<Property> properties) => _properties.AddRange(properties);
         public IEnumerator<Property> GetEnumerator() => _properties.GetEnumerator();

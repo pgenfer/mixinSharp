@@ -1,4 +1,6 @@
-﻿namespace MixinRefactoring
+﻿using System;
+
+namespace MixinRefactoring
 {
     public class MemberComparer
     {
@@ -18,10 +20,21 @@
         /// In case of properties, it is enough to check the name
         /// since two properties in the same class cannot have the same name
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "target"></param>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
         /// <returns></returns>
         protected virtual bool IsEqual(Property first, Property second)
+        {
+            return first.Name == second.Name;
+        }
+
+        /// <summary>
+        /// two events are equal if they have the same name.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        protected virtual bool IsEqual(Event first, Event second)
         {
             return first.Name == second.Name;
         }

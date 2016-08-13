@@ -12,15 +12,14 @@ namespace MixinRefactoring
     /// <summary>
     /// simply checks if a class declaration contains a constructor.
     /// </summary>
-    public class ConstructorSyntaxReader : CSharpSyntaxWalker
+    public class ConstructorSyntaxReader : SyntaxWalkerWithSemantic
     {
         private readonly IConstructorList _constructors;
-        private readonly SemanticModel _semantic;
-
-        public ConstructorSyntaxReader(IConstructorList constructors, SemanticModel semantic)
+        
+        public ConstructorSyntaxReader(IConstructorList constructors, SemanticModel semantic):
+            base(semantic)
         {
             _constructors = constructors;
-            _semantic = semantic;
         }
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)

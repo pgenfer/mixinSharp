@@ -6,12 +6,23 @@ namespace MixinRefactoring
 {
     public abstract class SemanticTypeReaderBase
     {
+        /// <summary>
+        /// TODO: improve this:
+        /// there should be a classsymbol reader which
+        /// calls the other readers. Because currently this
+        /// method is implemented by every reader although 
+        /// the reader will only handle the symbols for which it is
+        /// responsible
+        /// </summary>
+        /// <param name="typeSymbol"></param>
         protected virtual void ReadSymbol(ITypeSymbol typeSymbol)
         {
             var properties = typeSymbol.GetMembers().OfType<IPropertySymbol>();
             foreach (var property in properties) ReadSymbol(property);
             var methods = typeSymbol.GetMembers().OfType<IMethodSymbol>();
             foreach (var method in methods) ReadSymbol(method);
+            var events = typeSymbol.GetMembers().OfType<IEventSymbol>();
+            foreach (var @event in events) ReadSymbol(@event);
         }
 
         /// <summary>
@@ -28,6 +39,7 @@ namespace MixinRefactoring
         /// <param name="methodSymbol"></param>
         protected virtual void ReadSymbol(IMethodSymbol methodSymbol) { }
         protected virtual void ReadSymbol(IParameterSymbol parameter) { }
+        protected virtual void ReadSymbol(IEventSymbol @event) { }
 
         public void VisitSymbol(ISymbol symbol)
         {

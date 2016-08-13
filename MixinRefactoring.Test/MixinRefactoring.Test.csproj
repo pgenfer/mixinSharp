@@ -138,6 +138,7 @@
     <Compile Include="Integration\Dummys\Worker.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Integration\MixinWithEventTest.cs" />
     <Compile Include="Integration\PropertySymbolReaderTest.cs" />
     <Compile Include="MetaData\ClassFactoryTest.cs" />
     <Compile Include="Integration\Dummys\Collection.cs">
@@ -160,9 +161,11 @@
     <Compile Include="Commands\CreateMixinFromFieldDeclarationCommandTest.cs" />
     <Compile Include="Integration\RegionAndDocumentationTest.cs" />
     <Compile Include="Integration\IntegrationTestBase.cs" />
+    <Compile Include="MetaData\ClassTest.cs" />
     <Compile Include="MetaData\MixinReferenceFactoryTest.cs" />
     <Compile Include="Strategies\ImplementMethodForwardingTest.cs" />
     <Compile Include="Strategies\ImplementPropertyForwardingTest.cs" />
+    <Compile Include="SyntaxReader\EventSyntaxReaderTest.cs" />
     <Compile Include="Unit\InjectMixinCommandUnitTest.cs" />
     <Compile Include="Unit\SemanticTypeReaderTest.cs" />
     <Compile Include="Unit\MemberCompareTest.cs" />

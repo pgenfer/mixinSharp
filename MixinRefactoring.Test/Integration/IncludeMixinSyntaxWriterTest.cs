@@ -9,8 +9,7 @@ using NSubstitute;
 
 namespace MixinRefactoring.Test
 {
-    [TestFixture]
-    public class IncludeMixinSyntaxWriterTest
+    public class IncludeMixinSyntaxWriterTest : IntegrationTestBase
     {
         /// <summary>
         /// syntax writer dummy where strategies can be injected
@@ -18,58 +17,86 @@ namespace MixinRefactoring.Test
         public class IncludeSyntaxWriterTestDummy : IncludeMixinSyntaxWriter
         {
             /// <summary>
-            /// stores a reference to the property strategy that will be injected during test case
+            /// stores a reference to a strategy that will be injected during test case
             /// </summary>
-            private readonly IImplementMemberForwarding _propertyStrategy;
+            private readonly IImplementMemberForwarding _strategyThatSouldBeCalled;
+            /// <summary>
+            /// the type of the member for which the strategy should be used
+            /// </summary>
+            private readonly Type _typeForWhichStrategyIsUsed;
 
             protected override Dictionary<Type, IImplementMemberForwarding> CreateStrategies(
                 MixinReference mixin, 
                 SemanticModel semantic, 
                 Settings settings)
             {
-                return new Dictionary<Type, IImplementMemberForwarding>()
+                return new Dictionary<Type, IImplementMemberForwarding>
                 {
-                    [typeof(Property)] = _propertyStrategy
+                    [_typeForWhichStrategyIsUsed] = _strategyThatSouldBeCalled
                 };
             }
 
             public IncludeSyntaxWriterTestDummy(
-                IEnumerable<Member> members,MixinReference mixin, IImplementMemberForwarding propertyStrategy)
+                IEnumerable<Member> members,
+                MixinReference mixin, 
+                Type typeForStrategy,
+                IImplementMemberForwarding strategy)
                 :base(members, mixin, null)
             {
-                _propertyStrategy = propertyStrategy;
+                _typeForWhichStrategyIsUsed = typeForStrategy;
+                _strategyThatSouldBeCalled = strategy;
             }            
         }
 
-        [Test]
+        [TestDescription("Check that the strategy for generating properties is called")]
         public void PropertiesToImplement_WriteSyntax_PropertyStrategyCalled()
         {
-            var sourceCode = new SourceCode(Files.Person,Files.Name);
-            var personClassSource = sourceCode.Class(nameof(Person));
-            var nameClassSource = sourceCode.Class(nameof(Name));
-      
-            var nameClass = new ClassFactory(sourceCode.Semantic).Create(nameClassSource);
+            WithSourceFiles(Files.Person, Files.Name);
+            var person = CreateClass(nameof(Person));
+            var mixin = CreateMixinReference(person, "_name");
 
             var propertyStrategy = Substitute.For<IImplementMemberForwarding>();
-            // only a test dummy
-            var mixin = new MixinReference("_name", null);            
-            
-            var includeWriter = new IncludeSyntaxWriterTestDummy(nameClass.Properties,mixin, propertyStrategy);
-            includeWriter.Visit(personClassSource);
+             
+            var includeWriter = new IncludeSyntaxWriterTestDummy(
+                mixin.Class.Properties,
+                mixin, 
+                typeof(Property),
+                propertyStrategy);
+            includeWriter.Visit(person.SourceCode);
 
             // ensure that the implementMember of the propertyStrategy was called
             propertyStrategy.Received().ImplementMember(Arg.Any<Member>(), Arg.Any<int>());          
         }
 
+        [TestDescription("Check that strategy for generating events is called")]
+        public void EventsToImplement_WriteSyntax_EventStrategyCalled()
+        {
+            WithSourceFiles(Files.ChildClass, Files.Mixin);
+            var childClass = CreateClass(nameof(ChildClassWithEventsFromMixin));
+            var mixin = CreateMixinReference(childClass, "_mixin");
+
+            var eventStrategy = Substitute.For<IImplementMemberForwarding>();
+
+            var includeWriter = new IncludeSyntaxWriterTestDummy(
+                mixin.Class.Events,
+                mixin,
+                typeof(Event),
+                eventStrategy);
+            includeWriter.Visit(childClass.SourceCode);
+
+            eventStrategy.Received().ImplementMember(mixin.Class.Events.Single(), Arg.Any<int>());
+
+        }
+
         [Test]
         public void OverrideMethodToImplement_WriteSyntax_MethodHasOverrideModifier()
         {
-            var sourceCode = new SourceCode(Files.Person, Files.Worker);
-            var personClassSource = sourceCode.Class(nameof(PersonWithToString));
-            var worker = new MixinReferenceFactory(sourceCode.Semantic).Create(personClassSource.FindMixinReference("_toString"));
+            WithSourceFiles(Files.Person, Files.Worker);
+            var person = CreateClass(nameof(PersonWithToString));
+            var worker = CreateMixinReference(person, "_toString");
             
-            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, worker, sourceCode.Semantic);
-            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            var includeWriter = new IncludeMixinSyntaxWriter(worker.Class.Methods, worker, Semantic);
+            var newPersonClassSource = includeWriter.Visit(person.SourceCode);
             // check that new person class has a method that is overriden
             var methodDeclaration = newPersonClassSource.DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
@@ -83,13 +110,12 @@ namespace MixinRefactoring.Test
         [Test]
         public void MixinWithIndexer_WriteSyntax_IndexerImplementedInChild()
         {
-            var sourceCode = new SourceCode(Files.Person, Files.Collection);
-            var personClassSource = sourceCode.Class(nameof(PersonWithIndexer));
-            var collection = new MixinReferenceFactory(sourceCode.Semantic)
-                .Create(personClassSource.FindMixinReference("_collection"));
+            WithSourceFiles(Files.Person, Files.Collection);
+            var person = CreateClass(nameof(PersonWithIndexer));
+            var collection = CreateMixinReference(person, "_collection");
 
-            var includeWriter = new IncludeMixinSyntaxWriter(collection.Class.Properties, collection, sourceCode.Semantic);
-            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            var includeWriter = new IncludeMixinSyntaxWriter(collection.Class.Properties, collection, Semantic);
+            var newPersonClassSource = includeWriter.Visit(person.SourceCode);
             // check that generated class code has exactly one indexer declaration
             var indexerDeclaration = newPersonClassSource.DescendantNodes()
                 .OfType<IndexerDeclarationSyntax>().SingleOrDefault();
@@ -99,15 +125,14 @@ namespace MixinRefactoring.Test
         [Test]
         public void MethodWithOverride_WriteSyntax_OverrideImplementedInChild()
         {
-            var sourceCode = new SourceCode(Files.NotCompilable, Files.Worker);
-            var personClassSource = sourceCode.Class("PersonFromAbstractWork");
-            var worker = new MixinReferenceFactory(sourceCode.Semantic)
-                .Create(personClassSource.FindMixinReference("_worker"));
+            WithSourceFiles(Files.NotCompilable, Files.Worker);
+            var person = CreateClass("PersonFromAbstractWork");
+            var worker = CreateMixinReference(person, "_worker");
             // create a worker method with an override keyword
             var methods = worker.Class.Methods.Select(x => x.Clone(true));
 
-            var includeWriter = new IncludeMixinSyntaxWriter(methods, worker, sourceCode.Semantic);
-            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            var includeWriter = new IncludeMixinSyntaxWriter(methods, worker, Semantic);
+            var newPersonClassSource = includeWriter.Visit(person.SourceCode);
             // check that generated class code has exactly one indexer declaration
             var methodDeclaration = newPersonClassSource.DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
@@ -121,15 +146,14 @@ namespace MixinRefactoring.Test
         [Test]
         public void PropertyWithOverride_WriteSyntax_OverrideImplementedInChild()
         {
-            var sourceCode = new SourceCode(Files.NotCompilable, Files.Name);
-            var personClassSource = sourceCode.Class("PersonFromAbstractName");
-            var name = new MixinReferenceFactory(sourceCode.Semantic)
-                .Create(personClassSource.FindMixinReference("_name"));
+            WithSourceFiles(Files.NotCompilable, Files.Name);
+            var person = CreateClass("PersonFromAbstractName");
+            var name = CreateMixinReference(person, "_name");
             // create a worker method with an override keyword
             var properties = name.Class.Properties.Select(x => x.Clone(true));
 
-            var includeWriter = new IncludeMixinSyntaxWriter(properties, name, sourceCode.Semantic);
-            var newPersonClassSource = includeWriter.Visit(personClassSource);
+            var includeWriter = new IncludeMixinSyntaxWriter(properties, name, Semantic);
+            var newPersonClassSource = includeWriter.Visit(person.SourceCode);
             // check that generated class code has exactly one indexer declaration
             var propertyDeclaration = newPersonClassSource.DescendantNodes()
                 .OfType<PropertyDeclarationSyntax>()
@@ -139,7 +163,5 @@ namespace MixinRefactoring.Test
                 .ToString();
             Assert.IsTrue(propertyDeclaration.Contains("override"));
         }
-
-        
     }
 }

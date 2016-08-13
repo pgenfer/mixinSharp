@@ -51,4 +51,23 @@ namespace MixinRefactoring.Test
     {
         private MixinWithPrivateAccessor _mixin;
     }
+
+    /// <summary>
+    /// child class that has an event
+    /// </summary>
+    public class ChildClassWithEvent
+    {
+        /// <summary>
+        /// public event in the child class
+        /// </summary>
+        public event EventHandler SomethingHappened;
+    }
+
+    /// <summary>
+    /// class that has a mixin with an event
+    /// </summary>
+    public class ChildClassWithEventsFromMixin
+    {
+        private MixinWithEvent _mixin;
+    }
 }
