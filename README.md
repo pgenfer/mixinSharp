@@ -1,4 +1,5 @@
 # mixinSharp
+[![Build status](https://ci.appveyor.com/api/projects/status/u8nvb20x3y87h0ay?svg=true)](https://ci.appveyor.com/project/pgenfer/mixinsharp)
 
 MixinSharp (or shorter: mixin#) is a code refactoring extension for Visual Studio 2015 that adds mixin support to C# by auto generating the required code.  
 The VSIX binary installation file can be found in the [Visual Studio Gallery](https://visualstudiogallery.msdn.microsoft.com/05c8154b-eb71-45f1-986e-923acca556f1), the full source code is available here. 
