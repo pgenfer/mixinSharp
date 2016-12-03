@@ -108,6 +108,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Commands\CreateMixinFromInterfaceTestCommand.cs" />
+    <Compile Include="Common\NameMixinTest.cs" />
     <Compile Include="Extensions\StringExtensionTest.cs" />
     <Compile Include="Commands\AddFieldDeclarationForMixinCommandTests.cs" />
     <Compile Include="Commands\AddMixinToBaseListCommandTest.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Integration\IntegrationTestBase.cs" />
     <Compile Include="MetaData\ClassTest.cs" />
     <Compile Include="MetaData\MixinReferenceFactoryTest.cs" />
+    <Compile Include="MetaData\ParameterTest.cs" />
     <Compile Include="Strategies\ImplementMethodForwardingTest.cs" />
     <Compile Include="Strategies\ImplementPropertyForwardingTest.cs" />
     <Compile Include="SyntaxReader\EventSyntaxReaderTest.cs" />

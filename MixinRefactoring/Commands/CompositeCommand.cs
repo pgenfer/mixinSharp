@@ -60,7 +60,7 @@ namespace MixinRefactoring
         {
             // we need the class name of the child to find it in the syntax tree
             // after it was changed
-            var childClassName = childDeclaration.Identifier.Text.ToString();
+            var childClassName = childDeclaration.Identifier.Text;
             foreach (var command in _commands)
             {
                 var oldSyntaxTree = childDeclaration.SyntaxTree;
