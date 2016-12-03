@@ -44,6 +44,13 @@ namespace MixinRefactoring
             var settings = new Settings(serviceProvider);
 
             var childClassDeclaration = node.FindContainingClass();
+            // it can happen that the field declaration is not inside a class declaration
+            // (e.g. the user just started typing inside an interface declaration
+            //  and has not finished yet, so the node might look like a field declaration)
+            // in that case we stop processing here
+            if (childClassDeclaration == null)
+                return;
+
             var childClass = new ClassFactory(model).Create(childClassDeclaration);
             if (!command.CanExecute(childClass, settings))
                 return;

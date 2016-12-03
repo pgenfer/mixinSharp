@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MixinRefactoring
 {
@@ -16,10 +17,8 @@ namespace MixinRefactoring
             _parameters = parameters;
         }
 
-        protected override void ReadSymbol(IParameterSymbol parameter)
-        {
+        protected override void ReadSymbol(IParameterSymbol parameter) =>
             _parameters.Add(new Parameter(parameter.Name, parameter.Type));
-        }
 
 
         protected override void ReadSymbol(IPropertySymbol propertySymbol)
